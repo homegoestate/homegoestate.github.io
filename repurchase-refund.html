@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重購退稅試算系統｜宏國地政｜易丞地政 (SSO Edition)</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* =========================================
+           STYLE LOCKING: 樣式區完全保留，未做任何更動
+           ========================================= */
+        :root {
+            --primary: #2c3e50;
+            --brand-dark: #1A3C5C;
+            --brand-gold: #C5A065;
+            --accent: #e67e22;
+            --light: #ecf0f1;
+            --line-green: #06C755;
+            --fb-blue: #1877F2;
+            --google-red: #EA4335;
+        }
+
+        * { box-sizing: border-box; }
+        
+        /* --- Nexus Protection: 禁止選取與拖曳 --- */
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #f4f6f7; 
+            margin: 0; 
+            padding: 0; 
+            padding-bottom: 100px; 
+            color: #333; 
+            line-height: 1.6;
+            
+            /* 禁止文字選取 (讓複製變得困難) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 允許輸入框內的文字被選取，否則用戶無法修改數字 */
+        input {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* 禁止圖片拖曳 */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            pointer-events: none; /* 如果不需要點擊圖片，這行最強力 */
+        }
+
+        /* --- Header --- */
+        .main-header {
+            background: #FFF; padding: 20px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-top: 5px solid var(--brand-gold); margin-bottom: 20px;
+        }
+        .logo-group img { height: 60px; margin: 0 10px; vertical-align: middle; pointer-events: none; }
+        .main-header h1 { font-size: 1.8rem; color: var(--brand-dark); margin: 10px 0 5px; font-weight: 800; letter-spacing: 1px; }
+        .main-header .subtitle { color: #666; font-size: 1rem; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- Cards --- */
+        .card {
+            background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;
+        }
+        .card-header {
+            font-size: 1.2rem; color: var(--brand-dark); border-bottom: 2px solid var(--light);
+            padding-bottom: 10px; margin-bottom: 20px; font-weight: 700;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input[type="number"] {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; text-align: right;
+        }
+        input[type="number"]:focus { border-color: var(--brand-gold); outline: none; box-shadow: 0 0 0 3px rgba(197, 160, 101, 0.2); }
+
+        .unit-tag { font-size: 0.9rem; color: #fff; background:var(--brand-gold); padding:2px 8px; border-radius:4px; font-weight: normal; margin-left: 5px; }
+
+        .btn-calc {
+            width: 100%; padding: 15px; background: var(--brand-dark); color: white; border: none; border-radius: 8px;
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-calc:hover { background: #2c3e50; }
+
+        /* --- Result Box --- */
+        .result-box {
+            background: #FFF8E1; border: 1px dashed var(--brand-gold); padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center;
+        }
+        .result-title { font-size: 1rem; color: #B7791F; margin-bottom: 5px; font-weight: bold; }
+        .result-value { font-size: 2.2rem; color: #D35400; font-weight: 800; font-family: 'Consolas', monospace; }
+
+        .tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; font-weight: bold; }
+        .tag-sell { background: #e8f6f3; color: #1abc9c; }
+        .tag-buy { background: #fdedec; color: #e74c3c; }
+
+        /* --- Important Notice Section --- */
+        .notice-section {
+            background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 20px; border-top: 4px solid #C0392B;
+        }
+        .notice-title { color: #C0392B; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; }
+        .notice-content { font-size: 0.95rem; color: #444; }
+        .notice-content ul { padding-left: 20px; margin: 10px 0; }
+        .notice-content li { margin-bottom: 8px; }
+        
+        .contact-box {
+            background: #EBF5FB; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #AED6F1;
+        }
+        .contact-title { color: #2980B9; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+
+        /* --- Footer --- */
+        .footer-copyright {
+            text-align: center; font-size: 0.85rem; color: #999; margin-top: 30px; padding: 20px; border-top: 1px solid #eee;
+        }
+
+        /* --- FAB --- */
+        .fab-container {
+            position: fixed; bottom: 25px; right: 25px; 
+            display: flex; flex-direction: column; gap: 12px; z-index: 1000;
+        }
+        .fab-btn {
+            width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            transition: all 0.3s; overflow: hidden; white-space: nowrap; font-weight: bold; font-size: 0;
+        }
+        .fab-btn:hover { width: 160px; border-radius: 30px; font-size: 1rem; padding-left: 10px; justify-content: flex-start; }
+        .fab-btn i { font-style: normal; font-size: 1.5rem; min-width: 55px; text-align: center; }
+        
+        .fab-line { background-color: var(--line-green); }
+        .fab-review { background-color: var(--google-red); }
+        .fab-fb { background-color: var(--fb-blue); }
+        .fab-vip { background-color: var(--brand-gold); }
+
+        @media (max-width: 600px) {
+            .main-header h1 { font-size: 1.5rem; }
+            .card { padding: 15px; }
+        }
+
+        /* --- SSO 門禁按鈕專用 --- */
+        .btn-line-solid { background-color: #06C755; color: white; transition: background-color 0.3s; border: none; }
+        .btn-line-solid:hover { background-color: #05b34c; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="nexus-auth-gate" class="min-h-screen flex flex-col items-center justify-center p-5 bg-gradient-to-b from-[#0F2E46] to-[#162a3b] text-white fixed inset-0 z-[9999]" style="display: flex;">
+    <div class="bg-white text-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md text-center transform transition-all relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-[#C5A065] opacity-10 rounded-full blur-2xl"></div>
+        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-[#C5A065] shadow-inner">
+            <i class="fas fa-shield-alt text-3xl text-[#C5A065]"></i>
+        </div>
+
+        <h2 class="text-2xl font-bold text-[#0F2E46] mb-2" style="margin:10px 0;">重購退稅試算系統</h2>
+        <p class="text-sm text-gray-500 mb-5 leading-relaxed">
+            本工具提供宏國地政｜易丞地政官方好友使用。<br>
+            請先完成 LINE 好友驗證，即可立即開啟試算。
+        </p>
+
+        <div id="auth-error-msg" class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 font-bold flex items-start gap-2 text-left" style="display: none;">
+            <i class="fas fa-circle-info mt-0.5 text-amber-600"></i>
+            <span id="auth-error-text"></span>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left mb-4">
+            <div class="text-sm font-black text-[#0F2E46] mb-3 flex items-center gap-2">
+                <i class="fab fa-line text-[#06C755] text-lg"></i>
+                第一次使用請照這 2 步驟
+            </div>
+            <ol class="text-xs text-slate-600 font-bold leading-6 list-decimal pl-5">
+                <li>先點「加入官方好友」，完成加入或解除封鎖。</li>
+                <li>回到本頁後，點「我已加入，立即使用」。</li>
+            </ol>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3">
+            <button onclick="openOfficialLine()" class="w-full rounded-xl py-4 flex items-center justify-center font-black text-base shadow-lg transform transition active:scale-95 hover:shadow-xl cursor-pointer" style="background:#06C755;color:white;border:none;">
+                <i class="fab fa-line text-2xl mr-2"></i> 加入官方好友
+            </button>
+
+            <button onclick="verifyAfterFriend()" class="w-full rounded-xl py-4 flex items-center justify-center font-black text-base shadow-lg transform transition active:scale-95 hover:shadow-xl cursor-pointer" style="background:#0F2E46;color:white;border:none;">
+                <i class="fas fa-unlock-keyhole mr-2"></i> 我已加入，立即使用
+            </button>
+
+            <button onclick="loginWithLine()" class="w-full rounded-xl py-3 flex items-center justify-center font-bold text-sm cursor-pointer" style="background:#f8fafc;color:#475569;border:1px solid #e2e8f0;">
+                我本來就是好友，直接 LINE 授權
+            </button>
+        </div>
+
+        <details class="mt-4 text-left bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <summary class="cursor-pointer p-3 text-xs font-black text-slate-600 flex items-center justify-between">
+                加入後還是不能用？
+            </summary>
+            <div class="px-3 pb-3 text-xs leading-6 text-slate-500 font-bold">
+                請確認：① 已加入官方好友 ② 沒有封鎖官方帳號 ③ 加入後有回到本頁按「我已加入，立即使用」。<br>
+                若 LINE 畫面沒有跳出，請改用手機 LINE 內建瀏覽器開啟本工具。
+            </div>
+        </details>
+
+        <div class="text-[10px] text-gray-400 mt-4">
+            <i class="fas fa-lock mr-1"></i> 經由 LINE OAuth 2.0 安全授權
+        </div>
+    </div>
+    <div class="mt-8 text-xs text-blue-200 opacity-60 tracking-widest">© 2026 宏國地政 | 易丞地政</div>
+</div>
+
+<div id="main-content" style="display: none;">
+    <header class="main-header">
+        <div class="logo-group">
+            <img src="宏國地政封面.jpg" alt="宏國地政" onerror="this.style.display='none'">
+            <img src="易丞logo-01.jpg" alt="易丞地政" onerror="this.style.display='none'">
+        </div>
+        <h1>宏國地政｜易丞地政</h1>
+        <div class="subtitle">重購退稅試算系統 (房地合一 / 土增稅)</div>
+    </header>
+
+    <div id="app" class="container">
+
+        <div class="card">
+            <div class="card-header">
+                <div>1. 房地合一稅 (新制)<span class="unit-tag">萬元</span></div>
+                <span class="tag tag-sell">全額/比例退稅</span>
+            </div>
+            
+            <div class="input-group">
+                <label>賣出總價 (萬元)</label>
+                <input type="number" v-model.number="new_sell_price" placeholder="例：1500">
+            </div>
+            
+            <div class="input-group">
+                <label>重購總價 (萬元)</label>
+                <input type="number" v-model.number="new_buy_price" placeholder="例：2000">
+            </div>
+            
+            <div class="input-group">
+                <label>已繳納(或應繳) 稅額 (萬元)</label>
+                <input type="number" v-model.number="paid_tax" placeholder="例：45">
+            </div>
+
+            <button class="btn-calc" @click="calcNew">試算退稅金額</button>
+
+            <div class="result-box" v-if="new_refund !== null">
+                <div class="result-title">可退稅金額</div>
+                <div class="result-value">{{ formatWan(new_refund) }} 萬元</div>
+                <p style="font-size:0.9rem; color:#666; margin-top:10px;">
+                    <span v-if="new_refund_ratio < 1">依比例退稅：{{ (new_refund_ratio * 100).toFixed(1) }}% (買價 < 賣價)</span>
+                    <span v-else>全額退稅 (買價 ≧ 賣價)</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>2. 土地增值稅 (舊制)<span class="unit-tag">萬元</span></div>
+                <span class="tag tag-buy">以小換大</span>
+            </div>
+
+            <div class="input-group">
+                <label>賣出土地 - 公告現值總額 (萬元)</label>
+                <input type="number" v-model.number="old_land_val" placeholder="例：300 (移轉現值總額)">
+            </div>
+            
+            <div class="input-group">
+                <label>賣出土地 - 已繳納土增稅 (萬元)</label>
+                <input type="number" v-model.number="old_land_tax" placeholder="例：20 (稅單金額)">
+            </div>
+
+            <div class="input-group">
+                <label>重購土地 - 公告現值總額 (萬元)</label>
+                <input type="number" v-model.number="new_land_val" placeholder="例：400 (買入當年公告現值 × 面積)">
+            </div>
+
+            <button class="btn-calc" @click="calcOld">試算退稅金額</button>
+
+            <div class="result-box" v-if="old_refund !== null">
+                <div class="result-title">可退稅金額</div>
+                <div class="result-value">{{ formatWan(old_refund) }} 萬元</div>
+                <p style="font-size:0.9rem; color:#666; margin-top:10px;" v-if="old_refund === 0">
+                    不符合退稅資格<br>(原因：重購現值 不足扣抵 賣出淨值)
+                </p>
+            </div>
+        </div>
+
+        <div class="notice-section">
+            <div class="notice-title">⚠️ 重要提醒：重購退稅的 3 大天條</div>
+            <div class="notice-content">
+                申請退稅後，重購的房地在 <strong>5 年內</strong> 必須符合以下規定，否則會被追繳原退還稅款（依據土地稅法第37條）：
+                <ul>
+                    <li><strong>不可移轉</strong>：不能賣掉，也不能贈與給配偶以外的人。</li>
+                    <li><strong>不可改作其他用途</strong>：必須維持自住，不能出租、供營業使用。</li>
+                    <li><strong>戶籍不可遷出</strong>：
+                        <br>(1) 土地增值稅：本人、配偶或直系親屬至少一人需設籍。
+                        <br>(2) 房地合一稅：本人、配偶或未成年子女至少一人需設籍。
+                    </li>
+                </ul>
+            </div>
+
+            <div class="contact-box">
+                <div class="contact-title">🏠 委託辦理 重要須知</div>
+                <div class="notice-content">
+                    重購退稅涉及複雜的稅務規劃與時間點認定，若您希望由本公司協助辦理，請務必配合：
+                    <br><br>
+                    <strong>1. 請記得「指定」我們</strong><br>
+                    在買賣簽約階段，請向 <strong>賣方 / 建設公司 / 仲介業者</strong> 明確表示：
+                    <span style="color:#C0392B; font-weight:bold;">「我要指定由【宏國地政/易丞地政】辦理」</span>，我們才能名正言順地協助您爭取最大權益！
+                    <br><br>
+                    <strong>2. 傳訊後請「來電確認」 📞</strong><br>
+                    本公司小本經營，服務親力親為。若您已透過系統或 Line 傳遞需求，煩請撥個電話通知我們，並告知您的 Line 名稱，確認訊息無遺漏，讓我們能第一時間為您服務！
+                    <br><br>
+                    <strong>謝謝您的配合！🙏</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-copyright">
+            © 宏國地政｜易丞地政 版權所有<br>
+            本試算結果僅供參考，實際稅額以稅捐機關核定為準。
+        </div>
+
+    </div>
+
+    <div class="fab-container">
+        <a href="https://line.me/R/ti/p/@604gpqef" target="_blank" class="fab-btn fab-line" title="官方 LINE">
+            <i>💬</i> 官方 LINE
+        </a>
+        <a href="https://maps.app.goo.gl/qyKhdrKsG5QBo2BW8" target="_blank" class="fab-btn fab-review" title="Google 好評">
+            <i>📍</i> Google 好評
+        </a>
+        <a href="https://www.facebook.com/062582589a/" target="_blank" class="fab-btn fab-fb" title="FB 粉絲專頁">
+            <i>f</i> FB 粉絲頁
+        </a>
+        <a href="https://line.me/ti/g2/aVklWxyLP1RtfstQsslGQOlP4KViuFI7PPucdQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="fab-btn fab-vip" title="VIP 社群">
+            <i>👑</i> VIP 社群
+        </a>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 🛡️ Nexus SSO 企業級門禁系統邏輯｜LINE 好友門禁優化版
+    // ==========================================
+    const gasAuthUrl = "https://script.google.com/macros/s/AKfycbwiIbmZWvNkOZW1wPBSZT1b5MKcfeeU8LtfqOiPZE0gN0VPkxJDguhKmb6rTJnSWWBnCA/exec";
+    const officialLineUrl = "https://line.me/R/ti/p/@604gpqef";
+    const authStorageKey = "hg_line_auth";
+
+    function showAuthMessage(message) {
+        const errorMsg = document.getElementById('auth-error-msg');
+        const errorText = document.getElementById('auth-error-text');
+        if (!errorMsg || !errorText) return;
+        errorText.innerText = message;
+        errorMsg.style.display = 'flex';
+    }
+
+    function cleanAuthQuery() {
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    function initAuth() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authStatus = urlParams.get('nexus_auth');
+        const authGate = document.getElementById('nexus-auth-gate');
+        const mainContent = document.getElementById('main-content');
+
+        let isUnlocked = false;
+
+        try {
+            if (authStatus === 'success') {
+                localStorage.setItem(authStorageKey, 'true');
+                isUnlocked = true;
+                cleanAuthQuery();
+            } else if (authStatus === 'failed_not_friend') {
+                localStorage.removeItem(authStorageKey);
+                isUnlocked = false;
+                showAuthMessage("系統尚未確認您已加入官方好友。請先點「加入官方好友」，完成加入或解除封鎖後，再回來點「我已加入，立即使用」。");
+                cleanAuthQuery();
+            } else if (authStatus === 'cancel') {
+                localStorage.removeItem(authStorageKey);
+                isUnlocked = false;
+                showAuthMessage("您剛剛取消了 LINE 授權。若要使用試算工具，請重新進行 LINE 授權。");
+                cleanAuthQuery();
+            } else if (authStatus === 'error') {
+                localStorage.removeItem(authStorageKey);
+                isUnlocked = false;
+                showAuthMessage("LINE 驗證暫時未完成。請先確認已加入官方好友，再重新驗證一次。");
+                cleanAuthQuery();
+            } else if (window.location.protocol === 'file:') {
+                // 本機測試用：直接開 HTML 檔案時放行，避免測試版卡在授權頁。
+                isUnlocked = true;
+            } else {
+                isUnlocked = localStorage.getItem(authStorageKey) === 'true';
+            }
+        } catch (error) {
+            isUnlocked = false;
+            showAuthMessage("瀏覽器暫時無法儲存驗證狀態，請改用 LINE 內建瀏覽器或 Chrome 重新開啟。");
+        }
+
+        if (isUnlocked) {
+            authGate.style.display = 'none';
+            mainContent.style.display = 'block';
+            document.body.style.overflow = 'auto';
+        } else {
+            authGate.style.display = 'flex';
+            mainContent.style.display = 'none';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function openOfficialLine() {
+        window.open(officialLineUrl, '_blank');
+        showAuthMessage("已開啟官方好友頁。加入或解除封鎖後，請回到本頁點「我已加入，立即使用」。");
+    }
+
+    function buildAuthRedirectUrl() {
+        const currentBaseUrl = window.location.origin + window.location.pathname;
+        return `${gasAuthUrl}?state=${encodeURIComponent(currentBaseUrl)}`;
+    }
+
+    function loginWithLine() {
+        window.location.href = buildAuthRedirectUrl();
+    }
+
+    function verifyAfterFriend() {
+        showAuthMessage("正在重新確認 LINE 好友狀態，請依畫面完成授權。");
+        window.location.href = buildAuthRedirectUrl();
+    }
+
+    // 啟動門禁系統
+    document.addEventListener('DOMContentLoaded', initAuth);
+
+    // ==========================================
+    // 🌟 原有 Vue 2.0 試算邏輯 (一字未改)
+    // ==========================================
+    new Vue({
+        el: '#app',
+        data: {
+            // 新制 (單位：萬元)
+            new_sell_price: null,
+            new_buy_price: null,
+            paid_tax: null,
+            new_refund: null,
+            new_refund_ratio: 0,
+
+            // 舊制 (單位：萬元)
+            old_land_val: null,
+            old_land_tax: null,
+            new_land_val: null,
+            old_refund: null
+        },
+        methods: {
+            // 格式化萬元 (保留小數點後兩位，若整數則無小數)
+            formatWan(num) {
+                if (num === null) return 0;
+                return parseFloat(num.toFixed(2)).toLocaleString();
+            },
+            calcNew() {
+                // 單位皆為萬元
+                if (!this.new_sell_price || !this.new_buy_price || !this.paid_tax) {
+                    alert("請填寫所有房地合一稅欄位 (單位：萬元)");
+                    return;
+                }
+                
+                let ratio = this.new_buy_price / this.new_sell_price;
+                if (ratio > 1) ratio = 1;
+                
+                this.new_refund_ratio = ratio;
+                this.new_refund = this.paid_tax * ratio;
+            },
+            calcOld() {
+                // 單位皆為萬元
+                if (!this.old_land_val || !this.old_land_tax || !this.new_land_val) {
+                    alert("請填寫所有土地增值稅欄位 (單位：萬元)");
+                    return;
+                }
+                
+                // 公式：A = 重購現值, B = 賣出現值, C = 已繳稅
+                // 餘額 = A - (B - C)
+                // 若 餘額 > 0，則退還 餘額，但上限為 C
+                
+                let balance = this.new_land_val - (this.old_land_val - this.old_land_tax);
+                
+                if (balance <= 0) {
+                    this.old_refund = 0;
+                } else {
+                    this.old_refund = Math.min(balance, this.old_land_tax);
+                }
+            }
+        }
+    });
+
+    // ==========================================
+    // 🛡️ 數位防護盾 (維持原樣)
+    // ==========================================
+    // 1. 禁止右鍵選單
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
+    // 2. 禁止開發者工具快捷鍵 (F12, Ctrl+Shift+I, Ctrl+U 等)
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+    }
+</script>
+</body>
+</html>
