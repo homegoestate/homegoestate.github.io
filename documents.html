@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>應備文件｜宏國地政｜易丞地政</title><meta name="description" content="不動產買賣、建設公司、保存登記、夫妻贈與、私人設定、土地分割、共有物分割與公司買賣應備文件。"><link rel="stylesheet" href="styles.css"></head><body><main id="main">
+<section class="page-hero"><div class="container"><div class="eyebrow">DOCUMENT CHECKLIST</div><h1 class="page-title">常見案件應備文件</h1><p>先用案件類型找到舊站原有清單；實際送件仍會因當事人、標的、稅務與主管機關要求而調整。</p></div></section>
+<section class="section"><div class="container"><div class="filters"><input id="doc-search" class="input" type="search" placeholder="搜尋：買賣、贈與、分割、公司…" aria-label="搜尋應備文件"><select id="doc-select" class="select" aria-label="選擇案件類型"><option value="">全部類型</option></select></div><div id="document-grid" class="grid grid-2" aria-live="polite"></div></div></section>
+</main><script src="app.js"></script><script>
+const documentTitles = new Set(["新成屋／中古屋一般買賣","建設公司案件一般買賣","建物保存登記應備文件","夫妻贈與","私人設定應備文件","土地分割應備文件","共有物分割應備文件","公司不動產買賣應備文件"]);
+let docs=[];
+const grid=document.getElementById("document-grid"), search=document.getElementById("doc-search"), select=document.getElementById("doc-select");
+function renderDocs(){const q=(search.value||select.value).trim().toLowerCase(); const shown=docs.filter(d=>!q||(`${d.title} ${d.text}`).toLowerCase().includes(q)); grid.innerHTML=shown.map(d=>`<article class="card document-card"><h3>${d.title}</h3>${d.text?`<p class="long-copy">${escapeHtml(d.text.replace(/FacebookIgLine/g,""))}</p>`:"<p>請參考原官網移轉保留的文件清單圖片。</p>"}${d.images.filter(x=>!x.endsWith('.svg')&&!/202508131023/.test(x)).map((src,i)=>`<img loading="lazy" src="${src}" alt="${d.title}應備文件清單 ${i+1}">`).join("")}</article>`).join("")||`<article class="card"><h3>找不到相符項目</h3><p>請改用其他關鍵字，或直接透過 LINE 詢問。</p></article>`;}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+fetch("data/legacy-pages.json").then(r=>r.json()).then(all=>{docs=all.filter(d=>documentTitles.has(d.title)); select.innerHTML+=docs.map(d=>`<option>${d.title}</option>`).join(""); renderDocs();}).catch(()=>{grid.innerHTML='<article class="card"><h3>資料載入中斷</h3><p>請重新整理或用 LINE 聯絡我們。</p></article>';});
+[search,select].forEach(el=>el.addEventListener("input",renderDocs));
+</script></body></html>
