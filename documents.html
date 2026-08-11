@@ -1,12 +1,99 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>應備文件｜宏國地政｜易丞地政</title><meta name="description" content="不動產買賣、建設公司、保存登記、夫妻贈與、私人設定、土地分割、共有物分割與公司買賣應備文件。"><link rel="stylesheet" href="styles.css"></head><body><main id="main">
-<section class="page-hero"><div class="container"><div class="eyebrow">DOCUMENT CHECKLIST</div><h1 class="page-title">常見案件應備文件</h1><p>先用案件類型找到舊站原有清單；實際送件仍會因當事人、標的、稅務與主管機關要求而調整。</p></div></section>
-<section class="section"><div class="container"><div class="filters"><input id="doc-search" class="input" type="search" placeholder="搜尋：買賣、贈與、分割、公司…" aria-label="搜尋應備文件"><select id="doc-select" class="select" aria-label="選擇案件類型"><option value="">全部類型</option></select></div><div id="document-grid" class="grid grid-2" aria-live="polite"></div></div></section>
-</main><script src="app.js"></script><script>
-const documentTitles = new Set(["新成屋／中古屋一般買賣","建設公司案件一般買賣","建物保存登記應備文件","夫妻贈與","私人設定應備文件","土地分割應備文件","共有物分割應備文件","公司不動產買賣應備文件"]);
-let docs=[];
-const grid=document.getElementById("document-grid"), search=document.getElementById("doc-search"), select=document.getElementById("doc-select");
-function renderDocs(){const q=(search.value||select.value).trim().toLowerCase(); const shown=docs.filter(d=>!q||(`${d.title} ${d.text}`).toLowerCase().includes(q)); grid.innerHTML=shown.map(d=>`<article class="card document-card"><h3>${d.title}</h3>${d.text?`<p class="long-copy">${escapeHtml(d.text.replace(/FacebookIgLine/g,""))}</p>`:"<p>請參考原官網移轉保留的文件清單圖片。</p>"}${d.images.filter(x=>!x.endsWith('.svg')&&!/202508131023/.test(x)).map((src,i)=>`<img loading="lazy" src="${src}" alt="${d.title}應備文件清單 ${i+1}">`).join("")}</article>`).join("")||`<article class="card"><h3>找不到相符項目</h3><p>請改用其他關鍵字，或直接透過 LINE 詢問。</p></article>`;}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-fetch("data/legacy-pages.json").then(r=>r.json()).then(all=>{docs=all.filter(d=>documentTitles.has(d.title)); select.innerHTML+=docs.map(d=>`<option>${d.title}</option>`).join(""); renderDocs();}).catch(()=>{grid.innerHTML='<article class="card"><h3>資料載入中斷</h3><p>請重新整理或用 LINE 聯絡我們。</p></article>';});
-[search,select].forEach(el=>el.addEventListener("input",renderDocs));
-</script></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>簽約與登記應備文件｜宏國地政｜易丞地政</title>
+  <meta name="description" content="買方、賣方、公司、夫妻贈與、私人設定、建物第一次登記、土地分割及共有物分割應備文件。">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="main">
+  <section class="page-hero document-hero">
+    <div class="container narrow">
+      <a class="breadcrumb" href="index.html">首頁</a><span class="breadcrumb-sep">／</span><span>應備文件</span>
+      <div class="hero-kicker"><span></span> 文件準備中心</div>
+      <h1 class="page-title">簽約、登記要帶什麼？</h1>
+      <p>選擇您的案件類型，直接看大字清單。建議先準備基本文件，再由承辦人員依個案補充通知。</p>
+      <div class="document-search-wrap"><label for="doc-search">搜尋案件或文件</label><div class="search-box"><span aria-hidden="true">⌕</span><input id="doc-search" type="search" placeholder="例如：買方、權狀、印鑑證明、土地分割"></div></div>
+    </div>
+  </section>
+
+  <section class="doc-nav-section" aria-label="快速選擇文件類型">
+    <div class="container doc-chip-row">
+      <a href="#natural-buyer">自然人買方</a><a href="#natural-seller">自然人賣方</a><a href="#company">公司買賣</a><a href="#gift">夫妻贈與</a><a href="#mortgage">私人設定</a><a href="#first-registration">建物第一次登記</a><a href="#land-division">土地分割</a><a href="#co-owned">共有物分割</a>
+    </div>
+  </section>
+
+  <section class="section doc-content-section">
+    <div class="container">
+      <div class="doc-result-head"><div><span class="section-label">8 類常用清單</span><h2>依身分與案件選擇</h2></div><p id="result-count" aria-live="polite">顯示全部文件清單</p></div>
+
+      <div id="doc-list" class="document-list">
+        <details class="doc-detail" id="natural-buyer" data-search="自然人買方 新成屋 中古屋 買賣 身分證 健保卡 便章 簽約金 財力證明 貸款">
+          <summary><span class="doc-type">買賣簽約</span><span class="doc-title"><strong>自然人買方</strong><small>新成屋／中古屋一般買賣</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>雙證件正本</b><span>身分證＋健保卡</span></li><li><b>個人便章</b></li><li><b>簽約金</b><span>原則為成交價 10%，實際依契約約定</span></li><li><b>貸款所需財力證明</b><span>如薪轉、扣繳憑單或其他銀行要求資料</span></li></ol><div class="doc-note">如有共同買受人，原則上每位買方都需準備證件與印章。</div></div>
+        </details>
+
+        <details class="doc-detail" id="natural-seller" data-search="自然人賣方 新成屋 中古屋 買賣 身分證 便章 權狀 印鑑章 印鑑證明">
+          <summary><span class="doc-type">買賣簽約</span><span class="doc-title"><strong>自然人賣方</strong><small>新成屋／中古屋一般買賣</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>身分證正本</b></li><li><b>個人便章</b></li><li><b>土地、建物權狀正本</b></li><li><b>印鑑章</b></li><li><b>印鑑證明</b><span>用途註明「不動產登記用」</span></li></ol><div class="doc-note">如有抵押貸款，請同步告知原貸款銀行及聯繫窗口。</div></div>
+        </details>
+
+        <details class="doc-detail" id="company" data-search="公司 法人 買方 賣方 建設公司 負責人 身分證 公司變更登記事項表 大小章 權狀">
+          <summary><span class="doc-type">公司案件</span><span class="doc-title"><strong>公司名義買賣</strong><small>買方公司／賣方公司／建設公司</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body split-doc"><section><h3>公司買方</h3><ol class="clean-checklist"><li><b>負責人身分證正反面影本</b></li><li><b>公司變更登記事項表正本或影本</b></li><li><b>公司大小章</b><span>簽約時便章足矣</span></li></ol></section><section><h3>公司賣方／建設公司</h3><ol class="clean-checklist"><li><b>負責人身分證正本或影本</b></li><li><b>公司變更登記事項表</b></li><li><b>土地、建物權狀正本</b></li><li><b>公司大小章</b><span>印鑑章可先用於契約，簽約時便章足矣</span></li></ol></section></div>
+        </details>
+
+        <details class="doc-detail" id="gift" data-search="夫妻贈與 贈與 夫妻 身分證 便章 權狀 印鑑章 印鑑證明 稅費">
+          <summary><span class="doc-type">財產移轉</span><span class="doc-title"><strong>夫妻贈與</strong><small>贈與人與受贈人均需準備</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>雙方身分證正本</b></li><li><b>雙方個人便章</b></li><li><b>土地、建物權狀正本</b><span>贈與方提供</span></li><li><b>印鑑章</b><span>贈與方提供</span></li><li><b>印鑑證明</b><span>贈與方申請，用途註明「不動產登記用」</span></li></ol><div class="doc-note warning">應負擔費用可能包含代書費、契稅、印花稅及銀行借款人變更費用等，請先個案確認。</div></div>
+        </details>
+
+        <details class="doc-detail" id="mortgage" data-search="私人設定 借款 金主 抵押權 身分證 權狀 印鑑證明 本票 借據">
+          <summary><span class="doc-type">抵押設定</span><span class="doc-title"><strong>私人設定</strong><small>借款人／金主</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body split-doc"><section><h3>借款人</h3><ol class="clean-checklist"><li><b>身分證正本或影本</b></li><li><b>土地、建物權狀正本</b></li><li><b>印鑑證明</b><span>用途註明「不動產登記用」</span></li><li><b>印鑑章</b></li></ol></section><section><h3>金主</h3><ol class="clean-checklist"><li><b>身分證正本或影本</b></li><li><b>便章</b></li><li><b>本票、借據</b></li></ol></section></div>
+        </details>
+
+        <details class="doc-detail" id="first-registration" data-search="建物第一次登記 建物保存登記 使用執照 竣工平面圖 起造人 公司戶 變更事項表 便章">
+          <summary><span class="doc-type">建物登記</span><span class="doc-title"><strong>建物第一次登記</strong><small>又稱建物保存登記</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>使用執照正本</b></li><li><b>使用執照竣工平面圖正本</b></li><li><b>起造人身分證影本</b><span>公司戶另附公司變更登記事項表影本及負責人身分證正反面影本</span></li><li><b>便章</b><span>公司戶使用公司大小章便章</span></li></ol></div>
+        </details>
+
+        <details class="doc-detail" id="land-division" data-search="土地分割 共有土地分割 所有權人 身分證 土地權狀 分割計畫 貸款 銀行 便章">
+          <summary><span class="doc-type">土地案件</span><span class="doc-title"><strong>土地分割</strong><small>土地及共有土地分割基本資料</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>所有權人身分證影本</b></li><li><b>土地權狀正本</b></li><li><b>土地分割計畫</b><span>用印後歸還</span></li><li><b>原設定銀行聯繫窗口</b><span>土地如有貸款</span></li><li><b>便章一枚</b></li></ol></div>
+        </details>
+
+        <details class="doc-detail" id="co-owned" data-search="共有物分割 共有土地分割 所有權人 身分證 土地權狀 分割計畫 印鑑章 印鑑證明 貸款 銀行">
+          <summary><span class="doc-type">土地案件</span><span class="doc-title"><strong>共有物分割</strong><small>共有關係調整與登記</small></span><span class="doc-toggle">查看清單</span></summary>
+          <div class="doc-body"><h3>請準備</h3><ol class="clean-checklist"><li><b>所有權人身分證影本</b></li><li><b>土地權狀正本</b></li><li><b>土地分割計畫</b><span>用印後歸還</span></li><li><b>原設定銀行聯繫窗口</b><span>土地如有貸款</span></li><li><b>印鑑章</b></li><li><b>印鑑證明 1 份</b><span>用途註明「共有物分割」</span></li></ol></div>
+        </details>
+      </div>
+
+      <div id="no-doc-result" class="empty-state" hidden><h3>目前沒有相符清單</h3><p>請換一個關鍵字，或直接透過 LINE 詢問專人。</p></div>
+      <aside class="document-help"><div><span class="section-label">還是不確定？</span><h2>把案件狀況傳給我們</h2><p>請告訴我們案件類型、標的所在區域，以及方便聯繫的時間與電話，由專人協助確認文件。</p></div><a class="button button-primary" href="https://line.me/R/ti/p/@604gpqef?oat_content=url&ts=08151229">LINE 詢問專人</a></aside>
+    </div>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+const input = document.getElementById('doc-search');
+const cards = [...document.querySelectorAll('.doc-detail')];
+const resultCount = document.getElementById('result-count');
+const empty = document.getElementById('no-doc-result');
+function filterDocuments() {
+  const query = input.value.trim().toLowerCase();
+  let count = 0;
+  cards.forEach(card => {
+    const match = !query || `${card.dataset.search} ${card.textContent}`.toLowerCase().includes(query);
+    card.hidden = !match;
+    if (match) count++;
+  });
+  resultCount.textContent = query ? `找到 ${count} 類相關清單` : '顯示全部文件清單';
+  empty.hidden = count !== 0;
+}
+input.addEventListener('input', filterDocuments);
+</script>
+</body>
+</html>
