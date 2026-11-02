@@ -2,6 +2,8 @@
 
 正式入口：<https://homegoestate.github.io/tainan-map/>。首頁主按鈕、首頁地圖區塊及共用選單均可進入；地圖頁可回官網。
 
+2026-11-02 視覺更新：沿用同一份 V5 成交資料，改為宏國・易丞深海藍／孔雀綠／暖金配色；頁首顯示公司品牌與既有房產諮詢入口。城市插畫與高／中／低樓建築均為示意，不能視為社區實測外觀。窄螢幕使用全寬地圖；標籤可沿引線移位以避免重疊，社區真實座標不變。
+
 ## 檔案位置
 
 | 調整內容 | GitHub 檔案 |
@@ -12,6 +14,8 @@
 | 地圖頁文字與控制項 | `tainan-map/index.html` |
 | 地圖、分類、排序、比較、成交明細 | `tainan-map/app.js` |
 | 地圖手機版及外觀 | `tainan-map/styles.css` |
+| 品牌配色、頁首與新版視覺 | `tainan-map/brand.css` |
+| 城市模型插畫／首頁預覽圖 | `tainan-map/brand-city.svg`、`assets/tainan-map-preview.svg` |
 | 分批載入、檢查資料完整性、錯誤重試 | `tainan-map/data-loader.js` |
 | 版本、原始 V5 雜湊及每個資料檔案索引 | `tainan-map/data-manifest.json` |
 | 地方生活內容 | `tainan-map/life-data.js` |

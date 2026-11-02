@@ -1,51 +1,67 @@
 {
-  "version": "official-tainan-map-v5-20261102",
-  "preparedAt": "2026-11-02T10:03:03.467459+00:00",
-  "baselineCommit": "0bff86b871762f96b2a7140e066528341816fb51",
+  "version": "official-tainan-map-v5.1-brand-20261102",
+  "preparedAt": "2026-11-02T10:28:00.756070+00:00",
+  "baselineCommit": "f629d121dde3dd337da9c51d77802ceedd06f41d",
   "publicVisitorCountEnabled": false,
   "dataSnapshot": "2026-11-02",
   "browserRegressionChecks": 65,
   "homepageIntegrationChecks": 50,
   "files": {
-    "index.html": {
-      "bytes": 14979,
-      "sha256": "35cb8114bdb96e215c5defdae39edc6f978e2020468a6ae027e03e773a176eb8"
+    ".github/workflows/site-smoke.yml": {
+      "bytes": 632,
+      "sha256": "7ad9566f595573b4c3f53510cae41c523464d0802e7e3db95c6dd77bc76d4c86"
     },
     "app.js": {
       "bytes": 4485,
       "sha256": "0d96fd931fb3473df454c4b56e02bd8bf8c01448b850bafae833710d4970a26a"
     },
-    "styles.css": {
-      "bytes": 35192,
-      "sha256": "345afdc337bf969385cda4e920de4a700d4eb3f4fa4e516b9190f2f5b3789897"
-    },
-    "sitemap.xml": {
-      "bytes": 571,
-      "sha256": "c4a1c26a6f91d0b02010d83308f0025c9d5cbbf8d67cab731574aef0952a354f"
-    },
     "assets/tainan-map-preview.svg": {
-      "bytes": 3163,
-      "sha256": "c0a8cb72446c8bd360a46a9ef8ab6892eadb453902820ce5e58e2c425e43f82c"
+      "bytes": 86380,
+      "sha256": "f96a72f63f261bd351b24106cb6e0f898d0b0f441eea14c2c5ff42509150001b"
     },
     "docs/TAINAN_MAP_V5.md": {
-      "bytes": 3252,
-      "sha256": "84a1f06573c4a1ddfdb142024d44aed7f7496f7a824266838302096b10860879"
+      "bytes": 3785,
+      "sha256": "2a822c68b970cb641b6aaf582a321c7ddaba16910f2d593b23f3aff653749455"
+    },
+    "index.html": {
+      "bytes": 14979,
+      "sha256": "35cb8114bdb96e215c5defdae39edc6f978e2020468a6ae027e03e773a176eb8"
     },
     "scripts/site-smoke.mjs": {
       "bytes": 4335,
       "sha256": "e617cbaad792e75b15c22ddab51cb700390538f2b964256ff272226d9be4695b"
     },
-    ".github/workflows/site-smoke.yml": {
-      "bytes": 632,
-      "sha256": "7ad9566f595573b4c3f53510cae41c523464d0802e7e3db95c6dd77bc76d4c86"
+    "sitemap.xml": {
+      "bytes": 571,
+      "sha256": "c4a1c26a6f91d0b02010d83308f0025c9d5cbbf8d67cab731574aef0952a354f"
+    },
+    "styles.css": {
+      "bytes": 35192,
+      "sha256": "345afdc337bf969385cda4e920de4a700d4eb3f4fa4e516b9190f2f5b3789897"
     },
     "tainan-map/analytics-client.js": {
       "bytes": 188,
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 63803,
-      "sha256": "08236998e79d2fcbf6388811f0d4251b3ef2d30d09cde94f2a1b9770fee66382"
+      "bytes": 68520,
+      "sha256": "e583fb791bd7ccb571446a1ea69557cdc61e05cc2f7cf385ff9e2ad41d6deac3"
+    },
+    "tainan-map/brand-city.svg": {
+      "bytes": 85701,
+      "sha256": "843fab40b16d1680a8354da6c2759d622b58f2d7589faefa3abe5c23601d86cb"
+    },
+    "tainan-map/brand.css": {
+      "bytes": 16697,
+      "sha256": "601c16212c9def3366c91bd9f882cfd17c8c2c3be17cdbb93afa6b60779bbb42"
+    },
+    "tainan-map/data-loader.js": {
+      "bytes": 3396,
+      "sha256": "b9e9ab1dc807589c199ceb7248377c7fd27d3303b29b67656357701471fa17ec"
+    },
+    "tainan-map/data-manifest.json": {
+      "bytes": 12575,
+      "sha256": "5b98276334075e49464a5c64fcbf2e7fff71b2959dbff202c94f333cb8f73104"
     },
     "tainan-map/data/catalog-bfc86bdd01ae.json": {
       "bytes": 29633390,
@@ -319,14 +335,6 @@
       "bytes": 32565,
       "sha256": "3edb24260bca0ac0b42be72dd145adac85267df2750b94301312aed2200c8676"
     },
-    "tainan-map/data-loader.js": {
-      "bytes": 3396,
-      "sha256": "b9e9ab1dc807589c199ceb7248377c7fd27d3303b29b67656357701471fa17ec"
-    },
-    "tainan-map/data-manifest.json": {
-      "bytes": 12575,
-      "sha256": "5b98276334075e49464a5c64fcbf2e7fff71b2959dbff202c94f333cb8f73104"
-    },
     "tainan-map/district-boundaries.js": {
       "bytes": 23337,
       "sha256": "a6e55b5fc8d8e5143459960e2f84d9223398d094ccbf97e7c0446782e2b021bb"
@@ -336,8 +344,8 @@
       "sha256": "d1391adf5416d9d2324f4a699e7b94e6d325cc8aa0e02baacbb8e13c3e807a1d"
     },
     "tainan-map/index.html": {
-      "bytes": 8680,
-      "sha256": "25bf80582c7b622dde6fcb9feadfdb3166d086dc4931ff85aeeedd4daec41ecc"
+      "bytes": 9743,
+      "sha256": "d1b9b7b258ab6bf3f74ce0f8789e741b9c8d0dccd9877f4cf92b399f7fc11756"
     },
     "tainan-map/life-data.js": {
       "bytes": 133272,
@@ -345,7 +353,8 @@
     },
     "tainan-map/styles.css": {
       "bytes": 34015,
-      "sha256": "208be6bc9b47cba4871ef60463a658d74eb24b7a2c3d54a78c09bedbaf3f838e"
+      "sha256": "dbf24cfe6614fbe075b60a641d5c040393856fbb86cd15c635ee9a87df0caf35"
     }
-  }
+  },
+  "dataUnchangedFromV5": true
 }
