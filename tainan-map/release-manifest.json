@@ -1,11 +1,9 @@
 {
-  "version": "official-tainan-map-v5.1-brand-20261102",
-  "preparedAt": "2026-11-02T10:28:00.756070+00:00",
-  "baselineCommit": "f629d121dde3dd337da9c51d77802ceedd06f41d",
+  "version": "official-tainan-map-v5.2-mobile-20261102",
+  "preparedAt": "2026-11-02T12:28:58.604834+00:00",
+  "baselineCommit": "e0044d980a030708a07d081c1afdb9a3235672c2",
   "publicVisitorCountEnabled": false,
   "dataSnapshot": "2026-11-02",
-  "browserRegressionChecks": 65,
-  "homepageIntegrationChecks": 50,
   "files": {
     ".github/workflows/site-smoke.yml": {
       "bytes": 632,
@@ -20,8 +18,8 @@
       "sha256": "f96a72f63f261bd351b24106cb6e0f898d0b0f441eea14c2c5ff42509150001b"
     },
     "docs/TAINAN_MAP_V5.md": {
-      "bytes": 3785,
-      "sha256": "2a822c68b970cb641b6aaf582a321c7ddaba16910f2d593b23f3aff653749455"
+      "bytes": 4516,
+      "sha256": "1e20f4f406298a6ebf7b4e10c637d1e5eadfa1d701f6e76443335ee555816b97"
     },
     "index.html": {
       "bytes": 14979,
@@ -44,16 +42,16 @@
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 68520,
-      "sha256": "e583fb791bd7ccb571446a1ea69557cdc61e05cc2f7cf385ff9e2ad41d6deac3"
+      "bytes": 68718,
+      "sha256": "7da261d5ceb931b937c07b9cf37eacffdee786d6147f573079968d113a5595b6"
     },
     "tainan-map/brand-city.svg": {
       "bytes": 85701,
       "sha256": "843fab40b16d1680a8354da6c2759d622b58f2d7589faefa3abe5c23601d86cb"
     },
     "tainan-map/brand.css": {
-      "bytes": 16697,
-      "sha256": "601c16212c9def3366c91bd9f882cfd17c8c2c3be17cdbb93afa6b60779bbb42"
+      "bytes": 18802,
+      "sha256": "15349d84aaed9e4e1c3732e0c0a1cfcfa7b73c32e4b7943ffc5d326aad65906f"
     },
     "tainan-map/data-loader.js": {
       "bytes": 3396,
@@ -340,12 +338,12 @@
       "sha256": "a6e55b5fc8d8e5143459960e2f84d9223398d094ccbf97e7c0446782e2b021bb"
     },
     "tainan-map/feedback.js": {
-      "bytes": 6858,
-      "sha256": "d1391adf5416d9d2324f4a699e7b94e6d325cc8aa0e02baacbb8e13c3e807a1d"
+      "bytes": 6969,
+      "sha256": "de7523f4d8338873679962336e120d5e718e291b2b111879f37e1ebf728df4ae"
     },
     "tainan-map/index.html": {
-      "bytes": 9743,
-      "sha256": "d1b9b7b258ab6bf3f74ce0f8789e741b9c8d0dccd9877f4cf92b399f7fc11756"
+      "bytes": 9765,
+      "sha256": "06768d9a51ec6a8e90291662c0b5465d3bcddc342bde08165e278da5973d5055"
     },
     "tainan-map/life-data.js": {
       "bytes": 133272,
@@ -356,5 +354,13 @@
       "sha256": "dbf24cfe6614fbe075b60a641d5c040393856fbb86cd15c635ee9a87df0caf35"
     }
   },
-  "dataUnchangedFromV5": true
+  "dataUnchangedFromV5": true,
+  "previousReleaseValidation": {
+    "browserRegressionChecks": 65,
+    "homepageIntegrationChecks": 50
+  },
+  "mobileViewportChecks": 39,
+  "physicalIphoneAcceptance": "PENDING_DEVICE_CONNECTION",
+  "physicalLineAcceptance": "NOT_TESTED",
+  "consultationCheck": "Review page reached, not submitted; manual scheduling fallback available"
 }
