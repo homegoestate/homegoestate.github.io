@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f6f3e9">
+<title>台南房產地圖｜社區行情 V5｜宏國地政・易丞地政</title><link rel="canonical" href="https://homegoestate.github.io/tainan-map/"><meta name="description" content="從台南37行政區的社區名冊，探索可查證的成交均價與生活內容。保留待補座標與價格的社區，逐筆查看來源與歷史成交。"><link rel="stylesheet" href="styles.css">
+</head>
+<body class="catalog-loading"><div id="catalogLoadStatus" class="catalog-load-status" role="status" aria-live="polite"><strong>正在開啟台南房產地圖</strong><p>先載入社區名冊與均價；點開社區後，再下載該區成交明細。</p><button id="catalogRetry" type="button" hidden>重新載入</button><a href="../index.html">回官網首頁</a></div><noscript><p>互動地圖需要啟用 JavaScript。<a href="https://lvr.land.moi.gov.tw/">也可前往內政部實價登錄查詢。</a></p></noscript>
+<header class="masthead"><a class="brand" href="#" aria-label="台南生活地圖，回到全市"><span class="brand-icon" aria-hidden="true">城</span><span>台南生活地圖<small>TAINAN · NEIGHBORHOOD ATLAS</small></span></a><a class="official-home-link" href="../index.html">← 官網首頁</a><button id="feedbackButton">補充／回饋</button><button id="methodButton" class="quiet">資料與方法 ↗</button></header>
+<main>
+<aside class="explorer">
+<div class="eyebrow">37 DISTRICTS · AN OPEN CITY ATLAS</div><h1>把台南，<em>住進視野。</em></h1><p class="intro">從全市社區名冊，走進真實成交與日常。</p>
+<div id="atlasStats" class="atlas-stats" aria-label="全市名冊概況"></div>
+<label class="search-box"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋全市社區、路名、行政區" autocomplete="off" aria-label="搜尋全市社區、路名、行政區"><button id="clearSearch" hidden aria-label="清除搜尋" type="button">×</button></label><div id="searchResults" class="search-results" hidden></div>
+<div class="district-nav"><label class="select-label" for="districtSelect">選一個行政區</label><select id="districtSelect"><option value="">台南市 · 全市總覽</option></select></div>
+<div id="districtShortcuts" class="shortcuts"></div>
+<section class="district-summary" aria-live="polite"><span class="eyebrow" id="sceneLabel">THE WHOLE CITY</span><div class="section-title"><h2 id="districtTitle">全市社區名冊</h2><span class="snapshot-tag">來源快照</span></div><p id="districtDescription"></p>
+<div class="view-tabs"><button id="marketMode" class="active" aria-pressed="true">社區與均價</button><button id="lifeMode" aria-pressed="false">生活探索</button></div>
+<section id="marketPanel">
+<div class="market-filters"><label class="category-filter" for="categorySelect">成交類型<select id="categorySelect"><option value="all">全部住宅（不混店面）</option><option value="studio">套房（依官方型態）</option><option value="one_room">1 房住宅</option><option value="two_room">2 房住宅</option><option value="three_room">3 房住宅</option><option value="four_room">4 房住宅</option><option value="five_plus">5 房以上住宅</option><option value="shop">店面</option><option value="unknown">用途／格局待核</option></select></label><label for="periodSelect">成交期間<select id="periodSelect"><option value="all" selected>101/08/01 起歷史</option><option value="12m">近 12 個月</option><option value="36m">近 36 個月</option></select></label><label for="kindSelect">名冊類型<select id="kindSelect"><option value="all">全部社區</option><option value="highrise_candidate">6 樓以上候選</option><option value="lowrise_community">低樓社區</option><option value="use_unverified">用途／樓層待核</option></select></label></div>
+<p id="periodNote" class="period-note"></p><div id="scopeCoverage" class="scope-coverage"></div><p id="sampleCoverageNote" class="sample-coverage-note"></p>
+<div class="list-heading"><span id="resultCount"></span><label class="sort-label">排序<select id="sortSelect" aria-label="名冊排序"><option value="price" selected>均價 高→低</option><option value="age">成交樣本屋齡 低→高</option><option value="households">使照戶數 多→少</option><option value="units">已揭露成交戶別 多→少</option><option value="samples">可比樣本 多→少</option><option value="name">社區名稱</option></select></label></div><p id="sortNote" class="sort-note"></p>
+<div id="communityList" class="community-list"></div><nav id="marketListPager" class="pager" aria-label="社區名冊分頁"></nav>
+<p id="catalogNote" class="catalog-note">名冊與交易分開呈現；未配得價格的社區仍完整列出，可翻頁查閱全部結果。</p><button id="legacyButton" class="legacy-button">另查舊圖台待核名冊 ↗</button>
+</section>
+<section id="lifePanel" hidden><button id="northStart" class="north-start">從北區走一圈 <span>日常 × 人文 × 歷史 ↗</span></button><div id="categoryChips" class="category-chips"></div><div id="lifeList" class="life-list"></div></section>
+</section><div class="edition"><i></i> 資料快照 <span id="asOf"></span></div>
+</aside>
+<section class="map-stage" aria-label="台南市行政區與社區互動地圖">
+<div class="map-heading"><span id="breadcrumb">台灣 / 台南市</span><h2 id="mapTitle">全城，一眼看見。</h2><p id="mapHint">點行政區，展開社區與成交均價</p></div>
+<div class="map-status" id="mapStatus" aria-live="polite"></div><div class="compass" aria-hidden="true"><span>N</span><svg width="24" height="44" viewBox="0 0 24 44"><path d="M12 1L21 34L12 28L3 34Z" fill="#476451"/><path d="M12 1V28L3 34Z" fill="#bfc9ac"/></svg></div>
+<svg id="mapSvg" viewBox="0 0 1100 900" role="group" aria-label="真實台南市37行政區，可點選或使用行政區選單"><defs><filter id="landShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="#7c7758" flood-opacity=".19"/></filter><filter id="pinShadow" x="-80%" y="-50%" width="260%" height="220%"><feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="#354f3c" flood-opacity=".22"/></filter><linearGradient id="clusterFill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#426650"/><stop offset="1" stop-color="#244b3d"/></linearGradient><pattern id="seaWaves" width="72" height="26" patternUnits="userSpaceOnUse"><path d="M0 15Q18 6 36 15T72 15" fill="none" stroke="#b8c7bf" stroke-width=".8" opacity=".34"/></pattern></defs><rect x="0" y="220" width="300" height="580" fill="url(#seaWaves)" class="sea-waves" aria-hidden="true"/><g id="mapWorld"><g id="thickness" aria-hidden="true"></g><g id="districts"></g><g id="districtLabels"></g><g id="pins"></g></g></svg>
+<div id="mapTooltip" class="map-tooltip" hidden></div><div class="sea-label" aria-hidden="true">臺 灣 海 峽<small>TAIWAN STRAIT</small></div>
+<button id="readDistrictLife" class="read-district-life">閱讀本區生活 ↗</button>
+<div class="map-bottom"><div class="legend"><span class="density-key"><i></i><i></i><i></i> 名冊密度</span><span id="legendText">數字為社區名冊數，顏色不是房價</span></div><div class="map-controls"><button id="backToCity" title="返回全市">↖ 全市</button><button id="zoomOut" aria-label="縮小">−</button><button id="zoomIn" aria-label="放大">＋</button><button id="modeButton" aria-pressed="true">立體</button></div></div><p class="map-footnote">真實區界與座標 · 建築依樓層分類示意，非實測外型</p>
+</section>
+<aside id="lifeDetail" class="detail life-detail" hidden aria-label="生活內容閱讀" aria-live="polite"></aside><aside id="detail" class="detail" hidden aria-label="社區成交資訊" aria-live="polite"></aside>
+</main>
+<div id="compareTray" class="compare-tray" hidden><span id="compareNames"></span><button id="compareButton">比較</button><button id="clearCompare" aria-label="清除比較">×</button></div>
+<dialog id="infoDialog"><div class="dialog-head"><h2 id="dialogTitle"></h2><button id="closeDialog" aria-label="關閉視窗">×</button></div><div id="dialogBody"></div></dialog>
+<script src="data-loader.js?v=20261102"></script><script src="district-boundaries.js"></script><script src="life-data.js"></script><script src="analytics-client.js"></script><script src="feedback.js"></script><script src="app.js?v=20261102"></script>
+</body></html>

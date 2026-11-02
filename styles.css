@@ -36,14 +36,16 @@ button, input, select { font: inherit; }
 
 /* Header */
 .site-header { position: sticky; top: 0; z-index: 40; background: rgba(255,253,250,.96); border-bottom: 1px solid rgba(8,47,73,.1); backdrop-filter: blur(16px); }
-.header-inner { max-width: 1240px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 26px; }
-.brand { display: flex; align-items: center; gap: 13px; margin-right: auto; text-decoration: none; }
+.header-inner { max-width: 1320px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 18px; }
+.brand { display: flex; flex-shrink: 0; align-items: center; gap: 13px; margin-right: auto; text-decoration: none; }
 .brand-mark { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px 4px 16px 4px; background: linear-gradient(145deg, var(--navy-900), var(--teal-700)); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); font-weight: 950; font-size: 20px; letter-spacing: -.04em; }
 .brand strong { display: block; color: var(--navy-900); font-size: 20px; line-height: 1.25; letter-spacing: -.02em; }
 .brand span span { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; line-height: 1.25; letter-spacing: .08em; }
 .main-nav { display: flex; align-items: center; gap: 3px; }
-.main-nav a { position: relative; padding: 10px 11px; border-radius: 10px; color: #294656; text-decoration: none; font-size: 16px; font-weight: 800; }
+.main-nav a { position: relative; padding: 10px 8px; border-radius: 10px; color: #294656; text-decoration: none; font-size: 16px; font-weight: 800; white-space: nowrap; }
 .main-nav a:hover, .main-nav a[aria-current="page"] { color: var(--navy-900); background: #edf5f5; }
+.main-nav .nav-map { color: var(--teal-700); background: var(--teal-50); }
+.main-nav .nav-map:hover { background: #dff3ed; }
 .main-nav .nav-highlight::after { content: "常用"; position: absolute; top: -5px; right: 1px; padding: 0 5px; border-radius: 99px; background: var(--teal-700); color: #fff; font-size: 10px; line-height: 17px; letter-spacing: .05em; }
 .main-nav .nav-cta { margin-left: 5px; padding: 11px 17px; background: var(--navy-900); color: #fff; }
 .main-nav .nav-cta:hover { background: var(--teal-700); color: #fff; }
@@ -68,6 +70,8 @@ button, input, select { font: inherit; }
 .button-primary { background: var(--gold); color: #30240f; box-shadow: 0 10px 24px rgba(198,161,91,.22); }
 .button-outline { border-color: var(--navy-900); background: #fff; color: var(--navy-900); }
 .button-ghost { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.08); color: #fff; }
+.button-navy { background: var(--navy-900); color: #fff; }
+.button-navy:hover { background: var(--teal-700); }
 .center-actions { margin-top: 34px; text-align: center; }
 
 /* Home hero */
@@ -83,6 +87,32 @@ button, input, select { font: inherit; }
 .hero-proof { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 38px; color: #d6e1e5; font-size: 16px; font-weight: 700; }
 .hero-proof span { display: flex; align-items: center; gap: 8px; }
 .hero-proof span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+
+/* Tainan property map entry */
+.home-map-section { padding: 60px 24px; background: var(--ivory); }
+.home-map-panel { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr); align-items: center; gap: 42px; padding: 42px; border: 1px solid var(--gold-light); border-radius: var(--radius-lg); background: var(--paper); box-shadow: var(--shadow-sm); }
+.home-map-copy { min-width: 0; }
+.home-map-copy h2 { margin: 10px 0 14px; color: var(--navy-900); font-family: "Noto Serif TC", "PMingLiU", serif; font-size: clamp(36px,4vw,50px); line-height: 1.2; letter-spacing: -.035em; }
+.home-map-copy > p { margin: 0 0 20px; color: var(--muted); font-size: 18px; }
+.home-map-copy .home-map-lead { color: var(--navy-900); font-size: 23px; font-weight: 800; line-height: 1.5; }
+.home-map-facts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin: 26px 0 15px; }
+.home-map-facts > div { padding-left: 16px; border-left: 2px solid var(--gold); }
+.home-map-facts dt { color: var(--muted); font-size: 15px; }
+.home-map-facts dd { margin: 2px 0 0; color: var(--navy-900); font-size: 36px; font-weight: 900; line-height: 1.2; letter-spacing: -.03em; }
+.home-map-facts dd span { font-size: 17px; font-weight: 700; }
+.home-map-copy .home-map-history { font-size: 16px; }
+.home-map-history strong { margin-right: 8px; color: var(--teal-700); white-space: nowrap; }
+.home-map-copy .home-map-note { margin: 16px 0 0; font-size: 14px; line-height: 1.7; }
+.home-map-visual { min-width: 0; margin: 0; }
+.home-map-visual > a { position: relative; display: block; overflow: hidden; border: 1px solid #cbdedb; border-radius: 22px; background: #e8f1ee; text-decoration: none; }
+.home-map-visual img { width: 100%; height: auto; }
+.home-map-visual-label { position: absolute; left: 20px; right: 20px; bottom: 20px; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 17px 19px; border: 1px solid rgba(255,255,255,.8); border-radius: 16px; background: rgba(255,253,250,.95); box-shadow: 0 8px 25px rgba(6,29,45,.09); }
+.home-map-visual-label > span { color: var(--teal-700); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+.home-map-visual-label strong { grid-column: 1; color: var(--navy-900); font-size: 20px; }
+.home-map-visual-label b { grid-column: 2; grid-row: 1 / 3; align-self: center; color: var(--teal-700); font-size: 27px; }
+.home-map-visual figcaption { margin-top: 12px; color: var(--muted); font-size: 13px; text-align: center; }
+.home-map-visual > a:hover { border-color: var(--teal-700); }
+.home-map-visual > a:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
 
 /* Need-based navigation */
 .find-section { position: relative; padding: 80px 24px 92px; background: var(--ivory); }
@@ -255,9 +285,9 @@ button, input, select { font: inherit; }
   .brand span span { font-size: 12px; }
   .hero-v2 { min-height: 620px; align-items: end; }
   .hero-v2::before { background: linear-gradient(0deg, rgba(6,29,45,.99) 0%, rgba(6,29,45,.87) 56%, rgba(6,29,45,.38) 100%), url("assets/legacy/202508111006551-03cc7617.jpg") 58% center/cover; }
-  .hero-content { width: calc(100% - 34px); padding: 150px 0 42px; }
+  .hero-content { width: calc(100% - 34px); padding: 64px 0 42px; }
   .hero-kicker { font-size: 14px; }
-  .hero h1 { margin-top: 14px; font-size: clamp(43px,13vw,58px); }
+  .hero h1 { margin-top: 14px; font-size: clamp(34px,9.4vw,58px); }
   .hero p { font-size: 20px; }
   .button { width: 100%; min-height: 60px; font-size: 19px; }
   .hero-proof { gap: 8px 14px; margin-top: 28px; font-size: 14px; }
@@ -360,7 +390,7 @@ button, input, select { font: inherit; }
 .service-actions { margin-top: 16px !important; }
 .service-actions a, .contact-practice-note a { color: var(--teal-700); font-weight: 800; text-underline-offset: 4px; }
 .contact-practice-note { margin: 18px 0 0 !important; font-size: 15px; }
-@media (min-width: 1101px) and (max-width: 1190px) {
+@media (min-width: 1101px) and (max-width: 1279px) {
   .header-inner { gap: 9px; padding: 12px 14px; }
   .brand strong { font-size: 17px; }
   .brand span span { font-size: 12px; }
@@ -371,12 +401,22 @@ button, input, select { font: inherit; }
   .main-nav { top: 100%; max-height: calc(100dvh - 110px); overflow-y: auto; }
 }
 @media (max-width: 980px) {
+  .home-map-panel { gap: 28px; padding: 30px; }
   .home-tool-grid, .home-partner-links { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .anxin-panel { grid-template-columns: 1fr; gap: 28px; }
   .practice-panel { grid-template-columns: 1fr; }
 }
 @media (max-width: 700px) {
   body { padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
+  .header-inner { gap: 12px; }
+  .home-map-section { padding: 32px 17px; }
+  .home-map-panel { grid-template-columns: 1fr; gap: 28px; padding: 25px 20px; border-radius: 24px; }
+  .home-map-copy h2 { font-size: 34px; }
+  .home-map-copy .home-map-lead { font-size: 21px; }
+  .home-map-facts { gap: 12px; }
+  .home-map-facts dd { font-size: 32px; }
+  .home-map-visual-label { left: 12px; right: 12px; bottom: 12px; padding: 12px; }
+  .home-map-visual-label strong { font-size: 17px; }
   .home-tool-grid, .home-partner-links { grid-template-columns: 1fr; }
   .home-tool-card { min-height: 0; }
   .home-anxin { padding-top: 0; }

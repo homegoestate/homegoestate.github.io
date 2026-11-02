@@ -19,5 +19,8 @@ jobs:
         run: |
           node --check app.js
           node --check facebook-feed.js
+          node --check tainan-map/app.js
+          node --check tainan-map/data-loader.js
+          node --check tainan-map/feedback.js
       - name: Website structure and links
         run: node scripts/site-smoke.mjs

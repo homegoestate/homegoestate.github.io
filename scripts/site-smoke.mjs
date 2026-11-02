@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { resolve, dirname, extname } from "node:path";
+import { resolve, dirname, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -29,7 +29,7 @@ for (const file of ["index.html", "about.html", "services.html", "contact.html",
     const pathname = pathAndQuery.split("?")[0];
     if (!pathname) continue;
     const target = resolve(root, pathname.replace(/^\//, ""));
-    if (!target.startsWith(root + "/") && target !== root) { problems.push(`${file}: path outside root: ${raw}`); continue; }
+    if (!target.startsWith(root + sep) && target !== root) { problems.push(`${file}: path outside root: ${raw}`); continue; }
     if (!existsSync(target)) { problems.push(`${file}: missing ${raw}`); continue; }
     linksChecked++;
     if (fragment && extname(target) === ".html") {
@@ -45,8 +45,23 @@ mustHave("app.js", "aria-expanded");
 mustHave("app.js", "closeMobileMenu");
 mustHave("app.js", "about.html#practice-disclosure");
 mustHave("index.html", "data-facebook-feed");
-mustHave("index.html", 'href="loan-forecast.html"');
-mustHave("index.html", 'href="property-tax.html"');
+mustHave("index.html", 'href="https://yangceo-taiwan.github.io/loan-forecast/"');
+mustHave("index.html", 'href="https://homegoestate.github.io/test-Property-tax/"');
+mustHave("index.html", 'href="tainan-map/"');
+mustHave("app.js", 'const TAINAN_MAP_URL = "tainan-map/"');
+mustHave("app.js", 'href="${TAINAN_MAP_URL}"');
+mustHave("sitemap.xml", 'https://homegoestate.github.io/tainan-map/');
+for (const file of ['index.html','app.js','styles.css','data-loader.js','data-manifest.json','district-boundaries.js','life-data.js','feedback.js','analytics-client.js'])
+  assert.ok(existsSync(resolve(root, 'tainan-map', file)), `Missing map resource: ${file}`);
+mustHave('tainan-map/analytics-client.js', 'publicStatsEnabled:false');
+mustHave('tainan-map/feedback.js', 'const local=false');
+const manifest = JSON.parse(read('tainan-map/data-manifest.json'));
+assert.equal(manifest.catalogCount, 3813);
+assert.equal(manifest.transactionCount, 41957);
+for (const entry of [manifest.summary, ...Object.values(manifest.districts)]) {
+  assert.ok(existsSync(resolve(root, 'tainan-map', entry.gzip)));
+  assert.ok(existsSync(resolve(root, 'tainan-map', entry.json)));
+}
 mustHave("index.html", 'href="services.html#builder"');
 mustHave("index.html", 'href="services.html#land"');
 mustHave("index.html", 'href="services.html#inheritance"');

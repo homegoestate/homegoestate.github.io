@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 520" width="680" height="520" fill="none">
+  <title>台南房產地圖視覺示意</title>
+  <desc>以抽象圖格、路徑與定位點呈現選區查詢概念，不代表實際區界、建物或測繪成果。</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="680" y2="520" gradientUnits="userSpaceOnUse"><stop stop-color="#edf5f0"/><stop offset="1" stop-color="#dceae5"/></linearGradient>
+    <linearGradient id="tile" x1="215" y1="153" x2="450" y2="342" gradientUnits="userSpaceOnUse"><stop stop-color="#0f766e"/><stop offset="1" stop-color="#082f49"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" stroke="#abc7c0" stroke-opacity=".24"/></pattern>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#082f49" flood-opacity=".13"/></filter>
+  </defs>
+  <path fill="url(#paper)" d="M0 0h680v520H0z"/>
+  <path fill="url(#grid)" d="M0 0h680v520H0z"/>
+  <g stroke="#b6cfc6" stroke-width="1.5" opacity=".7">
+    <path d="M-52 204C49 115 109 161 181 84S374-18 468 41s99 13 235-41"/>
+    <path d="M-51 231C49 142 123 187 195 110S379 5 473 64s100 26 234-36"/>
+    <path d="M-48 258C52 169 136 214 208 137S389 31 483 90s98 31 225-32"/>
+    <path d="M-30 411c106-83 126-42 228-76s138-26 241 21 188-22 278-88"/>
+    <path d="M-28 440c106-83 128-42 230-76s139-25 242 22 189-22 279-88"/>
+  </g>
+  <circle cx="340" cy="243" r="182" stroke="#fffdfa" stroke-width="1.5"/>
+  <circle cx="340" cy="243" r="145" stroke="#fffdfa" stroke-dasharray="3 9"/>
+  <g filter="url(#shadow)" stroke="#fffdfa" stroke-width="4" stroke-linejoin="round">
+    <path d="m327 90 102 59-102 59-102-59Z" fill="#b9d1bf"/>
+    <path d="m212 157 102 59-102 59-102-59Z" fill="#d6dfcf"/>
+    <path d="m442 157 102 59-102 59-102-59Z" fill="#c2d9cd"/>
+    <path d="m327 224 102 59-102 59-102-59Z" fill="url(#tile)"/>
+    <path d="m212 291 102 59-102 59-102-59Z" fill="#c6dacb"/>
+    <path d="m442 291 102 59-102 59-102-59Z" fill="#dfe4cf"/>
+  </g>
+  <g stroke="#c6a15b" stroke-width="2.5" stroke-dasharray="5 7" stroke-linecap="round">
+    <path d="m212 211 115-66 115 66-115 66 115 67"/>
+    <path d="m327 277-115 67"/>
+  </g>
+  <g fill="#fffdfa" stroke="#0f766e" stroke-width="3">
+    <circle cx="212" cy="211" r="7"/><circle cx="327" cy="145" r="7"/><circle cx="442" cy="211" r="7"/><circle cx="212" cy="344" r="7"/><circle cx="442" cy="344" r="7"/>
+  </g>
+  <g filter="url(#shadow)">
+    <path d="M327 179c-22 0-40 17-40 39 0 29 40 65 40 65s40-36 40-65c0-22-18-39-40-39Z" fill="#c6a15b" stroke="#fffdfa" stroke-width="4"/>
+    <circle cx="327" cy="218" r="13" fill="#fffdfa"/>
+  </g>
+  <g transform="translate(566 52)" stroke="#0f766e" stroke-width="1.5"><circle r="22"/><path d="m0-15 6 21-6-4-6 4Z" fill="#0f766e" stroke="none"/><path d="M0 24v8M24 0h8M0-24v-8M-24 0h-8"/></g>
+  <path d="M55 55h35" stroke="#c6a15b" stroke-width="3"/>
+  <text x="55" y="85" fill="#0f766e" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="3">EXPLORE TAINAN</text>
+</svg>
