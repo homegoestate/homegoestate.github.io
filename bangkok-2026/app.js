@@ -231,9 +231,18 @@ async function sendGroup(e){
 }
 function mapsForZone(z){let k=zoneMap[z];return k?gsearch(k.near):'#'}
 function makeStaticMap(zones){
- const names={Ari:'ARI',OldCity:'GRAND PALACE',SongWat:'SONG WAT',China:'CHINATOWN',Asiatique:'ASIATIQUE',Riverside:'ICONSIAM',Canal:'CANAL',Sathorn:'SATHORN',One:'ONE BANGKOK',Siam:'SIAM',Silom:'SILOM',RCA:'RCA',Raja:'MUAY THAI',Ekkamai:'EKKAMAI',Thonglor:'THONGLOR',Dinner:'DINNER',Airport:'BKK AIRPORT'};
- const pins=zones.map(z=>{const p=zoneMap[z],x=75+(Math.min(p.lng,100.625)-100.45)/.175*740,y=55+(13.795-p.lat)/.115*365,color=z==='Asiatique'?'#bb7849':'#176f76';return `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle r="13" fill="${color}" stroke="white" stroke-width="3"/><circle r="3" fill="white"/><text x="17" y="4" font-size="10" font-weight="700" fill="#253f4b" paint-order="stroke" stroke="#eef4f1" stroke-width="3">${names[z]}</text></g>`}).join('');
- return `<svg class="fallback-svg" viewBox="0 0 900 480" role="img" aria-label="曼谷商圈概略分布圖，僅做方位示意，非精確店址"><rect width="900" height="480" fill="#e8f0e9"/><path d="M 40 145 C 155 80 255 250 365 190 S 520 305 620 245 S 745 310 865 190" fill="none" stroke="#a8d6dd" stroke-width="36" opacity=".8"/><path d="M 40 145 C 155 80 255 250 365 190 S 520 305 620 245 S 745 310 865 190" fill="none" stroke="#f4faf9" stroke-width="4" opacity=".7"/><g opacity=".55" stroke="#ceddd4" stroke-width="2"><path d="M40 80L860 80M40 400L860 400M85 15L85 460M755 15L755 460"/></g>${pins}<text x="25" y="30" font-size="16" font-weight="800" fill="#143a4c">BANGKOK / 區域示意圖</text><text x="25" y="461" font-size="11" fill="#526d74">商圈位置僅供認方向；精確路線請點上方 Google Maps 導航</text></svg>`;
+ // Dynamically scale verified approximate area centres. Do not draw fictional streets or rivers.
+ const all=zones.map(z=>zoneMap[z]).filter(Boolean);
+ if(!all.length)return '';
+ const minX=Math.min(...all.map(x=>x.lng))-.013,maxX=Math.max(...all.map(x=>x.lng))+.013;
+ const minY=Math.min(...all.map(x=>x.lat))-.011,maxY=Math.max(...all.map(x=>x.lat))+.011;
+ const w=790,h=335,scale=Math.min(w/(maxX-minX),h/(maxY-minY));
+ const cx=(minX+maxX)/2,cy=(minY+maxY)/2;
+ const pins=zones.map((z,i)=>{let v=zoneMap[z],x=450+(v.lng-cx)*scale,y=245-(v.lat-cy)*scale;
+  const label=v.label.split('・')[0],px=x<680?x+13:x-13,anchor=x<680?'start':'end',color=z==='Asiatique'?'#c47b50':'#167b78';
+  return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="10" fill="${color}" stroke="white" stroke-width="3"/><text x="${px.toFixed(1)}" y="${(y-9).toFixed(1)}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="#234656" paint-order="stroke" stroke="#f0f5f2" stroke-width="4">${esc(label)}</text></g>`;
+ }).join('');
+ return `<svg class="fallback-svg" viewBox="0 0 900 480" role="img" aria-label="依各商圈概略中心座標繪製的相對位置圖；不是精確景點地圖"><rect width="900" height="480" fill="#edf3ee"/><g stroke="#d4e2d8" stroke-width="1"><path d="M0 80H900M0 160H900M0 240H900M0 320H900M0 400H900M120 0V480M300 0V480M480 0V480M660 0V480M840 0V480"/></g>${pins}<text x="28" y="33" font-size="18" font-weight="800" fill="#153a4b">曼谷商圈 · 相對方位</text><text x="28" y="57" font-size="12" fill="#516b73">按座標比例顯示概略中心位置｜不含道路與即時交通</text><text x="838" y="44" font-size="25" font-weight="700" fill="#286475">↑</text><text x="839" y="62" font-size="10" font-weight="700" fill="#286475">N</text><text x="28" y="462" font-size="12" fill="#526d74">店家地址與路線仍以旁邊 Google Maps 導航為準</text></svg>`;
 }
 function dayMapPlaces(day){
  const base=day==='all'?D.pois:D.pois.filter(x=>x.day===day);
@@ -256,6 +265,15 @@ function renderMap(){
  const daySelect=$('#map-day'),priorMapDay=daySelect.value||'2',priorPlace=$('#map-place').value;
  daySelect.innerHTML='<option value="all">全部五天</option>'+D.days.map(d=>`<option value="${d.id}">${esc(d.date)}・DAY ${d.id}</option>`).join('');
  daySelect.value=priorMapDay;const day=daySelect.value;
+ const pkgs=day==='all'?[]:D.packages.filter(p=>p.day===day);
+ const routeUrl=pkg=>{
+  const queries=pkg.items.map(id=>poiMap.get(id)).filter(Boolean).map(p=>p.query||p.name).slice(0,5);
+  if(queries.length<2)return queries.length?gsearch(queries[0]):gsearch(zoneMap[pkg.zone]?.near||'Bangkok');
+  const args={api:'1',origin:queries[0],destination:queries.at(-1),travelmode:pkg.zone==='SongWat'?'walking':'driving'};
+  if(queries.length>2)args.waypoints=queries.slice(1,-1).join('|');
+  return 'https://www.google.com/maps/dir/?'+new URLSearchParams(args);
+ };
+ $('#map-package-links').innerHTML=pkgs.length?`<div class="map-packages-head"><h3>12/${day} 可以直接選的半日路線</h3><small>依各路線景點順序開啟 Google Maps；車程依當時路況計算</small></div><div class="map-package-cards">${pkgs.map(p=>`<a target="_blank" rel="noopener" href="${esc(routeUrl(p))}"><b>${esc(p.id)} · ${esc(p.name)}</b><span>${esc(p.window)} · ${esc(p.budget)}</span><strong>查看整段路線 ↗</strong></a>`).join('')}</div>`:'<p class="microcopy">選擇 12/2、12/3 或 12/4，即可查看半日分流路線的 Google Maps 導航。</p>';
  const points=dayMapPlaces(day);
  $('#map-place').innerHTML=points.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · ${esc(zoneMap[p.zone]?.label||'')}</option>`).join('');
  const placeList=points.map(p=>`<div class="map-venue${p.id===priorPlace?' selected':''}" data-poi="${esc(p.id)}"><div class="map-venue-top"><span class="pill">${esc(p.category||'自由')}</span><b>${esc(p.name)}</b></div><small>${esc(zoneMap[p.zone]?.label||'')}・${esc(p.period||'全天')}</small><div class="map-venue-actions"><button data-action="mapPlace" data-id="${esc(p.id)}">地圖顯示</button><a href="${esc(gsearch((p.query||p.name)+' Bangkok Thailand'))}" target="_blank" rel="noopener">Google 導航 ↗</a>${p.isPoi?`<button data-action="add" data-id="${esc(p.id)}" data-day="${p.day}">＋加入行程</button>`:''}</div></div>`).join('');
