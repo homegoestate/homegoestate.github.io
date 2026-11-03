@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#132b3d">
+  <meta name="description" content="2026/12/1–12/5 曼谷14人自由行：共同主線、附近選玩、侏羅紀意願登記、個人行程安排、Google Maps 導航與團體投票。">
+  <title>Bangkok, Your Way｜2026 曼谷14人自由行</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="announcement"><span class="live-dot"></span> 2026.12.01—12.05 <span class="announcement-divider">/</span> 14 位成人 · 包車自由分組 <span id="top-sync-tag" class="announcement-sync">個人行程本機儲存</span></div>
+  <header class="hero">
+    <div class="hero__shade"></div>
+    <div class="container hero__inner">
+      <p class="eyebrow hero__eyebrow">THE GROUP TRIP, REIMAGINED</p>
+      <h1>曼谷，<br><em>自由到剛剛好。</em></h1>
+      <p class="hero__lead">一起出發，不一定走同一條路。<br>想看侏羅紀、喝咖啡、吃打拋飯、逛街或睡到自然醒，都能找到自己的版本。</p>
+      <div class="hero__actions">
+        <button class="btn btn--gold" data-nav="days">查看五天主線 <span aria-hidden="true">↗</span></button>
+        <button class="btn btn--ghost-white" data-nav="explore">開始自由選玩 <span aria-hidden="true">＋</span></button>
+      </div>
+      <p class="hero__small">已整理 67 個遊玩／吃喝選項、15 條半日路線；價格與路程為規劃參考，非即時報價。</p>
+    </div>
+    <div class="hero__corner">BANGKOK · 2026</div>
+  </header>
+  <nav class="site-nav" aria-label="主要功能">
+    <div class="container nav-inner" id="nav-inner">
+      <button class="nav-btn active" data-nav="overview">旅程總覽</button>
+      <button class="nav-btn" data-nav="days">五天共同主線</button>
+      <button class="nav-btn" data-nav="explore">附近有什麼</button>
+      <button class="nav-btn" data-nav="planner">我的自由行程 <span id="nav-count" class="nav-count">0</span></button>
+      <button class="nav-btn" data-nav="group">14 人意願登記</button>
+      <button class="nav-btn" data-nav="map">區域地圖與提醒</button>
+    </div>
+  </nav>
+  <main class="container" id="app" tabindex="-1">
+    <section id="view-overview" class="view active" aria-labelledby="overview-title">
+      <div class="intro-grid">
+        <div>
+          <p class="eyebrow">START HERE / READ THIS FIRST</p>
+          <h2 id="overview-title" class="display-title">不是跟團，是 <span>一起自由行。</span></h2>
+          <p class="section-lead">先看固定的住宿、接送、集合；再選每天附近想玩的地方。每個人自己存行程，想同遊的人可以選同一條支線。</p>
+        </div>
+        <div class="callout">
+          <strong>這趟旅行只有三個「要一起」</strong>
+          <p>機場／換飯店的行李與接送、必要集合點、12/4 的共同晚宴。其餘景點都可以自由選擇，不必把整團綁在一起。</p>
+        </div>
+      </div>
+      <div class="metrics" id="overview-metrics"></div>
+      <div class="section-top"><div><p class="eyebrow">YOUR FIVE DAYS</p><h2>五天，一眼就懂。</h2></div><button class="text-button" data-nav="days">展開每日時間軸 ↗</button></div>
+      <div id="overview-days" class="overview-days"></div>
+      <div class="feature-row">
+        <div class="feature-card feature-card--blue">
+          <span class="feature-icon">🦖</span><div><p class="eyebrow">12/2 / FEATURED</p><h3>侏羅紀組正式列入選項</h3><p>想看 Jurassic World 就登記；Thainosaur 可另外勾選。不想看展的人同一個 Asiatique 河岸園區也有餐廳、市集、夜景。</p><button class="btn btn--small btn--white" data-action="jurassic">查看恐龍組與登記 ↗</button></div>
+        </div>
+        <div class="feature-card feature-card--cream">
+          <span class="feature-icon">🍽️</span><div><p class="eyebrow">FOOD · REST · DRINK</p><h3>「吃喝休息」也算一種玩法</h3><p>Fran’s、Phed Mark、魚丸麵、泰奶、咖啡、SPA、酒吧，都已放進同一套選玩系統，不必只選觀光景點。</p><button class="btn btn--small btn--dark" data-nav="explore">看附近吃喝 ↗</button></div>
+        </div>
+      </div>
+      <div class="howto">
+        <p class="eyebrow">3 STEPS / HOW IT WORKS</p>
+        <h2>每個人只要做三件事</h2>
+        <div class="howto-grid"><article><span>01</span><h3>先選日期</h3><p>看當天大部隊在哪裡、何時集合，避免選錯地區。</p></article><article><span>02</span><h3>挑附近玩法</h3><p>依興趣、區域、預算篩選，加入自己的某一天行程。</p></article><article><span>03</span><h3>輸出與登記</h3><p>產生文字行程和導航；共用後端啟用後，再登記團員意願。</p></article></div>
+      </div>
+    </section>
+
+    <section id="view-days" class="view" aria-labelledby="days-title">
+      <div class="section-top"><div><p class="eyebrow">DAILY FRAMEWORK</p><h2 id="days-title">大部隊怎麼走？</h2><p class="section-lead">時間是建議規劃，非已訂位。每天下方可選不同半日路線。</p></div><button class="btn btn--outline" data-nav="planner">查看我的行程 →</button></div>
+      <div id="day-switch" class="day-switch" role="group" aria-label="選擇日期"></div>
+      <div id="day-content"></div>
+    </section>
+
+    <section id="view-explore" class="view" aria-labelledby="explore-title">
+      <div class="section-top"><div><p class="eyebrow">NEARBY DISCOVERY</p><h2 id="explore-title">到了這一區，附近還能玩什麼？</h2><p class="section-lead">所有興趣分類都有實際內容。先選日期，按位置就能找吃的、喝的、逛的、玩的和休息點。</p></div><span id="explore-total" class="counter-label"></span></div>
+      <div class="filter-panel"><label>日期<select id="filter-day"><option value="all">所有日期</option></select></label><label>區域<select id="filter-zone"><option value="all">所有區域</option></select></label><label>興趣<select id="filter-cat"><option value="all">所有興趣</option></select></label><label>時間<select id="filter-period"><option value="all">全天時段</option></select></label><label class="search-label">關鍵字<input id="filter-search" type="search" placeholder="例如：侏羅紀、泰奶、SPA…" autocomplete="off"></label><button id="filter-reset" class="btn btn--light" type="button">清除條件</button></div>
+      <div id="zone-context" class="zone-context" hidden></div>
+      <div id="explore-cards" class="poi-grid"></div>
+      <div class="empty" id="explore-empty" hidden>這組條件沒有項目。試試其他日期、區域或興趣。</div>
+    </section>
+
+    <section id="view-planner" class="view" aria-labelledby="planner-title">
+      <div class="section-top"><div><p class="eyebrow">BUILD YOUR OWN DAY</p><h2 id="planner-title">我的曼谷版本</h2><p class="section-lead">點選活動後自動保存在這個瀏覽器。可調整日期與時間、上移下移、加入自訂景點，再輸出文字和 Google Maps 路線。</p></div><div class="planner-count" id="planner-total"></div></div>
+      <div class="planner-topbar"><label>行程名字／暱稱<input id="planner-name" type="text" maxlength="24" placeholder="例：小明的曼谷 5 天"></label><div class="planner-buttons"><button id="export-text" class="btn btn--dark">產生文字行程</button><button id="export-json" class="btn btn--outline">備份 JSON</button><button id="import-json-btn" class="btn btn--outline">匯入備份</button><input type="file" accept="application/json,.json" id="import-json" hidden></div></div>
+      <div class="day-switch" id="planner-switch" role="group" aria-label="個人行程日期"></div>
+      <div class="planner-layout"><div id="planner-stops"></div><aside class="planner-aside"><div class="aside-card"><p class="eyebrow">BUDGET / ESTIMATE</p><h3>已選項目預算</h3><div id="planner-budget" class="big-money">฿0–0</div><p class="microcopy">僅加總所選活動及餐飲參考費用；不含機票、住宿、包車、購物和未列消費。重複午餐等項目會被加總，請自行刪減。</p></div><div class="aside-card"><h3>今天的導航</h3><p class="microcopy">依你排列的順序分段生成 Google Maps 路線；實際車程、船班依現場為準。</p><div id="planner-map-links"></div></div><div class="aside-card"><h3>想加自己的私房點？</h3><form id="custom-stop-form"><label>名稱<input name="name" placeholder="例如：某間咖啡店" maxlength="80" required></label><label>安排時段<input name="time" type="time" value="15:00"></label><label>預留金額（฿）<input name="cost" type="number" min="0" max="30000" value="300"></label><label>Google Maps 搜尋字<input name="query" placeholder="店名或英文地址" maxlength="120"></label><button class="btn btn--dark btn--full" type="submit">＋ 加入本日自訂景點</button></form></div></aside></div>
+      <div class="export-box" id="text-export-box" hidden><div class="export-head"><h3>可直接傳 LINE 的個人行程</h3><button id="close-export" class="text-button">關閉 ×</button></div><textarea id="text-export" rows="17" readonly aria-label="生成的文字行程"></textarea><div class="action-row"><button id="copy-export" class="btn btn--dark">複製文字</button><button id="save-export" class="btn btn--outline">下載 TXT</button><button id="print-export" class="btn btn--outline">列印／存成 PDF</button><button id="share-export" class="btn btn--outline">複製個人行程連結</button></div><p class="microcopy">分享連結需先將網站上傳至 GitHub Pages 才能讓其他人開啟；連結包含你選的行程資料，請勿加入私人敏感資訊。</p></div>
+    </section>
+
+    <section id="view-group" class="view" aria-labelledby="group-title">
+      <div class="section-top"><div><p class="eyebrow">14 PEOPLE / ONE SHARED PICTURE</p><h2 id="group-title">團員共同登記 &amp; 侏羅紀統計</h2><p class="section-lead">每個人填自己的組別和喜好，不需要整團開會。接上共用 Google 試算表後才會跨裝置同步。</p></div><span id="group-sync-state" class="status-tag">尚未連接共用表</span></div>
+      <div class="sync-notice" id="sync-notice"></div>
+      <div class="group-layout"><div class="registration-card"><h3>我的分組登記</h3><p class="microcopy">只收成員編號、暱稱、行程選擇與一般飲食喜好；不收護照、電話、健康資料或大麻使用資訊。</p>
+      <form id="group-form"><div class="field-pair"><label>團員編號（01–14）<select id="group-number" required></select></label><label>暱稱<input id="group-nickname" maxlength="18" placeholder="例如：阿哲" required></label></div><label>個人登記碼（啟用後端後由主揪發給每位團員）<input id="group-code" type="password" maxlength="32" autocomplete="off" placeholder="只有同步到共用表才需要"></label>
+      <label>12/2 下午想走哪一條<select id="group-d2"></select></label><label>12/3 下午想走哪一條<select id="group-d3"></select></label><label>12/4 下午想走哪一條<select id="group-d4"></select></label>
+      <div class="field-pair"><label>12/2 侏羅紀 Jurassic World<select id="group-jurassic"><option value="yes">我想參加（計入意願）</option><option value="maybe">有興趣，尚未決定</option><option value="no">不參加</option></select></label><label>Thainosaur Museum<select id="group-thainosaur"><option value="yes">想連同 Thainosaur 一起看</option><option value="no">只看 Jurassic／不看館</option></select></label></div>
+      <label>12/4 共同晚宴偏好<select id="group-dinner"><option value="open">尚未決定</option><option value="benjarong">Benjarong 高級泰菜</option><option value="nahm">nahm 米其林泰菜</option><option value="sritrat">Sri Trat 輕鬆共享菜</option><option value="saffron">Saffron 河上餐船</option><option value="none">不參加共同晚餐</option></select></label>
+      <label>吃喝與休息偏好（可複選）<div class="choice-chips" id="group-prefs"><label><input type="checkbox" value="泰菜"> 泰菜</label><label><input type="checkbox" value="麵食"> 麵食</label><label><input type="checkbox" value="不吃牛"> 不吃牛</label><label><input type="checkbox" value="咖啡甜點"> 咖啡甜點</label><label><input type="checkbox" value="酒吧調酒"> 酒吧調酒</label><label><input type="checkbox" value="無酒精飲料"> 無酒精飲料</label><label><input type="checkbox" value="需要休息"> 需要休息</label><label><input type="checkbox" value="指定吸菸處休息"> 指定吸菸處休息</label></div></label>
+      <label>備註（可不填；請勿填敏感資料）<textarea id="group-note" maxlength="80" rows="2" placeholder="例如：希望與 04、06 同車；晚餐想坐一起"></textarea></label>
+      <div class="action-row"><button class="btn btn--dark" type="submit">儲存我的登記</button><button class="btn btn--outline" type="button" id="group-refresh">重新載入團員統計</button></div></form>
+      <div class="group-result" id="group-result" role="status" aria-live="polite"></div>
+      </div><aside class="group-summary"><div class="aside-card aside-card--accent"><span class="mini-kicker">🦖 JURASSIC RSVP</span><h3>侏羅紀參加意願</h3><div class="big-count"><strong id="jurassic-yes">—</strong><span>人想參加</span></div><div class="stat-row"><span>有興趣</span><strong id="jurassic-maybe">—</strong></div><div class="stat-row"><span>Thainosaur 加選</span><strong id="thainosaur-yes">—</strong></div><p class="microcopy">12/2 建議 15:30 Jurassic World，成人官方票 ฿769；Thainosaur 下午16:00前 ฿250（獨立購票）。尚未購票。</p><a class="subtle-link" href="https://jurassicworldexperience.com/th/en/" target="_blank" rel="noopener">侏羅紀官方訂票 ↗</a></div><div class="aside-card"><h3>目前團員意願彙整</h3><p class="microcopy" id="group-summary-note">未啟用共用來源前，以下僅顯示此瀏覽器自己填的資料。</p><div id="group-choice-summary"></div></div></aside></div>
+      <div class="group-table"><div class="export-head"><h3>已登記團員</h3><span id="registered-count" class="counter-label"></span></div><div id="members-table" class="table-scroll"></div></div>
+      <details class="tech-panel"><summary>給主揪｜如何讓 14 人登記同步？</summary><p>GitHub Pages 只有靜態網頁，無法自行建立跨裝置共享資料庫。附帶的 <code>shared-backend/Code.gs</code> 可部署成 Google Apps Script，資料存於你自有的 Google 試算表。</p><ol><li>依 README 建立 Google Apps Script，執行一次 <code>setup()</code> 產生 14 組登記碼。</li><li>部署「網頁應用程式」，複製 <code>/exec</code> 網址到網站的 <code>config.js</code>。</li><li>把網站推上 GitHub Pages，將每個編號及個人登記碼分別交給團員。</li><li>團員按「儲存我的登記」後會收到同步成功或錯誤回覆；列表可重新整理確認。</li></ol><p>這是方便朋友分組的輕量機制，並非正式登入系統。請勿用來收集私人或專業敏感資料，且不要把登記碼放進公開 GitHub。</p></details>
+    </section>
+
+    <section id="view-map" class="view" aria-labelledby="map-title">
+      <div class="section-top"><div><p class="eyebrow">WHERE WE GO</p><h2 id="map-title">曼谷區域位置與 Google Maps 導航</h2><p class="section-lead">先從下面選日期與景點：地圖會切換到你想去的地方，並提供 Google Maps 外部導航。區域總覽圖只是方位示意。</p></div><div class="mini-select"><label>地圖日期<select id="map-day"></select></label></div></div>
+      <div class="map-guide"><strong>這一頁怎麼用：</strong>① 選日期 ② 選你想看的景點 ③ 地圖會顯示該地點 ④ 按「Google Maps 導航」查即時路線。每個景點都有對應的「加入我的行程」。<span>地圖搜尋由 Google Maps 辨識地點；若嵌入畫面未顯示，請按外部導航，避免誤用概略座標。</span></div>
+      <div class="map-focus-grid">
+        <div class="map-focus-main">
+          <div class="map-focus-head"><label>選擇要看的景點<select id="map-place" aria-label="選擇今天的景點"></select></label><a id="map-open-google" class="btn btn--dark" href="https://www.google.com/maps/search/?api=1&query=Bangkok" target="_blank" rel="noopener">Google Maps 查地點 ↗</a></div>
+          <iframe id="google-map-frame" class="google-map-frame" title="選定景點的 Google 地圖" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Bangkok&amp;output=embed"></iframe>
+          <div class="map-embed-note"><b id="map-place-name">選擇目的地</b><span>嵌入地圖僅供定位參考；導航與真實交通時間請以 Google Maps 新開視窗為準。</span></div>
+        </div>
+        <aside class="map-focus-aside"><h3>今天附近可以怎麼玩？</h3><p class="microcopy">這裡列的是當天活動，不是只有商圈中心。點「看地圖」會顯示對應景點。</p><div id="map-place-list" class="map-place-list"></div></aside>
+      </div>
+      <details class="overview-map-panel"><summary>展開曼谷各區總覽圖（商圈約略位置）</summary><p class="microcopy">本圖用來認識區域距離，非商家門牌座標。圖資無法載入時仍提供可閱讀的區域示意圖。</p><div id="leaflet-map" class="map-canvas" aria-label="曼谷活動區域地圖"></div><div id="map-fallback" class="map-fallback" hidden></div><div id="map-zone-list" class="zone-list"></div></details>
+      <div class="notes-grid"><article class="info-card"><span>🚐</span><h3>包車與集合</h3><p>14 人加行李要依實際車輛容量確認；兩台車能否獨立分流、是否含等候、加時、停車和過路費，都要事前議定。不同區的組別不必為了短暫集合跨城折返。</p></article><article class="info-card"><span>🚭</span><h3>一般吸菸休息</h3><p>只在合法、場所允許的指定吸菸處休息；飯店、餐廳、公共空間規則各不相同。不可把 Craftsman 客房或陽台預設為吸菸地點，請向住宿方確認。</p></article><article class="info-card"><span>⚖️</span><h3>大麻法規務必留意</h3><p>泰國目前對大麻花實施醫療用途管制，無泰國合規醫療處方不可將娛樂性購買或吸食視為合法。網站不提供娛樂性購買點，也不蒐集個人用藥資訊。</p><a href="https://thailand.go.th/public/issue-focus-detail/cannabis-now-strictly-regulated-in-thailand--important-notice-for-tourists" target="_blank" rel="noopener">泰國官方旅客公告 ↗</a></article><article class="info-card"><span>🗓️</span><h3>行程與票價</h3><p>票價分官方價與人均預算估算。交通時間是安排緩衝，不是即時車程。班機、團餐、門票、包車與飯店訂單仍需在群組確認，畫面上的建議不等於已預約。</p></article></div>
+      <div class="source-card"><h3>官網與查證來源</h3><p>重要價格與場次依官方網站；不保證出發前維持不變。</p><div id="source-list" class="source-list"></div></div>
+    </section>
+  </main>
+  <div class="toast" id="toast" aria-live="polite" role="status"></div>
+  <footer><div class="container footer-inner"><div><strong>Bangkok, Your Way.</strong><p>2026 12.01—12.05 · 一起出發，各自精彩。</p></div><span>V8 · 2026/11/03 · 行程規劃示範；資料／價格請出發前再次查核。</span></div></footer>
+  <script src="data.js"></script>
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
