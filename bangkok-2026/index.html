@@ -109,13 +109,15 @@
 
     <section id="view-map" class="view" aria-labelledby="map-title">
       <div class="section-top"><div><p class="eyebrow">WHERE WE GO</p><h2 id="map-title">曼谷區域位置與 Google Maps 導航</h2><p class="section-lead">先從下面選日期與景點：地圖會切換到你想去的地方，並提供 Google Maps 外部導航。區域總覽圖只是方位示意。</p></div><div class="mini-select"><label>地圖日期<select id="map-day"></select></label></div></div>
-      <div class="map-guide"><strong>這一頁怎麼用：</strong>① 選日期 ② 選你想看的景點 ③ 地圖會顯示該地點 ④ 按「Google Maps 導航」查即時路線。每個景點都有對應的「加入我的行程」。<span>地圖搜尋由 Google Maps 辨識地點；若嵌入畫面未顯示，請按外部導航，避免誤用概略座標。</span></div>
+      <div class="map-guide"><strong>這一頁怎麼用：</strong>① 選日期 ② 選你想看的景點 ③ 地圖會顯示該地點 ④ 按「Google Maps 導航」查即時路線。每個景點都有對應的「加入我的行程」。<span>本頁始終提供可閱讀的商圈位置圖；真實門牌交給 Google Maps 查詢，不會把附近商圈中心冒充成店家地址。</span></div>
       <div id="map-package-links" class="map-package-links" aria-label="當日自由路線的 Google Maps 導航"></div>
       <div class="map-focus-grid">
         <div class="map-focus-main">
           <div class="map-focus-head"><label>選擇要看的景點<select id="map-place" aria-label="選擇今天的景點"></select></label><a id="map-open-google" class="btn btn--dark" href="https://www.google.com/maps/search/?api=1&query=Bangkok" target="_blank" rel="noopener">Google Maps 查地點 ↗</a></div>
-          <iframe id="google-map-frame" class="google-map-frame" title="選定景點的 Google 地圖" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Bangkok&amp;output=embed"></iframe>
-          <div class="map-embed-note"><b id="map-place-name">選擇目的地</b><span>嵌入地圖僅供定位參考；導航與真實交通時間請以 Google Maps 新開視窗為準。</span></div>
+          <div class="map-scene-controls"><span>預設顯示不依賴外部服務的商圈位置圖</span><button id="map-street-toggle" type="button" class="btn btn--outline btn--small">切換互動街道地圖</button></div>
+          <div id="map-static-stage" class="map-static-stage" role="img" aria-label="依座標比例繪製的當日商圈位置圖"></div>
+          <iframe id="map-street-frame" class="google-map-frame" title="OpenStreetMap 街道地圖（商圈概略位置）" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+          <div class="map-embed-note"><b id="map-place-name">選擇目的地</b><span>本頁圖面只表示商圈大致方位。真實店家門口、路線與交通時間請點上方「Google Maps 查地點」；可選擇載入 OpenStreetMap 街道底圖。</span></div>
         </div>
         <aside class="map-focus-aside"><h3>今天附近可以怎麼玩？</h3><p class="microcopy">這裡列的是當天活動，不是只有商圈中心。點「看地圖」會顯示對應景點。</p><div id="map-place-list" class="map-place-list"></div></aside>
       </div>

@@ -230,7 +230,7 @@ async function sendGroup(e){
  catch(e){$('#group-result').textContent='儲存在本機，但共用表未確認成功：'+e.message;$('#group-result').className='group-result bad';toast('共用登記未確認成功，請檢查網址或登記碼。');}
 }
 function mapsForZone(z){let k=zoneMap[z];return k?gsearch(k.near):'#'}
-function makeStaticMap(zones){
+function makeStaticMap(zones,activeZone){
  // Dynamically scale verified approximate area centres. Do not draw fictional streets or rivers.
  const all=zones.map(z=>zoneMap[z]).filter(Boolean);
  if(!all.length)return '';
@@ -239,8 +239,8 @@ function makeStaticMap(zones){
  const w=790,h=335,scale=Math.min(w/(maxX-minX),h/(maxY-minY));
  const cx=(minX+maxX)/2,cy=(minY+maxY)/2;
  const pins=zones.map((z,i)=>{let v=zoneMap[z],x=450+(v.lng-cx)*scale,y=245-(v.lat-cy)*scale;
-  const label=v.label.split('・')[0],px=x<680?x+13:x-13,anchor=x<680?'start':'end',color=z==='Asiatique'?'#c47b50':'#167b78';
-  return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="10" fill="${color}" stroke="white" stroke-width="3"/><text x="${px.toFixed(1)}" y="${(y-9).toFixed(1)}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="#234656" paint-order="stroke" stroke="#f0f5f2" stroke-width="4">${esc(label)}</text></g>`;
+  const label=v.label.split('・')[0],isActive=z===activeZone,r=isActive?16:10,px=x<680?x+r+5:x-r-5,anchor=x<680?'start':'end',color=isActive?'#c47b50':'#167b78';
+  return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${color}" stroke="white" stroke-width="3"/><text x="${px.toFixed(1)}" y="${(y-9).toFixed(1)}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="#234656" paint-order="stroke" stroke="#f0f5f2" stroke-width="4">${esc(label)}</text></g>`;
  }).join('');
  return `<svg class="fallback-svg" viewBox="0 0 900 480" role="img" aria-label="依各商圈概略中心座標繪製的相對位置圖；不是精確景點地圖"><rect width="900" height="480" fill="#edf3ee"/><g stroke="#d4e2d8" stroke-width="1"><path d="M0 80H900M0 160H900M0 240H900M0 320H900M0 400H900M120 0V480M300 0V480M480 0V480M660 0V480M840 0V480"/></g>${pins}<text x="28" y="33" font-size="18" font-weight="800" fill="#153a4b">曼谷商圈 · 相對方位</text><text x="28" y="57" font-size="12" fill="#516b73">按座標比例顯示概略中心位置｜不含道路與即時交通</text><text x="838" y="44" font-size="25" font-weight="700" fill="#286475">↑</text><text x="839" y="62" font-size="10" font-weight="700" fill="#286475">N</text><text x="28" y="462" font-size="12" fill="#526d74">店家地址與路線仍以旁邊 Google Maps 導航為準</text></svg>`;
 }
@@ -248,13 +248,16 @@ function dayMapPlaces(day){
  const base=day==='all'?D.pois:D.pois.filter(x=>x.day===day);
  const venues=base.map(p=>({id:p.id,name:p.name,query:p.query||p.name,zone:p.zone,category:p.category,period:p.period,day:p.day,isPoi:true}));
  const hotels=D.trip.hotels.map((h,i)=>({id:'hotel'+i,name:'🏨 '+h.name,query:h.query,category:'住宿',zone:i===0?'Ari':'Thonglor',period:'全天',day:i===0?'1':'4',isPoi:false}));
- return [...hotels.filter(x=>day==='all'||(day==='5'?x.day==='4':['1','2','3'].includes(day)?x.day==='1':x.day===day)),...venues];
+ return [...venues,...hotels.filter(x=>day==='all'||(day==='5'?x.day==='4':['1','2','3'].includes(day)?x.day==='1':x.day===day))];
 }
 function mapShowPlace(id){
  const d=$('#map-day').value||'2',points=dayMapPlaces(d),p=points.find(x=>x.id===id)||points[0];if(!p)return;
  const target=(p.query||p.name)+' Bangkok Thailand';
- const iframe=$('#google-map-frame'),mapUrl='https://maps.google.com/maps?q='+encodeURIComponent(target)+'&output=embed';
- if(iframe.dataset.target!==target){iframe.src=mapUrl;iframe.dataset.target=target;}
+ const inDay=[...new Set(points.map(x=>x.zone))].filter(z=>zoneMap[z]);
+ const zones=inDay.includes(p.zone)?inDay:[p.zone,...inDay];
+ $('#map-static-stage').innerHTML=makeStaticMap(zones,p.zone);
+ const street=$('#map-street-frame'),z=zoneMap[p.zone];
+ if(z){let box=[z.lng-.018,z.lat-.013,z.lng+.018,z.lat+.013];street.dataset.embed='https://www.openstreetmap.org/export/embed.html?bbox='+encodeURIComponent(box.join(','))+'&layer=mapnik&marker='+encodeURIComponent(z.lat+','+z.lng);if(!street.hidden)street.src=street.dataset.embed;}
  $('#map-place-name').textContent=p.name+'｜'+(zoneMap[p.zone]?.label||'曼谷');
  $('#map-open-google').href=gsearch(target);
  $('#map-place').value=p.id;
@@ -343,6 +346,7 @@ function wire(){
  $('#group-refresh').addEventListener('click',()=>loadGroup(true));
  $('#map-day').addEventListener('change',renderMap);
  $('#map-place').addEventListener('change',e=>mapShowPlace(e.target.value));
+ $('#map-street-toggle').addEventListener('click',()=>{const frame=$('#map-street-frame'),stage=$('#map-static-stage');frame.hidden=!frame.hidden;stage.hidden=!stage.hidden;$('#map-street-toggle').textContent=frame.hidden?'切換互動街道地圖':'返回離線商圈位置圖';if(!frame.hidden){frame.src=frame.dataset.embed||'https://www.openstreetmap.org/export/embed.html?bbox=100.48%2C13.71%2C100.57%2C13.79&layer=mapnik';}});
  $('.overview-map-panel').addEventListener('toggle',e=>{if(e.target.open&&mapInstance){setTimeout(()=>mapInstance.invalidateSize(),200);}});
 }
 function init(){restore();initOverview();filterOptions();initializeGroup();wire();save();renderOverview();renderDays();renderExplore();renderPlanner();renderGroup();tryLoadSharedHash();if(groupUrl)loadGroup();}
