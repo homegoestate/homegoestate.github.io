@@ -42,10 +42,12 @@ window.CATALOG_READY.then(()=>{
   const stableTie=(a,b)=>String(a.name||'').localeCompare(String(b.name||''),'zh-TW')||String(a.district||'').localeCompare(String(b.district||''),'zh-TW')||String(a.id).localeCompare(String(b.id));
   function compareCommunities(a,b){
     if(sort==='name')return stableTie(a,b);
+    // Price sort: communities with >=5 comparable sales first, then limited samples, then missing.
+    if(sort==='price'){const tier=c=>sufficient(c)?0:limited(c)?1:2,t=tier(a)-tier(b);if(t)return t;}
     const value=sort==='price'?priceValue:sort==='age'?ageValue:sort==='households'?householdValue:sort==='units'?unitValue:c=>Number(stats(c).eligibleCount)||null;
     const x=value(a),y=value(b);if(x===null&&y===null)return stableTie(a,b);if(x===null)return 1;if(y===null)return -1;return (sort==='age'?x-y:y-x)||stableTie(a,b);
   }
-  const sortExplanation=()=>({price:'依所選類型與期間的真實成交均價排序；少量樣本另標示，缺值置後。',age:'依所選成交樣本的屋齡中位數排序，缺值置後；管理組織核准日不作屋齡。',households:'依使用執照登載戶數排序，缺值置後；不是目前社區住戶普查。',units:'只計本類型、本期間可辨識的不同成交戶別；不是社區總戶數，缺值置後。',samples:'依所選類型、期間的可比成交筆數排序。',name:'依社區名稱排序；無價、無屋齡的名冊同樣保留。'}[sort]);
+  const sortExplanation=()=>({price:'依所選類型與期間的真實成交均價排序；達 5 筆可比成交者優先，少量成交其次，缺值置後。',age:'依所選成交樣本的屋齡中位數排序，缺值置後；管理組織核准日不作屋齡。',households:'依使用執照登載戶數排序，缺值置後；不是目前社區住戶普查。',units:'只計本類型、本期間可辨識的不同成交戶別；不是社區總戶數，缺值置後。',samples:'依所選類型、期間的可比成交筆數排序。',name:'依社區名稱排序；無價、無屋齡的名冊同樣保留。'}[sort]);
   const matching = c => !query || `${c.name||''} ${c.district||''} ${c.address||''}`.toLocaleLowerCase().includes(query);
   const listPool = () => (query?communities:(district?byDistrict.get(district)||[]:communities)).filter(c=>matching(c)&&(kind==='all'||c.kind===kind));
   const scopePool = () => district ? byDistrict.get(district)||[] : communities;
