@@ -47,3 +47,17 @@ dialog{scroll-padding-top:100px;overscroll-behavior:contain}
   .atlas-actions button,.atlas-actions a,.map-controls button,.dialog-head button{min-height:44px}
   .compare-tray{bottom:max(12px,env(safe-area-inset-bottom))}
 }
+
+/* 3D icons (2026-11-04): badge depth layer, building icons, life scene art */
+.district-badge rect.badge-depth{fill:#12384b!important;stroke:none!important;opacity:.28;filter:none!important}
+.district-badge.featured rect.badge-depth{fill:#8a6a2c!important;opacity:.45}
+.district-badge .badge-icon{pointer-events:none}
+.district-badge:hover .badge-icon,.district-badge:focus-visible .badge-icon{transform:translateY(-1.5px);transition:transform .18s ease}
+.map-cluster:hover .cluster-scale>g:first-child{transform:translate(0,-15.5px)}
+.life-card{position:relative}
+.life-art{float:right;width:84px;height:70px;margin:-6px -6px 4px 10px;border-radius:14px;background:radial-gradient(circle at 50% 70%,#eef5ee 0,#f8f8ef 70%);box-shadow:inset 0 0 0 1px #e1e9df}
+.life-art svg{width:100%;height:100%;display:block}
+.life-art-history,.life-art-culture{background:radial-gradient(circle at 50% 70%,#f6ece0 0,#fbf6ec 70%)}
+.life-art-events{background:radial-gradient(circle at 50% 70%,#fbebe2 0,#fcf6ef 70%)}
+@media(max-width:480px){.life-art{width:66px;height:56px}}
+@media(prefers-reduced-motion:reduce){.district-badge .badge-icon{transition:none}}

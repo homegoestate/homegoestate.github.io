@@ -42,16 +42,16 @@
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 68950,
-      "sha256": "fb66f57fb341400d67a7887e84fad51c33fbe751a8c74cb980518e978075b95f"
+      "bytes": 75754,
+      "sha256": "82f96b697c7400bdfb56529a753721d098d6cd1b7840654bc9b82084d35226eb"
     },
     "tainan-map/brand-city.svg": {
       "bytes": 85701,
       "sha256": "843fab40b16d1680a8354da6c2759d622b58f2d7589faefa3abe5c23601d86cb"
     },
     "tainan-map/brand.css": {
-      "bytes": 18802,
-      "sha256": "15349d84aaed9e4e1c3732e0c0a1cfcfa7b73c32e4b7943ffc5d326aad65906f"
+      "bytes": 19948,
+      "sha256": "6c6496731aaca74f8afc83e461a928251f4e76ba0cab886229f05a58b8be7e31"
     },
     "tainan-map/data-loader.js": {
       "bytes": 3396,
@@ -342,8 +342,8 @@
       "sha256": "de7523f4d8338873679962336e120d5e718e291b2b111879f37e1ebf728df4ae"
     },
     "tainan-map/index.html": {
-      "bytes": 10455,
-      "sha256": "2825fbd5f7720b5228e236f75de9302551dce9820fa3af411b34b38a00d8748b"
+      "bytes": 10449,
+      "sha256": "24320f291c5a6a7180d730e11f28f0bf9ebffdaa4abe10957f7f94b3a166f026"
     },
     "tainan-map/life-data.js": {
       "bytes": 133272,
