@@ -2,9 +2,14 @@ window.CATALOG_READY.then(()=>{
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const data = window.PILOT_DATA || {meta:{},communities:[]}, meta = data.meta || {}, communities = data.communities || [], legacyCommunities=data.legacyCommunities||[];
+  // Registry rows that the source itself labels as duplicate/void (重覆、作廢、多的無法刪); the original rows stay.
+  const HIDDEN_DUPLICATES = new Set(['community-registry-57','community-registry-63','community-registry-713','community-registry-1026','community-registry-1061','community-registry-3425']);
+  const data =window.PILOT_DATA || {meta:{},communities:[]}, meta = data.meta || {}, communities = (data.communities || []).filter(c=>!HIDDEN_DUPLICATES.has(String(c.id))), legacyCommunities=data.legacyCommunities||[];
   // Registry names sometimes carry stray % wildcards from the source export; strip them for display and search only.
   for(const c of communities)if(typeof c.name==='string'){const clean=c.name.replace(/^%+|%+$/g,'').trim();if(clean)c.name=clean;}
+  // Rows without registry coordinates: use positions matched against the official 114 doorplate dataset (estimated-positions.js).
+  const EST=window.ESTIMATED_POSITIONS||{},EST_LABEL={exact:'名冊門牌比對114年官方門牌座標（名冊未附座標，本站比對）',main:'依名冊門牌主號推估（子號不在官方門牌資料），非精確位置',nearby:'依同巷弄最接近門牌推估，非精確位置'};
+  for(const c of communities){const e=EST[c.id];const has=Number.isFinite(+c.lon)&&+c.lon>119&&Number.isFinite(+c.lat)&&+c.lat>21;if(e&&!has){c.lon=e.lon;c.lat=e.lat;c.positionEstimated=e.tier;c.positionQuality=EST_LABEL[e.tier]+'｜比對門牌：'+e.matched;}}
   const features = window.DISTRICT_GEOJSON?.features || [], lifeItems = window.LIFE_DATA?.items || [];
   const categories = {daily:'日常',scenery:'風景',culture:'人文',history:'歷史',food:'名產',events:'活動'};
   const kindLabels = {highrise_candidate:'6 樓以上候選',lowrise_community:'低樓社區',use_unverified:'用途／樓層待核'};
