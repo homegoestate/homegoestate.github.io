@@ -2,9 +2,9 @@
   const mount = document.querySelector("[data-facebook-feed]");
   if (!mount) return;
 
-  // The Supabase project that received Make's daily posts no longer resolves (checked 2026-11-04),
-  // so the homepage reads the site's own news archive instead. Re-enable once a live project exists.
-  const SUPABASE_ENABLED = false;
+  // Read Make's daily posts from Supabase; if the table is empty or the project is unreachable,
+  // fall back to the site's own news archive so the section never shows an error.
+  const SUPABASE_ENABLED = true;
   const endpoint = "https://jteigfphgrspvrmkjaiz.supabase.co/rest/v1/facebook_posts" +
     "?select=title,message,post_url,image_url,published_at" +
     "&order=published_at.desc&limit=3";
