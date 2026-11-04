@@ -3,6 +3,8 @@ window.CATALOG_READY.then(()=>{
   'use strict';
   const $ = id => document.getElementById(id);
   const data = window.PILOT_DATA || {meta:{},communities:[]}, meta = data.meta || {}, communities = data.communities || [], legacyCommunities=data.legacyCommunities||[];
+  // Registry names sometimes carry stray % wildcards from the source export; strip them for display and search only.
+  for(const c of communities)if(typeof c.name==='string'){const clean=c.name.replace(/^%+|%+$/g,'').trim();if(clean)c.name=clean;}
   const features = window.DISTRICT_GEOJSON?.features || [], lifeItems = window.LIFE_DATA?.items || [];
   const categories = {daily:'日常',scenery:'風景',culture:'人文',history:'歷史',food:'名產',events:'活動'};
   const kindLabels = {highrise_candidate:'6 樓以上候選',lowrise_community:'低樓社區',use_unverified:'用途／樓層待核'};
