@@ -61,3 +61,5 @@ dialog{scroll-padding-top:100px;overscroll-behavior:contain}
 .life-art-events{background:radial-gradient(circle at 50% 70%,#fbebe2 0,#fcf6ef 70%)}
 @media(max-width:480px){.life-art{width:66px;height:56px}}
 @media(prefers-reduced-motion:reduce){.district-badge .badge-icon{transition:none}}
+/* detail: permit, aliases, location source, map links (2026-11-04) */
+.detail-more{margin:12px 0;padding:10px 12px;border-radius:12px;background:#f4f8f5;font-size:12px;line-height:1.7;color:#4c6a6e}.detail-more p{margin:0 0 4px}.map-links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px!important}

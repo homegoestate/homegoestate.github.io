@@ -42,16 +42,16 @@
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 76003,
-      "sha256": "6feee71fb1ac5be27ae4d5f1ffad1f9ae9f6c7a522d181c5832ba240ccc16166"
+      "bytes": 78290,
+      "sha256": "60e9561ae94e8acfd9b874f3c81de6eff2bd7d7859b1d0798a4ba8d4a72cbfed"
     },
     "tainan-map/brand-city.svg": {
       "bytes": 85701,
       "sha256": "843fab40b16d1680a8354da6c2759d622b58f2d7589faefa3abe5c23601d86cb"
     },
     "tainan-map/brand.css": {
-      "bytes": 19948,
-      "sha256": "6c6496731aaca74f8afc83e461a928251f4e76ba0cab886229f05a58b8be7e31"
+      "bytes": 20256,
+      "sha256": "7058ec4f7b4259e3ce0604ef1d218a50020980085e3ce3ecb9103cff018ef62f"
     },
     "tainan-map/data-loader.js": {
       "bytes": 3396,
@@ -334,16 +334,16 @@
       "sha256": "3edb24260bca0ac0b42be72dd145adac85267df2750b94301312aed2200c8676"
     },
     "tainan-map/district-boundaries.js": {
-      "bytes": 23337,
-      "sha256": "a6e55b5fc8d8e5143459960e2f84d9223398d094ccbf97e7c0446782e2b021bb"
+      "bytes": 157806,
+      "sha256": "eedc8203cb631bdf72453c3765dc53e4ea44cf460326a0c4bb5f723561c3f8bc"
     },
     "tainan-map/feedback.js": {
       "bytes": 6969,
       "sha256": "de7523f4d8338873679962336e120d5e718e291b2b111879f37e1ebf728df4ae"
     },
     "tainan-map/index.html": {
-      "bytes": 10449,
-      "sha256": "c32e737c4cd1b8b959099f3af660a10bd554d8831ec198495e63abf04cb06aad"
+      "bytes": 10472,
+      "sha256": "ea2e887748f133d8c949b42143aef2f94460783d435ab69478b39874dbdd5638"
     },
     "tainan-map/life-data.js": {
       "bytes": 133272,
