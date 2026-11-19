@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve, dirname, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const files = [
@@ -54,14 +56,29 @@ mustHave("sitemap.xml", 'https://homegoestate.github.io/tainan-map/');
 for (const file of ['index.html','app.js','styles.css','data-loader.js','data-manifest.json','district-boundaries.js','life-data.js','feedback.js','analytics-client.js'])
   assert.ok(existsSync(resolve(root, 'tainan-map', file)), `Missing map resource: ${file}`);
 mustHave('tainan-map/analytics-client.js', 'publicStatsEnabled:false');
-mustHave('tainan-map/feedback.js', 'const local=false');
+mustHave('tainan-map/feedback.js', 'https://homegoestate.github.io/anxin-city/?view=city');
 const manifest = JSON.parse(read('tainan-map/data-manifest.json'));
 assert.equal(manifest.catalogCount, 3813);
-assert.equal(manifest.transactionCount, 41957);
-for (const entry of [manifest.summary, ...Object.values(manifest.districts)]) {
-  assert.ok(existsSync(resolve(root, 'tainan-map', entry.gzip)));
-  assert.ok(existsSync(resolve(root, 'tainan-map', entry.json)));
+function verifiedJson(entry) {
+  const data = readFileSync(resolve(root, 'tainan-map', entry.json));
+  const gzip = readFileSync(resolve(root, 'tainan-map', entry.gzip));
+  assert.equal(createHash('sha256').update(data).digest('hex'), entry.sha256, entry.json);
+  assert.equal(createHash('sha256').update(gzip).digest('hex'), entry.gzipSha256, entry.gzip);
+  assert.ok(gunzipSync(gzip).equals(data), entry.gzip);
+  return JSON.parse(data);
 }
+const catalog = verifiedJson(manifest.summary);
+assert.equal(catalog.meta.asOf, manifest.asOf);
+assert.equal(catalog.communities.length, manifest.catalogCount);
+let transactionCount = 0;
+for (const [district, entry] of Object.entries(manifest.districts)) {
+  const data = verifiedJson(entry);
+  const expected = catalog.communities.filter(c => c.district === district).map(c => c.id);
+  assert.deepEqual(Object.keys(data).sort(), expected.sort(), district);
+  for (const rows of Object.values(data)) transactionCount += rows.length;
+}
+assert.equal(Object.keys(manifest.districts).length, new Set(catalog.communities.map(c => c.district)).size);
+assert.equal(transactionCount, manifest.transactionCount);
 mustHave("index.html", 'href="services.html#builder"');
 mustHave("index.html", 'href="services.html#land"');
 mustHave("index.html", 'href="services.html#inheritance"');

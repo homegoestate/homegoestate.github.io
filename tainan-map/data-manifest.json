@@ -1,17 +1,17 @@
 {
-  "version": "V5-20261102",
-  "asOf": "2026-11-02",
-  "sourceDataSha256": "7bb22d262d2da135a60927a86f6e66713e20c3ec9b98b15a0bb7f0e01adb73eb",
+  "version": "V5-20261119",
+  "asOf": "2026-11-19",
+  "sourceDataSha256": "15597c9541e402338ebed2b20d5164a4d6c5fea3d6e3fb3d6aabcfa6e7926fbb",
   "catalogCount": 3813,
-  "transactionCount": 41957,
+  "transactionCount": 41995,
   "publicVisitorCountsEnabled": false,
   "summary": {
-    "json": "data/catalog-bfc86bdd01ae.json",
-    "gzip": "data/catalog-bfc86bdd01ae.json.gz",
-    "sha256": "bfc86bdd01ae01f991d258f41ae84dfa734743b3a27b31742c3945d56965752d",
-    "gzipSha256": "4912cfdb6e2a30e10a0539b6f2150d9b781bcc7c0baa8c301313bca999d12ef4",
-    "bytes": 29633390,
-    "gzipBytes": 1446929
+    "json": "data/catalog-4f10dbfc4f48.json",
+    "gzip": "data/catalog-4f10dbfc4f48.json.gz",
+    "sha256": "4f10dbfc4f48e81dc17d88d4b2e987bf2f1d1dd9d89326c98ce88b500a54dfe9",
+    "gzipSha256": "6e8e4bf4c6cf32366c1719d7c3da559af66228cad4f2d4130263e654ee2b5bd7",
+    "bytes": 29600376,
+    "gzipBytes": 1445702
   },
   "districts": {
     "七股區": {
@@ -23,68 +23,68 @@
       "gzipBytes": 58
     },
     "下營區": {
-      "json": "data/transactions-02-b2aedc73c8e6.json",
-      "gzip": "data/transactions-02-b2aedc73c8e6.json.gz",
-      "sha256": "b2aedc73c8e6a48537ad0a9094ec9f76627c79ead3d57adfdfc787e4dcbbdf23",
-      "gzipSha256": "474fef0ee8168eb5e7bd73b743f1a55017370c9e65cebeed92870ad76320539b",
-      "bytes": 63169,
-      "gzipBytes": 5173
+      "json": "data/transactions-02-a454610c2d47.json",
+      "gzip": "data/transactions-02-a454610c2d47.json.gz",
+      "sha256": "a454610c2d47db6d41fbadaa6d9abd75fb40194b32acd1045bb9deb889671114",
+      "gzipSha256": "60b4788d634893286919f2ef61efb9de4928f407ea1664baaa1381e43c8f4e6a",
+      "bytes": 62923,
+      "gzipBytes": 5170
     },
     "中西區": {
-      "json": "data/transactions-03-9a544a3135d7.json",
-      "gzip": "data/transactions-03-9a544a3135d7.json.gz",
-      "sha256": "9a544a3135d7ed5a69ff6f326636d54f48e41e94c997ffb04de23c3d4dbe65e6",
-      "gzipSha256": "add4c558a730157c4d6ab32ccbc655268052a4533dd458612d522b12744b4a3d",
-      "bytes": 5125085,
-      "gzipBytes": 404334
+      "json": "data/transactions-03-d5145fb93627.json",
+      "gzip": "data/transactions-03-d5145fb93627.json.gz",
+      "sha256": "d5145fb9362763ccc9bc83036311f55524afede41f97477130ab5b016928ad25",
+      "gzipSha256": "bf479ddbe7b5794a81f234f839258558a866bfe7b9badf33c2a1dffb36758ca0",
+      "bytes": 5128574,
+      "gzipBytes": 404623
     },
     "仁德區": {
-      "json": "data/transactions-04-071558f98468.json",
-      "gzip": "data/transactions-04-071558f98468.json.gz",
-      "sha256": "071558f98468f1314c28c8616fcdf79af3aca444b5473c911ca2dd65e6d5640d",
-      "gzipSha256": "16b94a903534ddc33a03dcb9d326c310ba19ed4b0ca4826106a5e26873350088",
-      "bytes": 2483533,
-      "gzipBytes": 170660
+      "json": "data/transactions-04-7e8e6e73c8a1.json",
+      "gzip": "data/transactions-04-7e8e6e73c8a1.json.gz",
+      "sha256": "7e8e6e73c8a1c0a6cc3857036655d61113dfbe526e2cc93c0ccd007d3baab38c",
+      "gzipSha256": "95ea83178a417fcd3ef104af8ad1d23803e5e51d871aa38ba8626bc324b3d2c6",
+      "bytes": 2488329,
+      "gzipBytes": 171012
     },
     "佳里區": {
-      "json": "data/transactions-05-6c4e8fe44469.json",
-      "gzip": "data/transactions-05-6c4e8fe44469.json.gz",
-      "sha256": "6c4e8fe44469e9712d36fba8b369afe6cc9de78373c8d4162956b978baf564c4",
-      "gzipSha256": "39fa2162fb42e52d35a8b87a3b77eb906d6d5e786c6eb67bd32858d7755ed29b",
-      "bytes": 942227,
-      "gzipBytes": 67091
+      "json": "data/transactions-05-672af236c177.json",
+      "gzip": "data/transactions-05-672af236c177.json.gz",
+      "sha256": "672af236c1773d5453d1495a580a5128740d33b76b6ca45c82caffaa6939361d",
+      "gzipSha256": "749c2152afc995abc2e7ab5249a9e7999b06c20a4d88ff073b31cea4ea4fd4f4",
+      "bytes": 941435,
+      "gzipBytes": 67125
     },
     "六甲區": {
-      "json": "data/transactions-06-88e549ebc1e6.json",
-      "gzip": "data/transactions-06-88e549ebc1e6.json.gz",
-      "sha256": "88e549ebc1e69a1a20849a196305af1605884e3b251ef2de4e96292bbb66eed3",
-      "gzipSha256": "3d024538378f9e7ab12337be753788180d0eb6e86207e1ce299d05629bfaa9e3",
-      "bytes": 45200,
-      "gzipBytes": 4172
+      "json": "data/transactions-06-0023c8bed72d.json",
+      "gzip": "data/transactions-06-0023c8bed72d.json.gz",
+      "sha256": "0023c8bed72d067aafa460254ebcc1e7ab54360ca56894dd2df144de395eab2c",
+      "gzipSha256": "365c49713945d8c1c98068b26a73722a66b4e350ed7b7d4aa45df682dc66d6dd",
+      "bytes": 45290,
+      "gzipBytes": 4171
     },
     "北區": {
-      "json": "data/transactions-07-2d3a015504f1.json",
-      "gzip": "data/transactions-07-2d3a015504f1.json.gz",
-      "sha256": "2d3a015504f15d826d115fde50f64bd224d7c6fe229413157ba18f79c3b6aa3c",
-      "gzipSha256": "2e8861523fec615af506e0c379360bd32b3419dfb827c1718221e3e098a0663a",
-      "bytes": 3889418,
-      "gzipBytes": 287486
+      "json": "data/transactions-07-7cb3a1420156.json",
+      "gzip": "data/transactions-07-7cb3a1420156.json.gz",
+      "sha256": "7cb3a1420156ce67b546b49a89798f83fc72c6f67f042ee20d5af72c47cf3557",
+      "gzipSha256": "c424f653be9d5e538f22cf54c6374bdbbdc3e24fe167ed9b13dd2ffe6ad1d10b",
+      "bytes": 3890178,
+      "gzipBytes": 287579
     },
     "南區": {
-      "json": "data/transactions-08-379b799ed05a.json",
-      "gzip": "data/transactions-08-379b799ed05a.json.gz",
-      "sha256": "379b799ed05a029226078ab95c992ecda802b236b9effb89b2dc051386829dec",
-      "gzipSha256": "6d08782b069c881e3a4a7aaf0bfa913fc676aa11f39c6abe679f371f6f4f54e4",
-      "bytes": 1833364,
-      "gzipBytes": 144891
+      "json": "data/transactions-08-7aac7144dbc7.json",
+      "gzip": "data/transactions-08-7aac7144dbc7.json.gz",
+      "sha256": "7aac7144dbc71c3b8cd3f82e54dcc28d89db1de9f3f95754ac6f9c509d030f94",
+      "gzipSha256": "4dc456dd8464d833d3fd49240695324a1603a6849cc0fe7b9cf9beda3fdf82f2",
+      "bytes": 1835351,
+      "gzipBytes": 145059
     },
     "善化區": {
-      "json": "data/transactions-09-340268b2514f.json",
-      "gzip": "data/transactions-09-340268b2514f.json.gz",
-      "sha256": "340268b2514f5af867d96716a55b6ae27667023ff37e69d828c687130d897970",
-      "gzipSha256": "e4127de9178d41120a0dc43c287f8679e3b2607d3962dcba63d1c3146feaf985",
-      "bytes": 2167577,
-      "gzipBytes": 147828
+      "json": "data/transactions-09-cb07f0c11a5e.json",
+      "gzip": "data/transactions-09-cb07f0c11a5e.json.gz",
+      "sha256": "cb07f0c11a5e39b2790f12897982fa79869b09105e1aec199dc0bd41bc9cd02a",
+      "gzipSha256": "3c85ceed7d52ce8d8f0077444c3004b7eac77ce1eb4227ae0f809a8c348e53c1",
+      "bytes": 2168989,
+      "gzipBytes": 147982
     },
     "大內區": {
       "json": "data/transactions-10-d80e5ca08e0b.json",
@@ -95,44 +95,44 @@
       "gzipBytes": 41
     },
     "學甲區": {
-      "json": "data/transactions-11-2fd7fbe085a8.json",
-      "gzip": "data/transactions-11-2fd7fbe085a8.json.gz",
-      "sha256": "2fd7fbe085a8e32cc7c80eb798136308c1b7f806f6fedf3c565305a048f5ecf3",
-      "gzipSha256": "1761638d55af35a9ca0e6ef728d3b357b93471e7f80aa9c8c8e2056c1af1c5f9",
-      "bytes": 330226,
-      "gzipBytes": 25295
+      "json": "data/transactions-11-94f94571e0b5.json",
+      "gzip": "data/transactions-11-94f94571e0b5.json.gz",
+      "sha256": "94f94571e0b5d127bfbd560814949dc604b748dcb2c4263563cfd8c17b453e69",
+      "gzipSha256": "35045d9cf9134097362c85d4a87d8c75cc96c40d83c75e7cd9d8f5a40e305bd4",
+      "bytes": 331467,
+      "gzipBytes": 25456
     },
     "安南區": {
-      "json": "data/transactions-12-b8129a1f76d6.json",
-      "gzip": "data/transactions-12-b8129a1f76d6.json.gz",
-      "sha256": "b8129a1f76d6458f6fb62b700af6fdb4e756727d29d918a1afb16e7eebc4d772",
-      "gzipSha256": "7126a78d0095b7f1159adf05e775064082cec9c34455307f0a35532f0882b92b",
-      "bytes": 2994248,
-      "gzipBytes": 212846
+      "json": "data/transactions-12-da4801a055e1.json",
+      "gzip": "data/transactions-12-da4801a055e1.json.gz",
+      "sha256": "da4801a055e1cddf4ea6c6f99600cd7850d05233b518a91eb90547279f2dad87",
+      "gzipSha256": "4c5157e334e225dea781532defe4dacf440902bc2b8164989805ba2d98abd4c9",
+      "bytes": 2998678,
+      "gzipBytes": 213282
     },
     "安定區": {
-      "json": "data/transactions-13-351bdf1782e0.json",
-      "gzip": "data/transactions-13-351bdf1782e0.json.gz",
-      "sha256": "351bdf1782e050728d27a331ae37868112c87e50f9ed944a8b01986591afa7f1",
-      "gzipSha256": "00956e8d801696dbf4e97c348c3eba10441e9eafeb066375ea0b41e9dcc07c9a",
-      "bytes": 174847,
-      "gzipBytes": 13245
+      "json": "data/transactions-13-9dd24f7ddca1.json",
+      "gzip": "data/transactions-13-9dd24f7ddca1.json.gz",
+      "sha256": "9dd24f7ddca157982f9569133ea23b6dd352e30970fd6c5ff80f93ba0fdc7ef4",
+      "gzipSha256": "152a81aef9d96ab25e5afaadc1da059235eb509f628c0e81dc35d688f076c3d3",
+      "bytes": 174826,
+      "gzipBytes": 13248
     },
     "安平區": {
-      "json": "data/transactions-14-1109f069516b.json",
-      "gzip": "data/transactions-14-1109f069516b.json.gz",
-      "sha256": "1109f069516b675565b33e3827d4905356773f0296d843d50eb85cecde74d2b1",
-      "gzipSha256": "d5b5eaea8955b42e5f76fdf2718c62d19395bd9d153c42a332c363595c8ce5dd",
-      "bytes": 5823167,
-      "gzipBytes": 413680
+      "json": "data/transactions-14-7a50525b3445.json",
+      "gzip": "data/transactions-14-7a50525b3445.json.gz",
+      "sha256": "7a50525b3445ca536cda2d0ad9d2fa161b31aeab10620f368b422b01a3f03df5",
+      "gzipSha256": "ca5a1f8fadbf83057caf69e682d22fd966af0a95f13b9b3efa5db0270ee35e97",
+      "bytes": 5824275,
+      "gzipBytes": 414110
     },
     "官田區": {
-      "json": "data/transactions-15-4b0cf478ddb2.json",
-      "gzip": "data/transactions-15-4b0cf478ddb2.json.gz",
-      "sha256": "4b0cf478ddb2c1c0966fb0846d22e1a80bbd2d531c08da0b1d07801f054e6685",
-      "gzipSha256": "119583058e564955fce1653d872e453c4c315235166f8547f94de7ef2e0f4d2b",
-      "bytes": 46515,
-      "gzipBytes": 3921
+      "json": "data/transactions-15-b4148663900e.json",
+      "gzip": "data/transactions-15-b4148663900e.json.gz",
+      "sha256": "b4148663900ebacfae775d005cd456a085abebf83403a816b240b1da3f1003a1",
+      "gzipSha256": "5f337a5a67a44e8c6684dee43b7b8c950eddf247dd497ea5c5162d9c7e0c19db",
+      "bytes": 46608,
+      "gzipBytes": 3919
     },
     "將軍區": {
       "json": "data/transactions-16-7eed42d4d401.json",
@@ -143,68 +143,68 @@
       "gzipBytes": 59
     },
     "山上區": {
-      "json": "data/transactions-17-f0f3777136a9.json",
-      "gzip": "data/transactions-17-f0f3777136a9.json.gz",
-      "sha256": "f0f3777136a93017b5e84d3db69a514de1d3bea7881fff3f9a15916510b06e4b",
-      "gzipSha256": "55ddc96a5c291c9880577c704c13c05b3894aa77d89c83a04365590b052bcbbb",
+      "json": "data/transactions-17-13f26c620c84.json",
+      "gzip": "data/transactions-17-13f26c620c84.json.gz",
+      "sha256": "13f26c620c84ec4d9b21c0b9737b2cd239fd813e43e297a46382eceb7cf863f5",
+      "gzipSha256": "4e1052efa70635ffa8eeb8d2b6067e827b7c793d08de40d6911cabf4b6d52995",
       "bytes": 2337,
-      "gzipBytes": 980
+      "gzipBytes": 978
     },
     "後壁區": {
-      "json": "data/transactions-18-d9d6e4f5c615.json",
-      "gzip": "data/transactions-18-d9d6e4f5c615.json.gz",
-      "sha256": "d9d6e4f5c615a613c86d2589cd65caf4ec1853846fc775e3a946f9fcf404478b",
-      "gzipSha256": "b555c7634b3c3b2ec9856c51d1ecf2f5cc275665edcd5e31b90ab0852feeafe0",
-      "bytes": 2212,
-      "gzipBytes": 1024
+      "json": "data/transactions-18-43880f8eb673.json",
+      "gzip": "data/transactions-18-43880f8eb673.json.gz",
+      "sha256": "43880f8eb673946b448dbf0923540ce095d8690099e36d6fbd435c8d8ca0059e",
+      "gzipSha256": "19e826f3380c9a545d0e3c50dda78f960db6ccee013ebbdbfe0a2fb53f8d5f50",
+      "bytes": 2215,
+      "gzipBytes": 1025
     },
     "新化區": {
-      "json": "data/transactions-19-b47d83ff0671.json",
-      "gzip": "data/transactions-19-b47d83ff0671.json.gz",
-      "sha256": "b47d83ff06716608229a477d08c90da20b6086f3da995b739b8d459abe895e06",
-      "gzipSha256": "369444142869e3a952c4c3e66fe7500caf14271fad28d8fbdaf7740e2ad4c93b",
-      "bytes": 553552,
-      "gzipBytes": 42015
+      "json": "data/transactions-19-571b9cd87c7d.json",
+      "gzip": "data/transactions-19-571b9cd87c7d.json.gz",
+      "sha256": "571b9cd87c7de25384e6b918a78fe6a0c7982c0b9f30a8ad6afac9a0d0adaaf0",
+      "gzipSha256": "da772198f6a1f822e4b91a1f30290b2c3615dde716ddfc5f02a558ce13966a4f",
+      "bytes": 554903,
+      "gzipBytes": 42091
     },
     "新市區": {
-      "json": "data/transactions-20-fe0c7de360cd.json",
-      "gzip": "data/transactions-20-fe0c7de360cd.json.gz",
-      "sha256": "fe0c7de360cd4c58a6059777be0b38ec86dbc94bfc080e82ac39665e4d7fdefb",
-      "gzipSha256": "052f274fe7c5f272bbea5a04f184b3c6c9ad008a469039b4e820c53f465eb4ad",
-      "bytes": 1570246,
-      "gzipBytes": 104587
+      "json": "data/transactions-20-7642046bd825.json",
+      "gzip": "data/transactions-20-7642046bd825.json.gz",
+      "sha256": "7642046bd825d50d86e3e297a51adb6ef7e681fc5b500c28aa77110b6ede1e53",
+      "gzipSha256": "75f8416c6a0590fd48ccb8af07e99d7be6eaccb67147a05a8873e9f716a26946",
+      "bytes": 1572248,
+      "gzipBytes": 104769
     },
     "新營區": {
-      "json": "data/transactions-21-259b3e72d5c9.json",
-      "gzip": "data/transactions-21-259b3e72d5c9.json.gz",
-      "sha256": "259b3e72d5c96903e665f657504bb84565402f15353cdff396dcd6aa1fe7de1c",
-      "gzipSha256": "f2d1673f481ddf5b4416a4e6903c98dc0f13af4142d104a671d0fc52e2c666fc",
-      "bytes": 1303805,
-      "gzipBytes": 103543
+      "json": "data/transactions-21-23ed78db14be.json",
+      "gzip": "data/transactions-21-23ed78db14be.json.gz",
+      "sha256": "23ed78db14bee0faa90256333120ce8e8074b2cb435918cab91dd7d89e254c22",
+      "gzipSha256": "04e41c725de5e3985651bb0bafb47d22f0f8220a94d607d95ee30195ba3034a6",
+      "bytes": 1305961,
+      "gzipBytes": 103713
     },
     "東區": {
-      "json": "data/transactions-22-3b610793a44f.json",
-      "gzip": "data/transactions-22-3b610793a44f.json.gz",
-      "sha256": "3b610793a44f9a0a85e4c89d3573fcf7f8f578f43ec7852bd073108402c7676f",
-      "gzipSha256": "93ee3e208191c0fd73aba7598a4669c71e01bce0f2661483511dc46212ecb55a",
-      "bytes": 4197498,
-      "gzipBytes": 350970
+      "json": "data/transactions-22-dfefc36b9773.json",
+      "gzip": "data/transactions-22-dfefc36b9773.json.gz",
+      "sha256": "dfefc36b977319edd86aa3472adec87eb56bff3d52feebb6b408534338aa3afc",
+      "gzipSha256": "c3658d548482a8598f031d4e01424c7dd1a8faf0eafcd521ab2b5ee7574e3a55",
+      "bytes": 4202817,
+      "gzipBytes": 351435
     },
     "東山區": {
-      "json": "data/transactions-23-adfb25375744.json",
-      "gzip": "data/transactions-23-adfb25375744.json.gz",
-      "sha256": "adfb2537574465b2477b695ca94977dd060d0e7a4a293c928206b06a198eb0af",
-      "gzipSha256": "6ea725dccf49972f9b2e3306d5cb697faea39190cee98df8020e68c9cad248eb",
-      "bytes": 48748,
-      "gzipBytes": 4229
+      "json": "data/transactions-23-d6c09c41ed5e.json",
+      "gzip": "data/transactions-23-d6c09c41ed5e.json.gz",
+      "sha256": "d6c09c41ed5e8931530c4856e35d23c715dfa52cd4bb5abfc68ab99f9da4fb6e",
+      "gzipSha256": "8f6b1ea6c2e8b556f9a6697b176ab3874c960d2751671ec72a0a840ddae93739",
+      "bytes": 48874,
+      "gzipBytes": 4232
     },
     "柳營區": {
-      "json": "data/transactions-24-608563cd4e6e.json",
-      "gzip": "data/transactions-24-608563cd4e6e.json.gz",
-      "sha256": "608563cd4e6ec94750c9d42b31a23fc92711d3cc5be566568e2ba14fdf0dc317",
-      "gzipSha256": "d622d9113a8a410a5c8ade62c953418798956a73cb1970e7bd44371cb13f9d45",
-      "bytes": 54209,
-      "gzipBytes": 4938
+      "json": "data/transactions-24-d8ee242ed22b.json",
+      "gzip": "data/transactions-24-d8ee242ed22b.json.gz",
+      "sha256": "d8ee242ed22b9592eb10d31e1f86c80f1f85b559aa2d3127f826ea1ede3b6f6d",
+      "gzipSha256": "4a9e9c9074f0cb9fd4b603af0854ff10b75f6733977715a3f452f556bb6d6317",
+      "bytes": 54212,
+      "gzipBytes": 4940
     },
     "楠西區": {
       "json": "data/transactions-25-5f43c77319ae.json",
@@ -215,28 +215,28 @@
       "gzipBytes": 41
     },
     "歸仁區": {
-      "json": "data/transactions-26-595cf62c7ba4.json",
-      "gzip": "data/transactions-26-595cf62c7ba4.json.gz",
-      "sha256": "595cf62c7ba47fd0e5a5721cf6b5dc1ec5e8a07d29e9c22bbd56944b1429a778",
-      "gzipSha256": "bfd6a4768ba533e607bc9f46822cdb38ededaf03fd5e3f37fd926e6f3016b04d",
-      "bytes": 1422690,
-      "gzipBytes": 103457
+      "json": "data/transactions-26-2460a181be41.json",
+      "gzip": "data/transactions-26-2460a181be41.json.gz",
+      "sha256": "2460a181be413f9ed3dd7e0cccf94e9e3037eea222de1399285b87ba375e9a10",
+      "gzipSha256": "d27af8069014333cb267d2711af4bb16c2decd629113d960d85616f92ff0f111",
+      "bytes": 1424829,
+      "gzipBytes": 103683
     },
     "永康區": {
-      "json": "data/transactions-27-8d0b99195d0c.json",
-      "gzip": "data/transactions-27-8d0b99195d0c.json.gz",
-      "sha256": "8d0b99195d0ca1f7a17435b7896e36a65b1e3688c82f2be942e5675c9e157483",
-      "gzipSha256": "4ef064bdafe1311311b8647b80e3702e170bf706b4d6a86d3110a160e144a4a1",
-      "bytes": 10859162,
-      "gzipBytes": 762906
+      "json": "data/transactions-27-603088caacc7.json",
+      "gzip": "data/transactions-27-603088caacc7.json.gz",
+      "sha256": "603088caacc7b2843e0cce11c83704bcbb8495e90ddfe00aef4f480be4b731ed",
+      "gzipSha256": "8c346b43a0753f7e0579e0bfce9902c12632c0a1775263f5e9157fdea23b947f",
+      "bytes": 10870808,
+      "gzipBytes": 763624
     },
     "玉井區": {
-      "json": "data/transactions-28-0590fdcd6cae.json",
-      "gzip": "data/transactions-28-0590fdcd6cae.json.gz",
-      "sha256": "0590fdcd6caebbbd6a9ae99b2c6386780d21cf7991f0a1552eeca0e9063c65b3",
-      "gzipSha256": "2835f7e4564dd873f84a58bcf9b0517fbba7086caf718ba2f2dae9bbabcb1bc1",
-      "bytes": 100484,
-      "gzipBytes": 7461
+      "json": "data/transactions-28-62792e51f129.json",
+      "gzip": "data/transactions-28-62792e51f129.json.gz",
+      "sha256": "62792e51f129b944bcf88a5cc839ba17eb993579f03498bd1901ce99061bf628",
+      "gzipSha256": "602807d87b002e471f2ded6fbbefb2af80ee833f8d192d707fceff4e870382e8",
+      "bytes": 100625,
+      "gzipBytes": 7460
     },
     "白河區": {
       "json": "data/transactions-29-94383124b051.json",
@@ -247,40 +247,36 @@
       "gzipBytes": 65
     },
     "西港區": {
-      "json": "data/transactions-30-b371c45780ff.json",
-      "gzip": "data/transactions-30-b371c45780ff.json.gz",
-      "sha256": "b371c45780ff772ea52b3b084c0cfd5080ad28c87af7ef952e9437e3d89dd25f",
-      "gzipSha256": "4fc6c89754f6f7e89535b71af01ee54608bdac348d1bd7de07e953fe82b38579",
-      "bytes": 112848,
-      "gzipBytes": 8814
+      "json": "data/transactions-30-1052248eaf9b.json",
+      "gzip": "data/transactions-30-1052248eaf9b.json.gz",
+      "sha256": "1052248eaf9be62e97b945b287133a986dbba2b51be2ac72e418e022ececa44b",
+      "gzipSha256": "fd867cd514e555be31d3c822933d3c3fb37d9bfa9bb20e7dcea3ac200ba102c3",
+      "bytes": 112929,
+      "gzipBytes": 8816
     },
     "關廟區": {
-      "json": "data/transactions-31-f387ceba4e1b.json",
-      "gzip": "data/transactions-31-f387ceba4e1b.json.gz",
-      "sha256": "f387ceba4e1bba8339d1c0e392cf93372b19153baba354d45277ba35140ad542",
-      "gzipSha256": "6cca9f2251f38d4ac3725120a792c50d325a647771fcd1613c82ce4fb9d1ff3c",
-      "bytes": 471656,
-      "gzipBytes": 31239
+      "json": "data/transactions-31-77dd5c80c412.json",
+      "gzip": "data/transactions-31-77dd5c80c412.json.gz",
+      "sha256": "77dd5c80c41274432d27982fa4dcdb897d1d39ccdb1c63dad335c48389d89d83",
+      "gzipSha256": "61ee44dd98aa4250f050c806dcd4d923b905a442893e581e0da2f8ca5eb7a884",
+      "bytes": 470654,
+      "gzipBytes": 31251
     },
     "鹽水區": {
-      "json": "data/transactions-32-2bf66c96600d.json",
-      "gzip": "data/transactions-32-2bf66c96600d.json.gz",
-      "sha256": "2bf66c96600d9b524e65d8d588cbc27e2a197d2d6bb40bf4a492f34b7113617a",
-      "gzipSha256": "ee247b4e973f62b4771a383f7b666e0530902742a7f911dd235fb0459f5335d5",
+      "json": "data/transactions-32-73d9b47dc12c.json",
+      "gzip": "data/transactions-32-73d9b47dc12c.json.gz",
+      "sha256": "73d9b47dc12c5869eb82e27991711a829d14c14adf1e652d7fec81196d53d92a",
+      "gzipSha256": "1e88637a81218d1e493981e6786938516ce3b91dd57623c260efdc67240549e9",
       "bytes": 2337,
-      "gzipBytes": 903
+      "gzipBytes": 901
     },
     "麻豆區": {
-      "json": "data/transactions-33-aa55a74410dd.json",
-      "gzip": "data/transactions-33-aa55a74410dd.json.gz",
-      "sha256": "aa55a74410dd80635f354f03b1b64f4bae917f76ca78d47ff98af06756cb94ca",
-      "gzipSha256": "3edb24260bca0ac0b42be72dd145adac85267df2750b94301312aed2200c8676",
-      "bytes": 476240,
-      "gzipBytes": 32565
+      "json": "data/transactions-33-adfb76339314.json",
+      "gzip": "data/transactions-33-adfb76339314.json.gz",
+      "sha256": "adfb763393145d2ab40ec09ac59129b22a79d9c8167d3375dcbf006be24fc991",
+      "gzipSha256": "dc57091f86a57e3c3b48df5719646517a960dd81467bdfbc846e917f857289bc",
+      "bytes": 477275,
+      "gzipBytes": 32686
     }
-  },
-  "sanitizedMetadataFields": [
-    "meta.latestRefresh.previous.path",
-    "meta.latestRefresh.refreshed.path"
-  ]
+  }
 }
