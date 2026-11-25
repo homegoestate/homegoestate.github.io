@@ -508,7 +508,7 @@ main {height: calc(100dvh - var(--atlas-header)); min-height: 520px;}
     flex: none;
     border-block: 1px solid #bccaba;
   }
-  .map-stage.city-active {border-color: #284847;}
+  .map-stage.city-active {height:clamp(510px, 65svh, 610px);border-color:#28505b;}
   .map-heading {left: 15px; top: 14px; max-width: calc(100% - 176px);}
   .map-heading > span {font-size: 10px;}
   .map-heading h2 {font-size: 21px; margin: 4px 0 0;}

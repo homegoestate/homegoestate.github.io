@@ -104,6 +104,6 @@
       (districtNote ? '' : '附近的活動斷層與其他地質敏感區，請另查官方圖台。'));
   }
 
-  const outlines = zones.map(({ name, code, ring }) => ({ name, code, ring }));
+  const outlines = zones.map(({ name, code, date, ring }) => ({ name, code, date, ring }));
   window.MapFaults = { lookup, source, outlines };
 })();

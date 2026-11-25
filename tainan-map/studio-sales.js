@@ -25,7 +25,10 @@
       Number(community.floors) > 0 && Number(community.floors) <= 150 ? Number(community.floors) : null;
     let currentFloor = null, scene = null, limit = 3;
     let sun = {date:params.get('date'), time:params.get('time')};
-    root.innerHTML = `<button type="button" class="studio-glance" aria-label="移至所選樓層成交"><span></span><strong></strong><i aria-hidden="true">↓</i></button>
+    root.innerHTML = `<nav class="studio-switch" aria-label="社區 3D 檢視項目">
+      <button type="button" data-studio-view="floors" aria-pressed="true">3D 樓層成交</button>
+      <button type="button" data-studio-view="ground" aria-pressed="false">斷層與地層下陷</button></nav>
+      <div data-studio-panel="floors"><button type="button" class="studio-glance" aria-label="移至所選樓層成交"><span></span><strong></strong><i aria-hidden="true">↓</i></button>
       <div class="sales-studio-layout"><div class="studio-viewport"></div>
       <section class="studio-ledger" aria-label="門牌與樓層成交">
       <label class="studio-door-label">查詢門牌<select id="studioDoor"></select></label>
@@ -35,8 +38,32 @@
       <button id="studioEnv" type="button">日照與環境查詢 ↗</button>
       <button id="studioCopy" type="button">分享門牌與樓層</button><span class="copy-status" role="status"></span></div>
       </section></div><footer class="studio-note">建物外觀、朝向及層高均為示意。太陽方向依社區座標試算，個戶採光須現場確認。
-      <a href="https://landmap.tainan.gov.tw/gis/?fun=3ds" target="_blank" rel="noopener noreferrer">開啟台南市府 3D 圖台 ↗</a></footer>`;
+      <a href="https://landmap.tainan.gov.tw/gis/?fun=3ds" target="_blank" rel="noopener noreferrer">開啟台南市府 3D 圖台 ↗</a></footer></div>
+      <div data-studio-panel="ground" hidden></div>`;
     const el = selector => root.querySelector(selector);
+    const groundPanel = el('[data-studio-panel="ground"]');
+    let groundView;
+    function changePanel(view) {
+      for (const button of root.querySelectorAll('[data-studio-view]'))
+        button.setAttribute('aria-pressed',String(button.dataset.studioView===view));
+      for (const panel of root.querySelectorAll('[data-studio-panel]'))
+        panel.hidden=panel.dataset.studioPanel!==view;
+      if(view==='ground' && !groundView){
+        if(window.CommunityGround) groundView=window.CommunityGround.mount(groundPanel,community,{
+          esc,initialLayer:params.get('layer'),initialKind:params.get('measure'),initialScope:params.get('extent'),openDetails:()=>options.openEnvironment('ground'),
+          share:(layer,button,kind,scope)=>{const url=new URL(options.shareBase);url.searchParams.set('view','building');
+            url.searchParams.set('layer',layer);if(door)url.searchParams.set('address',door);
+            if(layer==='subsidence')url.searchParams.set('measure',kind);
+            if(scope==='area')url.searchParams.set('extent',scope);
+            if(currentFloor!=null)url.searchParams.set('floor',String(currentFloor));
+            options.copyValue(url.href,button,'已複製社區位置與這個圖層。','地質圖層連結');}
+        });
+        else {groundPanel.innerHTML='<p>社區地質圖目前無法載入。</p><button type="button">開啟環境查詢</button>';groundPanel.querySelector('button').onclick=()=>options.openEnvironment('ground');}
+      }
+      const dialog=root.closest('dialog');
+      if(dialog)dialog.scrollTop=0;
+    }
+    for(const button of root.querySelectorAll('[data-studio-view]'))button.onclick=()=>changePanel(button.dataset.studioView);
     const select = el('#studioDoor');
     for (const label of doors) select.add(new Option(label, label));
     if (!doors.length) { select.add(new Option('精確門牌待補', '')); select.disabled = true; }
@@ -55,6 +82,7 @@
         const r = record.row;
         const value = record.comparable ? '<strong>'+num(r.unitWan)+'</strong><span> 萬元／坪</span>' : '<strong>未列入可比</strong>';
         const extra = [r.priceWan == null ? null : '總價 '+num(r.priceWan)+' 萬元', r.areaPing == null ? null : num(r.areaPing)+' 坪', r.parkingMode].filter(Boolean);
+        if(r.unitDoorplateRow114)extra.push('戶別經 114 年市府門牌資料核對');
         return `<li><time>${esc(r.date)}</time><p class="studio-unit-price">${value}</p><p>${esc(r.unitIdentity || r.address)}</p><small>${esc(extra.join(' · '))}</small>${record.comparable?'':'<small>'+esc(record.price.label)+'</small>'}</li>`;
       };
       const empty = currentFloor == null ? '請點模型或從選單選擇樓層，查看當層資料。' : '目前條件下，沒有可對應到這個門牌與樓層的成交。';
@@ -93,7 +121,7 @@
     select.onchange=()=>{door=select.value;displayDoor(null);};
     el('.studio-glance').onclick=()=>{const readout=el('#studioReadout');readout.focus({preventScroll:true});readout.scrollIntoView({block:'start'});};
     el('#studioFloors').onclick=options.openFloors;
-    el('#studioEnv').onclick=options.openEnvironment;
+    el('#studioEnv').onclick=()=>options.openEnvironment();
     el('#studioCopy').onclick=e=>{
       const url=new URL(options.shareBase);
       url.searchParams.set('view','building');
@@ -106,6 +134,7 @@
       options.copyValue(url.href,e.currentTarget,'已複製這個查詢畫面。','查詢連結');
     };
     displayDoor(params.has('floor') ? Number(params.get('floor')) : null,params.get('floor')==='all');
+    if(['fault','subsidence'].includes(params.get('layer')))changePanel('ground');
     return {destroy(){scene?.destroy();scene=null;}};
   }
   window.StudioSales={mount};

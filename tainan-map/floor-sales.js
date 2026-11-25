@@ -232,6 +232,7 @@
   }
   function recordStatusText(record) {
     const parts = [record.price.label];
+    if (record.row?.unitDoorplateRow114) parts.push('戶別由成交門牌與樓層比對 114 年市府門牌資料（第 '+record.row.unitDoorplateRow114+' 列）');
     if (!record.current && record.period.label) parts.push(record.period.label);
     if (!record.floorLocated) parts.push(record.floor.reason || '無法定位至單樓');
     if (!record.doorplateLocated) parts.push('門牌待核，未與其他門牌合併');

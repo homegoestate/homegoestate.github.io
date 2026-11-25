@@ -67,6 +67,23 @@ for (const module of ['scene-city','scene-building','studio-sales']) {
   runInNewContext(read('tainan-map/'+module+'.js'), floorContext);
 }
 for (const api of ['CityScene','BuildingScene','StudioSales']) assert.equal(typeof floorContext.window[api].mount,'function');
+for (const asset of ['ground-subsidence.js','city-geo-layers.js','community-ground.js','community-ground.css','detail-sheet.js']) {
+  mustHave('tainan-map/index.html',asset+'?');
+  assert.ok(existsSync(resolve(root,'tainan-map',asset)));
+}
+for (const module of ['ground-subsidence','city-geo-layers','community-ground'])
+  runInNewContext(read('tainan-map/'+module+'.js'), floorContext);
+mustHave('tainan-map/index.html','presale-units.js?');
+runInNewContext(read('tainan-map/presale-units.js'),floorContext);
+assert.equal(floorContext.window.PresaleUnits.lookup('community-registry-1279').count,30);
+const sub=floorContext.window.MapSubsidence;
+assert.equal(sub.lookup(null,null).status,'no_coordinates');
+for (const kind of ['cumulative','rate','station']) {
+  const feature=sub.features.find(f=>f.properties.kind===kind);
+  assert.ok(feature?.properties.period && feature?.properties.sourceUrl,'Missing observation source for '+kind);
+  const point=feature.geometry.type==='Point'?feature.geometry.coordinates:feature.geometry.coordinates[0];
+  assert.equal(sub.lookup(point[1],point[0]).byKind[kind].distanceKm,0);
+}
 mustHave('tainan-map/index.html','id="studioSample"');
 mustHave('tainan-map/index.html','id="showPlanMap"');
 runInNewContext(read('tainan-map/floor-sales.js'), floorContext);
@@ -148,12 +165,20 @@ assert.equal(catalog.meta.asOf, manifest.asOf);
 assert.equal(catalog.communities.length, manifest.catalogCount);
 const registry = new Map(catalog.communities.map(community => [community.id, community]));
 let transactionCount = 0;
+const officialSaleIds=new Set();
 for (const [district, entry] of Object.entries(manifest.districts)) {
   const data = verifiedJson(entry);
   const expected = catalog.communities.filter(c => c.district === district).map(c => c.id);
   assert.deepEqual(Object.keys(data).sort(), expected.sort(), district);
   for (const [id, rows] of Object.entries(data)) {
     transactionCount += rows.length;
+    for(const row of rows){
+      assert.ok(row.transactionId && !officialSaleIds.has(row.transactionId),'Duplicate or missing transaction ID: '+id);
+      officialSaleIds.add(row.transactionId);
+      if(row.eligible && row.singleBuilding && row.completionPrecision==='day' && row.buildingCompletionDate && row.date) {
+        assert.ok(row.date>=row.buildingCompletionDate,id+' includes a sale before completion in a comparable price');
+      }
+    }
     const view = floors.groupRows(rows, registry.get(id), {asOf:manifest.asOf, period:catalog.meta.periods.all});
     const displayed = view.addresses.flatMap(address => address.floors.flatMap(floor => floor.records));
     assert.equal(displayed.length, rows.length, id + ' floor explorer count');
@@ -163,6 +188,13 @@ for (const [district, entry] of Object.entries(manifest.districts)) {
 }
 assert.equal(Object.keys(manifest.districts).length, new Set(catalog.communities.map(c => c.district)).size);
 assert.equal(transactionCount, manifest.transactionCount);
+for (const [id,units] of [['community-3424',191],['community-3287',27]]) {
+  const c=registry.get(id);
+  assert.equal(c.projectUnits.count,units);
+  assert.equal(c.householdCount,units);
+  assert.equal(c.buildingCount,1);
+  assert.ok(c.allUseHistoricalCount >= c.stats.count && c.stats.count >= c.stats.distinctTransactedUnitCount);
+}
 mustHave("index.html", 'href="services.html#builder"');
 mustHave("index.html", 'href="services.html#land"');
 mustHave("index.html", 'href="services.html#inheritance"');

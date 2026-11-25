@@ -7,7 +7,10 @@
   color: #f3edda;
   color-scheme: dark;
   font-family: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
-  background: radial-gradient(ellipse at 54% 44%, #315a5d 0%, #21464d 37%, #14343e 72%, #0e2935 100%);
+  background:
+    radial-gradient(ellipse at 13% 72%, #19778066, transparent 53%),
+    radial-gradient(ellipse at 80% 9%, #63789540, transparent 55%),
+    linear-gradient(134deg, #122c40, #173e4f 51%, #112c3d);
 }
 #cityScene[hidden], #cityScene [hidden] { display: none !important; }
 #cityScene .city-model-canvas, #cityScene .city-model-labels {
@@ -41,20 +44,20 @@
   border: 0;
   border-radius: 2px;
   box-shadow: none;
-  color: #193e3e;
+  color: #132f38;
   background: transparent;
   font: 650 12px/1.25 "Microsoft JhengHei", system-ui, sans-serif;
   letter-spacing: .035em;
-  text-shadow: 0 0 3px #d3ead1;
+  text-shadow: 0 1px 2px #f3f0dfb0;
   -webkit-tap-highlight-color: transparent;
 }
 #cityScene .city-model-label.is-flag {
   height: 23px;
   padding: 0 7px;
-  border: 1px solid #a5c8b8;
-  border-radius: 3px;
+  border: 1px solid #a3cfca;
+  border-radius: 4px;
   box-shadow: 0 2px 5px #0b2e3440;
-  background: #1d4948;
+  background: #153f4c;
   color: #f7f2da;
   font-size: 11px;
   text-shadow: none;
@@ -69,8 +72,8 @@
   background: #214b47;
 }
 #cityScene .city-model-label.is-leading.is-flag {
-  border-color: #ddc392;
-  background-color: #394941;
+  border-color: #f6d19c;
+  background-color: #534052;
 }
 #cityScene .city-model-count { display: none; }
 #cityScene .is-flag .city-model-count {
@@ -90,7 +93,7 @@
 }
 #cityScene .city-model-compass {
   position: absolute;
-  top: 104px;
+  top: 100px;
   right: clamp(18px, 3.1%, 40px);
   display: grid;
   place-items: center;
@@ -102,6 +105,7 @@
   background: transparent;
   box-shadow: none;
   color: #c4d9cc;
+  touch-action: manipulation;
 }
 #cityScene .city-model-compass svg { width: 51px; height: 51px; }
 #cityScene .city-model-compass span {
@@ -115,7 +119,7 @@
 #cityScene .city-model-tools {
   position: absolute;
   right: clamp(16px, 3%, 34px);
-  bottom: 23px;
+  bottom: 24px;
   display: flex;
   align-items: center;
   gap: 0;
@@ -153,25 +157,71 @@
 }
 #cityScene .city-model-tool:hover, #cityScene .city-model-tool:focus-visible { color: #f6d398; background: #375651; }
 #cityScene button:focus-visible { outline: 2px solid #f2cc88; outline-offset: 2px; }
+#cityScene .city-model-layers {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  top: 111px;
+  left: clamp(20px, 2.2vw, 34px);
+  max-width: calc(100% - 38px);
+}
+#cityScene .city-layer-choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 35px;
+  padding: 5px 11px;
+  border: 1px solid #6a96a799;
+  border-radius: 6px;
+  background: #102b3a;
+  box-shadow: none;
+  color: #e1eceb;
+  font: 650 12px/1.3 "Microsoft JhengHei", system-ui, sans-serif;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+#cityScene .city-layer-choice svg {width: 17px; height: 17px;}
+#cityScene [data-city-layer="registry"] {--theme-accent: #ffd599;}
+#cityScene [data-city-layer="fault"] {--theme-accent: #ffa18a;}
+#cityScene [data-city-layer="subsidence"] {--theme-accent: #96e3ea;}
+#cityScene .city-layer-choice svg {color: var(--theme-accent);}
+#cityScene .city-layer-choice[aria-pressed="true"] {background: var(--theme-accent); color: #18313b; border-color: var(--theme-accent);}
+#cityScene .city-layer-choice[aria-pressed="true"] svg {color: inherit;}
+#cityScene .city-layer-choice:hover {border-color: var(--theme-accent);}
 #cityScene .city-model-legend {
   position: absolute;
-  bottom: 22px;
-  left: clamp(17px, 3.4%, 40px);
-  color: #c5d9cd;
-  pointer-events: none;
-  font-size: 10px;
-  line-height: 1.45;
+  bottom: 21px;
+  left: clamp(20px, 2.2vw, 34px);
+  max-width: min(495px, calc(100% - 282px));
+  padding: 9px 11px;
+  border: 1px solid #7197a562;
+  border-radius: 7px;
+  background: #0d2937ed;
+  color: #e2edec;
+  font: 12px/1.45 "Microsoft JhengHei", system-ui, sans-serif;
 }
-#cityScene .city-model-legend b { display: block; font-size: 12px; color: #e9ecdc; font-weight: 600; letter-spacing: .07em; }
-#cityScene .city-model-legend small { color: #aac2b9; font-size: 10px; letter-spacing: .03em; }
-#cityScene .city-model-scale { display: flex; align-items: center; gap: 6px; margin: 4px 0 2px; font: 9px/1.15 Consolas, monospace; }
-#cityScene .city-model-scale i {
-  display: block;
-  width: 76px;
-  height: 5px;
-  border-radius: 1px;
-  background: linear-gradient(to right, #b8cdbb 0% 16.5%, #b2d9c5 16.5% 33%, #94cfba 33% 50%, #75bfad 50% 66.5%, #56af9f 66.5% 83%, #389e95 83% 100%);
+#cityScene .city-legend-head {display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#cityScene .city-legend-head strong {font-size:13px;color:#f7f5e9;}
+#cityScene .city-legend-note, #cityScene .city-legend-source {color:#bed2d7;font-size:11px;}
+#cityScene .city-legend-source {display:block;margin-top:3px;}
+#cityScene .city-legend-source a {color:#c6ecef;text-decoration:underline;text-underline-offset:2px;}
+#cityScene .city-legend-bands {
+  display:flex;gap:3px;margin:5px 0 1px;
+  font: 11px/1.2 Consolas, monospace;font-variant-numeric:tabular-nums;
 }
+#cityScene .city-legend-bands span {min-width:30px;flex:1 1 auto;text-align:center;border-top:4px solid var(--band);padding-top:3px;white-space:nowrap;}
+#cityScene .city-geo-caption {margin-top:3px;color:#e4efed;font-size:12px;}
+#cityScene .city-geo-select {width:auto;max-width:165px;margin-left:auto;min-height:29px;border:1px solid #668894;border-radius:4px;background:#173846;color:#f0f4e9;padding:2px 4px;font:inherit;font-size:11px;}
+#cityScene[data-layer="fault"] .city-legend-head strong::before, #cityScene[data-layer="subsidence"] .city-legend-head strong::before {content:"";display:inline-block;width:15px;height:6px;vertical-align:middle;margin-right:6px;background:#ff9477;border-radius:2px;}
+#cityScene[data-layer="subsidence"] .city-legend-head strong::before {background:var(--geo-swatch,#ffe181);height:3px;}
+#cityScene[data-subsidence="station"] .city-legend-head strong::before {border-radius:50%;height:8px;width:8px;}
+#cityScene .city-subsidence-choices {display:flex;gap:4px;margin-top:4px;}
+#cityScene .city-subsidence-choices button {min-height:26px;min-width:0;border:1px solid #567481;border-radius:4px;padding:3px 8px;background:#153343;color:#cfe0e4;font:600 11px/1.3 system-ui,sans-serif;box-shadow:none;}
+#cityScene .city-subsidence-choices button[aria-pressed="true"] {background:#d1e5e5;color:#10343f;border-color:#d1e5e5;}
+#cityScene .city-distance-scale {position:absolute;right:clamp(21px,3%,34px);bottom:75px;height:5px;color:#d1e4e4;border:solid #b5ccce;border-width:0 1px 2px;pointer-events:none;}
+#cityScene .city-distance-scale span {position:absolute;bottom:4px;left:50%;transform:translateX(-50%);white-space:nowrap;font:10px/1.2 Consolas,monospace;}
 #cityScene .city-model-sr {
   position: absolute;
   width: 1px;
@@ -185,22 +235,28 @@
   #cityScene .city-model-canvas { touch-action: pan-y; }
   #cityScene .city-model-tool { height: 40px; }
 }
-@media (max-width: 700px) {
-  #cityScene .city-model-compass { top: 77px; right: 13px; width: 43px; height: 46px; }
+@media (max-width: 900px) {
+  #cityScene .city-model-layers {top:65px;left:15px;}
+  #cityScene .city-layer-choice {min-height:39px;padding:5px 9px;}
+  #cityScene .city-model-compass { top: 110px; right: 13px; width: 43px; height: 46px; }
   #cityScene .city-model-compass svg { width: 41px; height: 41px; }
   #cityScene .city-model-label { font-size: 10px; }
   #cityScene .city-model-label.is-flag { font-size: 10px; height: 21px; padding: 0 5px; }
-  #cityScene .city-model-tools { right: 12px; bottom: 13px; }
+  #cityScene .city-model-tools { right: 12px; bottom: 9px; }
   #cityScene .city-model-tool { width: 37px; height: 39px; }
   #cityScene .city-model-tool svg { width: 16px; height: 16px; }
-  #cityScene .city-model-legend { left: 14px; bottom: 11px; }
-  #cityScene .city-model-legend b { font-size: 10px; }
-  #cityScene .city-model-scale { gap: 4px; }
-  #cityScene .city-model-scale i { width: 48px; }
-  #cityScene .city-model-legend small { font-size: 9px; }
+  #cityScene .city-model-legend {left:14px;right:14px;bottom:61px;max-width:455px;padding:7px 9px;}
+  #cityScene .city-distance-scale {right:auto;left:15px;bottom:23px;}
+  #cityScene .city-legend-head {gap:5px;}
+  #cityScene .city-legend-head strong {font-size:12px;}
+  #cityScene .city-geo-select {min-height:32px;}
+  #cityScene .city-subsidence-choices button {min-height:32px;}
 }
 @media (max-width: 365px) {
   #cityScene .city-model-tool { width: 35px; height: 39px; }
   #cityScene .city-model-tools { right: 10px; bottom: 8px; }
-  #cityScene .city-model-legend { bottom: 58px; left: 12px; }
+  #cityScene .city-model-layers {left:12px;gap:3px;max-width:calc(100% - 20px);}
+  #cityScene .city-layer-choice {gap:4px;padding:4px 7px;}
+  #cityScene .city-model-legend {left:12px;right:12px;}
+  #cityScene .city-geo-select {max-width:127px;}
 }

@@ -2,10 +2,11 @@
   'use strict';
 
   const RAD = Math.PI / 180;
-  const HOME = { yaw: 19, tilt: 44, zoom: 1 };
+  const HOME = { yaw: -16, tilt: 39, zoom: 1 };
   const STEPS = [0, 1, 15, 60, 150, 300];
-  const HEIGHT = [22, 34, 49, 68, 92, 122];
-  const COLOR = ['#b8cdbb', '#b2d9c5', '#94cfba', '#75bfad', '#56af9f', '#389e95'];
+  const HEIGHT = [16, 29, 46, 70, 103, 145];
+  const COLOR = ['#abbfc5', '#94d9d0', '#41b5aa', '#e7cd76', '#f29c60', '#da7072'];
+  const GEO_HEIGHT = 16;
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const fmt = n => n.toLocaleString('zh-TW');
   const icons = {
@@ -119,10 +120,11 @@
       if(base===d.z)continue;
       const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
       const nx=outward*dy/length,ny=-outward*dx/length;
-      const light=clamp(.45+(-nx*.78-ny*.35)*.19,.23,.69);
+      const light=clamp(.52+(-nx*.78-ny*.35)*.25,.25,.8);
       walls.push({a,b,d,base,nx,ny,color:shade(COLOR[d.tier],light),highlight:shade('#e6bd79',light)});
     }
-    return {districts,points:[...positions.values()],walls,footprint,unit};
+    const locate=([lon,lat])=>({x:((lon-120.3)*longitudeKm-cx)*unit,y:((23.15-lat)*latitudeKm-cy)*unit});
+    return {districts,points:[...positions.values()],walls,footprint,unit,locate};
   }
   function shade(hex, fraction) {
     const value=parseInt(hex.slice(1),16);
@@ -143,7 +145,25 @@
     const ranked=new Map([...new Set([leader.name,'新營區','善化區','永康區','七股區','玉井區','白河區','安南區','麻豆區','南化區','關廟區','北門區','歸仁區','楠西區'])].map((s,i)=>[s,i]));
     const labelOrder=[...model.districts].sort((a,b)=>(ranked.get(a.name)??50)-(ranked.get(b.name)??50)||b.count-a.count);
     const events=new AbortController(), listen=(target,event,fn,opts={})=>target.addEventListener(event,fn,{...opts,signal:events.signal});
-    const view={...HOME};
+    // Mobile browsers can suppress the compatibility click immediately after
+    // a drag. Accept a short touch tap once, and retain native keyboard clicks.
+    function activateButton(button,action){
+      let start=null,lastTap=-Infinity;
+      listen(button,'pointerdown',e=>{if(e.pointerType==='touch')start={id:e.pointerId,x:e.clientX,y:e.clientY};});
+      listen(button,'pointercancel',()=>{start=null;});
+      listen(button,'pointerup',e=>{
+        const tap=start;start=null;
+        if(tap?.id!==e.pointerId||Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)return;
+        lastTap=performance.now();action();
+      });
+      listen(button,'click',e=>{
+        if(e.detail&&performance.now()-lastTap<700&&(e.pointerType==='touch'||e.sourceCapabilities?.firesTouchEvents))return;
+        action();
+      });
+    }
+    const view={...HOME}, geo=window.CityGeoLayers?.prepare(model.locate);
+    let layer='registry', subsidenceKind='cumulative', geoStrokes=[], focusedFeature=null;
+    const geoInfo=()=>layer==='subsidence'?geo?.subsidence[subsidenceKind]:geo?.[layer];
     let active=true, frame=0, resize, picked=null, retained=null, size, camera, targets=[], hoverFrame=0, hoverPoint=null;
     const pointerState=new Map();
     let pinch=null;
@@ -165,8 +185,23 @@
     resetButton.type='button';resetButton.title='回到預設方向與縮放';resetButton.setAttribute('aria-label',resetButton.title);
     resetButton.innerHTML='<svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="23" fill="none" stroke="currentColor" opacity=".32" stroke-dasharray="1 4"/><g class="city-model-needle"><path d="m26 10 5.5 21-5.5-4-5.5 4Z" fill="#f5d6a0"/><path d="m26 41-4-13 4 2.7 4-2.7Z" fill="#83b4af"/><circle cx="26" cy="26.5" r="1.2" fill="#123840"/></g></svg><span>N</span>';
     const needle=resetButton.querySelector('g');
+    const layerBar=element('div','city-model-layers',root);
+    layerBar.setAttribute('role','group');layerBar.setAttribute('aria-label','全市立體地圖圖層');
+    const glyphs={
+      registry:'<path d="m3 15 5-2 5 2-5 2-5-2Zm0 0v3l5 2 5-2v-3m-3-6 5-2 5 2-5 2-5-2Zm0 0v4m10-4v8l-5 2-2-1"/>',
+      fault:'<path d="m3 17 4-4 2 1 3-6 2 4 3-5 1 1 3-4m-9 7-2 6"/>',
+      subsidence:'<path d="M3 9c4-2 6-2 9 0s5 2 9 0M3 14c4-2 6-2 9 0s5 2 9 0M3 19c4-2 6-2 9 0s5 2 9 0"/>'
+    };
+    for(const [id,title] of [['registry','社區名冊'],['fault','活動斷層'],['subsidence','地層下陷']]){
+      const b=element('button','city-layer-choice',layerBar);
+      b.type='button';b.dataset.cityLayer=id;
+      b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">'+glyphs[id]+'</svg>';
+      b.append(title);activateButton(b,()=>setLayer(id));
+    }
     const legend=element('div','city-model-legend',root);
-    legend.innerHTML='<b>行政區名冊數</b><div class="city-model-scale"><span>0</span><i></i><span>300+</span></div><small>色階與高度代表社區數</small>';
+    const scale=element('div','city-distance-scale',root);
+    scale.setAttribute('aria-hidden','true');
+    const scaleText=element('span','',scale);
     const tools=element('div','city-model-tools',root);
     tools.setAttribute('role','group');tools.setAttribute('aria-label','立體地圖視角');
     const announce=element('div','city-model-sr',root);announce.setAttribute('aria-live','polite');
@@ -177,14 +212,89 @@
     ]){
       const b=element('button','city-model-tool',tools);b.type='button';b.title=title;b.setAttribute('aria-label',title);
       b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[key]+'</svg>';
-      listen(b,'click',action);
+      activateButton(b,action);
+    }
+    function sourceLink(parent,title,url) {
+      if(!url?.startsWith('https://')){parent.append(title);return;}
+      const a=element('a','',parent);a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=title+' ↗';
+    }
+    const legendObserver=typeof ResizeObserver==='undefined'?null:new ResizeObserver(()=>{size=null;invalidate();});
+    legendObserver?.observe(legend);
+    function buildLegend(){
+      legend.replaceChildren();
+      root.dataset.subsidence=layer==='subsidence'?subsidenceKind:'';
+      root.style.setProperty('--geo-swatch',({rate:'#8ff1fe',station:'#f1c5ff'})[subsidenceKind]||'#ffe181');
+      const head=element('div','city-legend-head',legend);
+      const title=element('strong','',head);
+      if(layer==='registry'){
+        title.textContent='各區收錄社區數';
+        const units=element('span','city-legend-note',head);units.textContent='色階、柱高均按名冊筆數';
+        const bands=element('div','city-legend-bands',legend);
+        for(const [i,n] of STEPS.entries()){
+          const item=element('span','',bands);item.style.setProperty('--band',COLOR[i]);
+          item.textContent=i===STEPS.length-1?n+'+':i===0?'0':n+'–'+(STEPS[i+1]-1);
+        }
+        const meta=window.PILOT_DATA?.meta, source=meta?.sources?.find(x=>x.label.includes('工務局')&&x.label.includes('清冊'));
+        if(source){const line=element('small','city-legend-source',legend);sourceLink(line,'臺南市工務局清冊',source.url);
+          if(meta.registrySnapshot?.fileAsOf)line.append(' · '+meta.registrySnapshot.fileAsOf);}
+      }else{
+        const info=geoInfo(), rows=info?.rows||[];
+        title.textContent=info?.title||(layer==='fault'?'活動斷層地質敏感區':'地層下陷');
+        if(layer==='subsidence' && geo){
+          const switcher=element('div','city-subsidence-choices',legend);
+          switcher.setAttribute('role','group');switcher.setAttribute('aria-label','地層下陷資料種類');
+          for(const [kind,name] of Object.entries(window.CityGeoLayers.groupNames)){
+            const b=element('button','',switcher);
+            b.type='button';b.dataset.citySubsidence=kind;b.textContent=name;
+            b.setAttribute('aria-pressed',String(kind===subsidenceKind));
+            b.onclick=()=>{
+              subsidenceKind=kind;focusedFeature=null;geoStrokes=[];
+              buildLegend();legend.querySelector('[data-city-subsidence="'+kind+'"]').focus({preventScroll:true});size=null;invalidate();
+            };
+          }
+        }
+        if(rows.length){
+          const input=element('select','city-geo-select',head);
+          input.setAttribute('aria-label',layer==='fault'?'選擇斷層公告區':'選擇地層下陷圖徵');
+          input.add(new Option('查看個別'+(layer==='fault'?'公告區':'圖徵'), ''));
+          for(const row of rows)input.add(new Option(row.label,row.key));
+          input.value=focusedFeature||'';
+          input.onchange=()=>focusFeature(input.value||null);
+        }
+        const message=element('div','city-geo-caption',legend);
+        const selected=rows.find(row=>row.key===focusedFeature);
+        message.textContent=selected?.detail||info?.caption||'本次未載入此圖層。';
+        if(info){
+          const line=element('small','city-legend-source',legend);
+          sourceLink(line,info.source,selected?.source||info.url);
+          if(info.date)line.append(' · '+info.date);
+        }
+      }
+    }
+    function focusFeature(key){
+      focusedFeature=key;
+      const select=legend.querySelector('select');if(select)select.value=key||'';
+      const info=geoInfo(), row=info?.rows.find(r=>r.key===key);
+      const caption=legend.querySelector('.city-geo-caption');
+      if(caption)caption.textContent=row?.detail||info?.caption||'本次未載入此圖層。';
+      const source=legend.querySelector('a');
+      if(source)source.href=row?.source||info.url;
+      if(row)announce.textContent=row.detail;
+      size=null;invalidate();
+    }
+    function setLayer(id){
+      if(!['registry','fault','subsidence'].includes(id))return;
+      layer=id;root.dataset.layer=id;focusedFeature=null;geoStrokes=[];
+      picked=null;retained=null;hoverPoint=null;
+      for(const b of layerBar.children)b.setAttribute('aria-pressed',String(b.dataset.cityLayer===id));
+      buildLegend();size=null;invalidate();
     }
     function invalidate(){if(active&&!frame)frame=requestAnimationFrame(draw);}
     function rotateBy(degrees){view.yaw=(view.yaw+degrees)%360;invalidate();}
     function tiltBy(degrees){view.tilt=clamp(view.tilt+degrees,8,68);invalidate();}
     function zoomBy(factor){if(factor>0)view.zoom=clamp(view.zoom*factor,.68,2.4);invalidate();}
     function reset(){Object.assign(view,HOME);highlight(null);invalidate();}
-    listen(resetButton,'click',reset);
+    activateButton(resetButton,reset);
     function highlight(d){
       if(picked===d)return;
       picked=d;
@@ -195,16 +305,18 @@
       const width=root.clientWidth,height=root.clientHeight;
       if(!width||!height)return null;
       const compact=width<580,ratio=Math.min(window.devicePixelRatio||1,2);
-      const top=compact?clamp(height*.17,61,93):clamp(height*.11,68,108);
-      const bottom=compact?74:65,margin=compact?12:Math.max(28,width*.045);
+      const top=layerBar.offsetTop+layerBar.offsetHeight+(compact?9:14);
+      const bottom=Math.max(24,height-legend.offsetTop+(compact?6:12));
+      const margin=compact?16:Math.max(32,width*.055);
       const defaultYaw=HOME.yaw*RAD, defaultTilt=HOME.tilt*RAD;
       const cs=Math.cos(defaultYaw),sn=Math.sin(defaultYaw),ct=Math.cos(defaultTilt),st=Math.sin(defaultTilt);
       let x1=Infinity,x2=-Infinity,y1=Infinity,y2=-Infinity;
       for(const d of model.districts)for(const poly of d.polygons)for(const p of poly[0]){
         const x=cs*p.x-sn*p.y,y=(sn*p.x+cs*p.y)*ct;
-        x1=Math.min(x1,x);x2=Math.max(x2,x);y1=Math.min(y1,y-d.z*st);y2=Math.max(y2,y);
+        const z=layer==='registry'?d.z:GEO_HEIGHT;
+        x1=Math.min(x1,x);x2=Math.max(x2,x);y1=Math.min(y1,y-z*st);y2=Math.max(y2,y);
       }
-      const scale=Math.min((width-2*margin)/(x2-x1),(height-top-bottom)/(y2-y1));
+      const scale=Math.max(.05,Math.min((width-2*margin)/(x2-x1),(height-top-bottom)/(y2-y1)));
       return {width,height,ratio,compact,top,bottom,scale,cx:width/2-(x1+x2)*scale/2,cy:(height+top-bottom)/2-(y1+y2)*scale/2};
     }
     function drawGrid(c) {
@@ -240,21 +352,25 @@
       const at=(x,y,z=0)=>({x:cx+s*(cs*x-sn*y),y:cy+s*((sn*x+cs*y)*ct-z*st)});
       const roofMatrix=(z,xOff=0,yOff=0)=>ctx.setTransform(ratio*s*cs,ratio*s*sn*ct,-ratio*s*sn,ratio*s*cs*ct,ratio*(cx+xOff),ratio*(cy-s*st*z+yOff));
       camera={at,cs,sn,ct,st,s,cx,cy};drawGrid(camera);
+      const km=5*model.unit*s<32?10:5;
+      scaleText.textContent=km+' km';
+      scale.style.width=(km*model.unit*s).toFixed(1)+'px';
       // Contact shadow follows the city's actual footprint, including its coast.
-      for(const [dx,dy,alpha] of [[3,12,.12],[2,7,.18],[1,3,.35]]){
+      for(const [dx,dy,alpha] of [[6,16,.09],[4,10,.16],[1,4,.35]]){
         roofMatrix(0,dx,dy);ctx.fillStyle='rgba(1,16,22,'+alpha+')';ctx.fill(model.footprint,'evenodd');
       }
       for(const p of model.points){p.rx=cs*p.x-sn*p.y;p.depth=sn*p.x+cs*p.y;p.sx=cx+s*p.rx;p.sy=cy+s*p.depth*ct;}
       const walls=model.walls.filter(w=>w.nx*sn+w.ny*cs>0);
       walls.sort((a,b)=>(a.a.depth+a.b.depth)-(b.a.depth+b.b.depth));
       targets=[];
-      for(let tier=0;tier<HEIGHT.length;tier++){
-        const low=tier?HEIGHT[tier-1]:0,high=HEIGHT[tier],up=high*s*st,down=low*s*st;
+      const registry=layer==='registry', levels=registry?HEIGHT:[GEO_HEIGHT];
+      for(let tier=0;tier<levels.length;tier++){
+        const low=tier?levels[tier-1]:0,high=levels[tier],up=high*s*st,down=low*s*st;
         ctx.setTransform(ratio,0,0,ratio,0,0);
         for(const w of walls){
           if(w.base>=high || w.d.z<high)continue;
           const {a,b,d}=w;
-          ctx.fillStyle=d===picked?w.highlight:w.color;
+          ctx.fillStyle=registry?(d===picked?w.highlight:w.color):'#416571';
           ctx.beginPath();ctx.moveTo(a.sx,a.sy-up);ctx.lineTo(b.sx,b.sy-up);ctx.lineTo(b.sx,b.sy-down);ctx.lineTo(a.sx,a.sy-down);ctx.closePath();
           ctx.fill();
           // A narrow stroke seals anti-aliased seams between the neighbouring facets.
@@ -262,28 +378,38 @@
           targets.push({w,up,down});
         }
         for(const d of model.districts){
-          if(d.tier!==tier)continue;
-          roofMatrix(d.z);
-          const base=d===picked?'#efc98b':COLOR[d.tier], surface=ctx.createLinearGradient(-400,-350,480,540);
+          if(registry&&d.tier!==tier)continue;
+          roofMatrix(high);
+          const base=registry?(d===picked?'#ffe6aa':COLOR[d.tier]):d===picked?'#accbc9':'#89a9ad';
+          const surface=ctx.createLinearGradient(-330,-420,510,440);
           surface.addColorStop(0,base);surface.addColorStop(1,shade(base,.89));
           ctx.fillStyle=surface;ctx.fill(d.roof,'evenodd');
-          ctx.strokeStyle=d===picked?'#fff2cc':'rgba(237,250,225,.83)';ctx.lineWidth=(d===picked?1.5:.8)/s;ctx.lineJoin='round';ctx.stroke(d.roof);
-          targets.push({d});
+          ctx.strokeStyle=registry?(d===picked?'#fff4ce':'rgba(255,252,224,.83)'):'rgba(241,251,245,.6)';
+          ctx.lineWidth=(d===picked?1.5:(registry ? .85 : .65))/s;ctx.lineJoin='round';ctx.stroke(d.roof);
+          targets.push({d,z:high});
         }
       }
       ctx.setTransform(ratio,0,0,ratio,0,0);
-      const occupied=[], ordered=picked?[picked,...labelOrder.filter(d=>d!==picked)]:labelOrder;
+      let occupied=[];
+      if(!registry && geoInfo()){
+        const projected=window.CityGeoLayers.draw(ctx,geoInfo(),p=>at(p.x,p.y,GEO_HEIGHT),{
+          width,height,compact,top:size.top,bottom:height-size.bottom,focusedFeature
+        });
+        geoStrokes=projected.hits;occupied=projected.labels;
+      }
+      const ordered=picked?[picked,...labelOrder.filter(d=>d!==picked)]:labelOrder;
       for(const d of ordered){
-        const anchor=at(d.anchor.x,d.anchor.y,d.z);
-        const selected=d===picked, featured=d.name==='新營區'||d===leader||(!compact&&d.name==='善化區'),flag=selected||featured;
+        const anchor=at(d.anchor.x,d.anchor.y,registry?d.z:GEO_HEIGHT);
+        const selected=d===picked,featured=registry&&(d.name==='新營區'||d===leader||(!compact&&d.name==='善化區')),flag=registry&&(selected||featured);
         const w=flag?Math.max(61,d.name.length*13+String(d.count).length*7+14):d.name.length*(compact?10:12)+6;
         const h=flag?24:17,y=anchor.y-(featured?13:0),x=anchor.x;
         const rect=[x-w/2-3,y-h/2-3,x+w/2+3,y+h/2+3];
-        const clips=rect[0]<3||rect[2]>width-3||rect[1]<size.top-21||rect[3]>height-42 ||
+        const clips=rect[0]<3||rect[2]>width-3||rect[1]<size.top-9||rect[3]>height-size.bottom+8 ||
           (rect[2]>width-(compact?56:77)&&rect[1]<(compact?136:173)) ||
           (rect[0]<135&&rect[3]>height-(compact?85:70));
         const collides=occupied.some(r=>rect[0]<r[2]&&rect[2]>r[0]&&rect[1]<r[3]&&rect[3]>r[1]);
-        const show=(!clips&&!collides&&hit(anchor.x,anchor.y)===d)||selected;
+        const priority=registry||selected||(ranked.get(d.name)??50)<(compact?8:14);
+        const show=priority&&((!clips&&!collides&&hit(anchor.x,anchor.y)===d)||selected);
         d.button.hidden=!show;
         if(!show)continue;
         occupied.push(rect);
@@ -303,7 +429,7 @@
       for(let i=targets.length-1;i>=0;i--){
         const t=targets[i];
         if(t.d){
-          const rx=(x-cx)/s, depth=((y-cy)/s+t.d.z*st)/ct;
+          const rx=(x-cx)/s, depth=((y-cy)/s+t.z*st)/ct;
           const px=cs*rx+sn*depth,py=-sn*rx+cs*depth;
           if(t.d.polygons.some(poly=>inside(px,py,poly[0])&&!poly.slice(1).some(hole=>inside(px,py,hole))))return t.d;
         }else{
@@ -332,7 +458,10 @@
         if(e.pointerType==='mouse'){
           hoverPoint=p;
           if(!hoverFrame)hoverFrame=requestAnimationFrame(()=>{
-            hoverFrame=0;if(hoverPoint&&!pointerState.size)highlight(hit(hoverPoint.x,hoverPoint.y));
+            hoverFrame=0;if(hoverPoint&&!pointerState.size) {
+              highlight(layer==='registry'?hit(hoverPoint.x,hoverPoint.y):null);
+              if(layer!=='registry')canvas.style.cursor=window.CityGeoLayers?.pick(geoStrokes,hoverPoint)?'pointer':'grab';
+            }
           });
         }
         return;
@@ -349,7 +478,11 @@
       const last=pointerState.get(e.pointerId);if(!last)return;
       pointerState.delete(e.pointerId);pinch=null;
       if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
-      if(!cancelled&&!last.moved){const p=local(e),d=hit(p.x,p.y);if(d)onDistrict(d.name);}
+      if(!cancelled&&!last.moved){
+        const p=local(e), row=layer==='registry'?null:window.CityGeoLayers?.pick(geoStrokes,p);
+        if(row){focusFeature(row.key);return;}
+        const d=hit(p.x,p.y);if(d)onDistrict(d.name);
+      }
     }
     listen(canvas,'pointerup',e=>release(e,false));listen(canvas,'pointercancel',e=>release(e,true));
     listen(canvas,'pointerleave',()=>{hoverPoint=null;if(!pointerState.size)highlight(retained);});
@@ -373,8 +506,9 @@
     if(typeof ResizeObserver!=='undefined'){
       resize=new ResizeObserver(()=>{size=null;invalidate();});resize.observe(root);
     }else listen(window,'resize',()=>{size=null;invalidate();});
-    invalidate();
-    return {setActive,reset,zoomBy,rotateBy,tiltBy,destroy(){setActive(false);events.abort();resize?.disconnect();root.replaceChildren();}};
+    const entry=new URLSearchParams(location.search).get('layer');
+    setLayer(['fault','subsidence'].includes(entry)?entry:'registry');
+    return {setActive,setLayer,getLayer:()=>layer,reset,zoomBy,rotateBy,tiltBy,destroy(){setActive(false);events.abort();resize?.disconnect();legendObserver?.disconnect();root.replaceChildren();}};
   }
   window.CityScene={mount};
 })();

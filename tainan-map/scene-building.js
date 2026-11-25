@@ -75,7 +75,7 @@
     date.value = window.MapSun?.today() || new Date(Date.now() + 28800000).toISOString().slice(0, 10);
     const hasPosition = Boolean(window.MapSun?.position(options.lat, options.lon, date.value, '12:00'));
     const canRotate = Boolean(ctx && (modelLevels.length || hasPosition));
-    $('.bscene-stamp span').textContent = floors ? `地上 ${floors} 層` : (separated ? '已揭露樓層' : '樓層資料');
+    $('.bscene-stamp span').textContent = floors ? `地上 ${floors} 層 · 量體示意` : (separated ? '已揭露樓層' : '樓層資料');
     empty.hidden = Boolean(modelLevels.length && ctx);
     if (!empty.hidden) {
       if (modelLevels.length) empty.querySelector('strong').textContent = '樓層清單';
@@ -237,7 +237,7 @@
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
       const yaw = state.yaw * radians, tilt = state.tilt * radians;
       const sy = Math.sin(yaw), cy = Math.cos(yaw), st = Math.sin(tilt), ct = Math.cos(tilt);
-      const hx = 19, hy = 12, step = separated ? 7.4 : 3.6;
+      const hx = 17, hy = 10.8, step = separated ? 7.4 : 3.8;
       const thickness = separated ? 1.6 : step;
       const top = modelLevels.length ? (modelLevels.length - 1) * step + thickness : 0;
       const groundRadius = 33;
@@ -330,18 +330,23 @@
         function faceQuad(f, u0, u1, z0, z1, expand = 0) {
           return [onFace(f,u0,z0,expand), onFace(f,u1,z0,expand), onFace(f,u1,z1,expand), onFace(f,u0,z1,expand)];
         }
-        polygon(corners(hx + 2.0,hy + 2.0,0), '#152a36', '#8fb4b285', .9);
-        polygon(corners(hx + 1.1,hy + 1.1,.32), '#39515c', '#9cbfbd80', .65);
+        const podium=corners(hx+3.4,hy+3.4,-.55);
+        ctx.save();ctx.shadowBlur=12;ctx.shadowOffsetY=6;ctx.shadowColor='#071a27ba';
+        polygon(podium,'#283c49','#718990',.9);ctx.restore();
+        polygon(corners(hx + 2.0,hy + 2.0,0), '#56676b', '#a2b2a6', .9);
+        polygon(corners(hx + 1.1,hy + 1.1,.32), '#9b9b88', '#d2c7a8', .65);
         function drawLid(z, selected, isRoof) {
           const lid = corners(hx+.23,hy+.23,z);
           const lidGrad = ctx.createLinearGradient(lid[0].x,lid[0].y,lid[2].x+.01,lid[2].y);
-          lidGrad.addColorStop(0, selected ? '#997044' : '#4c696e');
-          lidGrad.addColorStop(.5, selected ? '#d4a964' : '#759295');
-          lidGrad.addColorStop(1, selected ? '#a17a4c' : '#4e6f77');
+          lidGrad.addColorStop(0, selected ? '#bd7845' : '#8b9689');
+          lidGrad.addColorStop(.5, selected ? '#edc981' : '#c3c0a6');
+          lidGrad.addColorStop(1, selected ? '#bf8d54' : '#a09a80');
           polygon(lid, lidGrad, selected ? '#ffe3a0' : '#b5d4ce', 1.1);
-          polygon(corners(hx-1,hy-1,z+.04), isRoof ? '#49616a75' : '#304b551f', selected ? '#ffd594' : '#bad3cc98', .75);
-          for (let x = -hx + 5; x < hx - 1; x += 5) stroke([proj(x,-hy+1,z+.06), proj(x,hy-1,z+.06)], '#b6d4cf48', .6);
-          for (let y = -hy + 5; y < hy - 1; y += 5) stroke([proj(-hx+1,y,z+.06), proj(hx-1,y,z+.06)], '#d2e3d943', .6);
+          polygon(corners(hx-1.1,hy-1.1,z+.04), isRoof ? '#7e8e86' : '#31495638', selected ? '#ffd594' : '#f5e1b9', .85);
+          if(isRoof){
+            polygon(corners(hx-2.4,hy-2.4,z+.06),'#78918c','#435e60',.8);
+            for (let x=-hx+6;x<hx-2.5;x+=6)stroke([proj(x,-hy+2.5,z+.1),proj(x,hy-2.5,z+.1)],'#d2d7bc66',.65);
+          }
           return lid;
         }
         for (const [index,n] of modelLevels.entries()) {
@@ -355,25 +360,30 @@
               gradient.addColorStop(.55, selected ? '#ffe3a2' : '#86adab');
               gradient.addColorStop(1, selected ? '#bb7933' : '#406d73');
             } else {
-              const light = Math.round(14 + 11 * flank + 5 * ((index+1) / modelLevels.length));
-              gradient.addColorStop(0, `hsl(199,32%,${light}%)`);
-              gradient.addColorStop(.46, `hsl(191,34%,${light + 8}%)`);
-              gradient.addColorStop(1, `hsl(202,37%,${light - 4}%)`);
+              const light = Math.round(31 + 10 * flank + 5 * ((index+1) / modelLevels.length));
+              gradient.addColorStop(0, `hsl(19,34%,${light}%)`);
+              gradient.addColorStop(.50, `hsl(24,42%,${light + 15}%)`);
+              gradient.addColorStop(1, `hsl(15,35%,${light - 3}%)`);
             }
             polygon(face, gradient);
-            const frame = selected ? '#ffeece' : (hover ? '#91bcbb' : '#91b9bd');
-            const panes = broad ? 8 : 5;
+            const frame = selected ? '#fff4cb' : (hover ? '#91bcbb' : '#edce9c');
+            const panes = broad ? 6 : 4;
             for (let i = 0; i < panes; i++) {
               const u0 = -f.half + (2 * f.half / panes) * i, u1 = u0 + 2 * f.half / panes;
-              const window = faceQuad(f,u0 + .38,u1 - .38,base + .58,cap - .62);
+              const window = faceQuad(f,u0 + .66,u1 - .49,base + thickness*.19,cap - thickness*.17);
               const pane = ctx.createLinearGradient(window[0].x,window[0].y,window[2].x+.01,window[2].y);
-              pane.addColorStop(0, selected ? '#4a342b4d' : '#0d202f7a');
-              pane.addColorStop(.72, selected ? '#fff0bd62' : (i % 3 === 0 ? '#b8e9e04a' : '#9fd8de29'));
-              pane.addColorStop(1, selected ? '#fff4c988' : '#badcda55');
+              pane.addColorStop(0, selected ? '#b2753d' : '#26495b');
+              pane.addColorStop(.58, selected ? '#edb864' : (i % 3 === 0 ? '#77aca8' : '#69979d'));
+              pane.addColorStop(1, selected ? '#ffe3a0' : '#b1cfc1');
               polygon(window, pane);
-              stroke([onFace(f,u0,base + .35),onFace(f,u0,cap - .4)], selected ? '#755839' : '#122d38', Math.max(.45,scale * .14));
+              if(scale*thickness>7){
+                const mid=(u0+u1)/2;
+                stroke([onFace(f,mid,base+thickness*.19),onFace(f,mid,cap-thickness*.17)],selected?'#9c7135':'#42636b',.75);
+                const inset=(i%3===1 && broad)?1.04:.47;
+                polygon(faceQuad(f,u0+.35,u1-.25,base+.33,base+.68,inset),selected?'#f4be65':'#c5ab86');
+              }
             }
-            polygon(faceQuad(f,-f.half-.22,f.half+.22,cap-.38,cap,.23), selected ? '#ffdb90' : '#57757c');
+            polygon(faceQuad(f,-f.half-.28,f.half+.28,cap-.37,cap,.32), selected ? '#ffce72' : '#d1b58d');
             stroke([onFace(f,-f.half-.22,cap,.23),onFace(f,f.half+.22,cap,.23)], frame, selected ? 1.45 : .70);
             stroke([onFace(f,-f.half,base),onFace(f,-f.half,cap)], selected ? '#ffdd8e' : '#b1cecc88', .8);
             stroke([onFace(f,f.half,base),onFace(f,f.half,cap)], selected ? '#ffdd8e' : '#b1cecc88', .8);

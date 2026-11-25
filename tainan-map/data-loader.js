@@ -40,7 +40,7 @@
     document.getElementById('catalogLoadStatus').hidden = true;
   };
   window.CATALOG_READY = (async () => {
-    manifest = JSON.parse(new TextDecoder().decode(await fetchBytes('data-manifest.json?v=20261122')));
+    manifest = JSON.parse(new TextDecoder().decode(await fetchBytes('data-manifest.json?v=20261125-evidence')));
     const data = await decode(manifest.summary);
     if (!manifest.catalogCount || data.communities.length !== manifest.catalogCount ||
         data.meta.asOf !== manifest.asOf || data.meta.periods.all.start !== '2012-08-01') throw new Error('資料版本不符');

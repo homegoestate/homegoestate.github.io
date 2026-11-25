@@ -1,6 +1,6 @@
 (function environmentExplorer() {
   'use strict';
-  const topics = {sun:'日照試算', ground:'斷層與土壤', building:'建物安全', coast:'海埔與舊海岸'};
+  const topics = {sun:'日照試算', ground:'斷層、下陷與液化', building:'建物安全', coast:'海埔與舊海岸'};
   const directions = ['北','東北','東','東南','南','西南','西','西北'];
   const soilLabels = {high:'高潛勢', medium:'中潛勢', low:'低潛勢', unpublished:'市府資料標為未公開／未調查', outside:'參考點在這份圖層涵蓋範圍外', edge:'參考點接近分區邊界，請核對原圖', disputed:'市府下載檔與線上圖層的分區不同，請核對原圖'};
   const soilUrl = new URL('environment-soil.json?v=20261125', document.currentScript.src);
@@ -91,10 +91,15 @@
 
     function showGround(body) {
       const fault = window.MapFaults?.lookup(c);
+      const subsidence = precise && window.MapSubsidence?.lookup(Number(c.lat),Number(c.lon));
+      const geolink = new URL(location.pathname,location.origin);
+      geolink.searchParams.set('community',c.id);geolink.searchParams.set('view','building');geolink.searchParams.set('layer','subsidence');
       body.innerHTML = `<section class="env-card"><h3>活動斷層地質敏感區</h3><div id="envFault"><strong>${esc(fault?.label || '公告圖層暫時無法載入')}</strong><p>${esc(fault?.detail || '請至經濟部地質敏感區圖台，以地段、地號核對公告範圍。')}</p></div>
         <details id="envFaultOverview"><summary>看全市公告範圍與社區位置</summary><div class="env-map-view"></div></details>
         <p class="env-note">來源為經濟部地質調查及礦業管理中心，圖資核對 ${esc(window.MapFaults?.source?.checked || '日期待核')}。${fault?.noticeDate ? ' 本區公告日期 '+esc(fault.noticeDate)+'。' : ''}</p>
         ${links(link('https://gsa.gsmma.gov.tw/gwh/gsb97-1/sys_2014b_pg/index.cfm','公告敏感區與地號查詢'),link('https://faultgis.gsmma.gov.tw/gis/','全臺活動斷層圖'),fault?.districtNote ? link(fault.districtSourceUrl,'市府行政區斷層資料') : '')}</section>
+        <section class="env-card"><h3>地層下陷觀測</h3><p id="envSubsidence">${esc(subsidence?.summary || (precise?'水利署觀測圖層尚待載入。':'可先看全市觀測範圍，社區精確位置待核。'))}</p>
+        ${links(link(geolink.href,'在社區地質圖查看下陷線及測站'),link('https://www.wra.gov.tw/cp.aspx?n=3679','水利署地層下陷現況'))}</section>
         <section class="env-card"><h3>土壤液化潛勢</h3><div id="envSoil" role="status"></div><p class="env-note">區域土層調查可供看屋初查。個別基地請核對鑽探、地下水位與基礎設計。</p>
         ${links(link('https://www.liquid.net.tw/TainanMAP/Web/Map.aspx','台南市門牌查詢'),link('https://data.gov.tw/dataset/122721','市府開放圖資'))}</section>`;
       const overview = find('envFaultOverview');

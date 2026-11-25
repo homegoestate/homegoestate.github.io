@@ -22,8 +22,9 @@
   height: clamp(292px, 39vh, 420px);
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 50% 75%, #22434a 0%, transparent 55%),
-    radial-gradient(ellipse at 44% -40%, #35505b 0%, #162a36 50%, #0e1b26 94%);
+    radial-gradient(ellipse at 18% 7%, #73564a75 0%, transparent 51%),
+    radial-gradient(ellipse at 73% 74%, #285b62 0%, transparent 60%),
+    linear-gradient(145deg,#203643,#152f3d 65%,#122739);
 }
 .bscene-view::after {
   content: "";
