@@ -17,7 +17,7 @@
   'use strict';
 
   const host = typeof window !== 'undefined' ? window : globalThis;
-  const VERSION = '2026-11-25.1';
+  const VERSION = '2026-11-25.2';
   const TODAY = () => new Date().toISOString().slice(0, 10);
   const FLOOR_TOKEN = /(?:地下)?([0-9零〇一二兩三四五六七八九十百千]+)層/g;
   const FLOOR_ONLY = /^[0-9零〇一二兩三四五六七八九十百千]+層$/;
@@ -55,15 +55,9 @@
     const source = normalize(value);
     if (!source) return null;
     if (/^\d+$/.test(source)) return Number(source);
-    if (/^[零〇一二兩三四五六七八九十百千]+$/.test(source)) {
-      if (source.length === 1) return CN[source] ?? null;
-      const ten = source.indexOf('十');
-      if (ten >= 0 && source.indexOf('百') < 0 && source.indexOf('千') < 0) {
-        const left = ten === 0 ? 1 : CN[source[ten - 1]];
-        const right = ten === source.length - 1 ? 0 : CN[source[ten + 1]];
-        return Number.isFinite(left) && Number.isFinite(right) ? left * 10 + right : null;
-      }
-    }
+    if (Object.hasOwn(CN, source)) return CN[source];
+    const tens = source.match(/^([一二兩三四五六七八九]?)十([一二三四五六七八九]?)$/);
+    if (tens) return (CN[tens[1]] ?? 1) * 10 + (CN[tens[2]] ?? 0);
     return null;
   }
 

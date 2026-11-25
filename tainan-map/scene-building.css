@@ -1,0 +1,181 @@
+.bscene {
+  --bs-ink: #e2efed;
+  --bs-muted: #a8bdbd;
+  --bs-line: #344e59;
+  --bs-mint: #a5dfca;
+  min-width: 0;
+  border: 1px solid #37505a;
+  border-radius: 16px;
+  background: #14252f;
+  color: var(--bs-ink);
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  font-family: "Microsoft JhengHei", system-ui, sans-serif;
+  color-scheme: dark;
+}
+.bscene [hidden] { display: none !important; }
+.bscene *, .bscene *::before, .bscene *::after { box-sizing: border-box; }
+.bscene-view {
+  position: relative;
+  width: 100%;
+  height: clamp(292px, 39vh, 420px);
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 75%, #22434a 0%, transparent 55%),
+    radial-gradient(ellipse at 44% -40%, #35505b 0%, #162a36 50%, #0e1b26 94%);
+}
+.bscene-view::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 -15px 26px -15px #08131d99;
+}
+.bscene-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.bscene-canvas.bscene-can-orbit { cursor: grab; touch-action: none; }
+.bscene-canvas.bscene-dragging { cursor: grabbing; }
+.bscene :is(button, select, input, canvas):focus-visible { outline: 2px solid #e9ce8e; outline-offset: -3px; }
+.bscene-stamp, .bscene-view-tip { position: absolute; z-index: 1; pointer-events: none; }
+.bscene-stamp {
+  top: 14px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid #769b9b56;
+  border-radius: 20px;
+  background: #112630d9;
+  color: #d5e8e2;
+  line-height: 1.2;
+  font-size: 12px;
+  font-weight: 650;
+}
+.bscene-stamp i { width: 5px; height: 5px; border-radius: 100%; background: #a0dfc8; }
+.bscene-view-tip {
+  bottom: 11px;
+  left: 15px;
+  color: #b6cecc;
+  background: #12242dc9;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .03em;
+}
+.bscene-view-tip:empty { display: none; }
+.bscene-empty {
+  pointer-events: none;
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  width: max-content;
+  max-width: 85%;
+  transform: translate(-50%, -50%);
+  padding: 11px 19px;
+  border: 1px solid #5c808147;
+  border-radius: 9px;
+  background: #142833eb;
+  text-align: center;
+}
+.bscene-empty strong { color: #dbeae7; font-size: 17px; }
+.bscene .bscene-empty p { margin: 5px 0 0; color: #bbcdcd; font-size: 12px; line-height: 1.5; }
+.bscene-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  padding: 8px 14px;
+  border-block: 1px solid var(--bs-line);
+  background: #1b303a;
+}
+.bscene .bscene-picker { display: flex; flex: 1 1 180px; align-items: center; gap: 8px; min-width: 0; }
+.bscene-picker > span, .bscene-sun-fields label { font-size: 12px; font-weight: 600; color: var(--bs-muted); }
+.bscene .bscene-picker select, .bscene .bscene-date {
+  display: block;
+  margin: 0;
+  min-width: 0;
+  width: auto;
+  max-width: 100%;
+  height: 38px;
+  padding: 4px 9px;
+  color: var(--bs-ink);
+  border: 1px solid #48636b;
+  border-radius: 7px;
+  background: #152730;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 550;
+}
+.bscene .bscene-picker select { flex: 1 1 80px; max-width: 210px; }
+.bscene .bscene-picker select:disabled { opacity: .68; }
+.bscene-orbit { display: flex; align-items: center; gap: 2px; }
+.bscene .bscene-orbit button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 34px;
+  height: 36px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #c9dcd9;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+.bscene .bscene-orbit button:last-child { border-color: #42616c; margin-left: 4px; }
+.bscene .bscene-orbit button:is(:hover,:focus-visible) { background: #2a454e; color: #edfff8; }
+.bscene-sun { padding: 12px 15px 9px; }
+.bscene-sun-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 5px 8px; }
+.bscene-sun-head strong { display: inline-flex; align-items: center; gap: 8px; color: var(--bs-ink); font-size: 14px; }
+.bscene-sun-head strong svg { color: #edc987; }
+.bscene-bearing { font-variant-numeric: tabular-nums; font-size: 12px; color: #f0cd8f; }
+.bscene-sun-fields { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 13px; margin-top: 7px; }
+.bscene-sun-fields label { display: flex; align-items: center; gap: 7px; margin: 0; }
+.bscene .bscene-date { width: 136px; height: 34px; font-variant-numeric: tabular-nums; }
+.bscene-time-field { flex: 1 1 175px; }
+.bscene-time-field > span { white-space: nowrap; }
+.bscene-time-field output { display: inline; margin-inline-start: 3px; color: #dbe9e6; font-size: 12px; font-variant-numeric: tabular-nums; }
+.bscene .bscene-time-field input {
+  display: block;
+  margin: 0;
+  height: 30px;
+  flex: 1 1 60px;
+  min-width: 40px;
+  width: auto;
+  padding: 0;
+  accent-color: #b8ddc9;
+  cursor: pointer;
+}
+.bscene .bscene-note {
+  margin: 0;
+  padding: 0 15px 12px;
+  color: #a2b8b8;
+  font-size: 11px;
+  line-height: 1.65;
+}
+@media (max-width: 650px), (pointer: coarse) {
+  .bscene .bscene-orbit button { width: 44px; height: 44px; }
+  .bscene .bscene-picker select, .bscene .bscene-date { min-height: 42px; }
+  .bscene .bscene-time-field input { min-height: 40px; }
+}
+@container (max-width: 460px) {
+  .bscene .bscene-picker { flex-basis: 100%; }
+  .bscene .bscene-picker select { max-width: none; }
+  .bscene-orbit { width: 100%; justify-content: flex-end; }
+  .bscene-orbit::before { content: '調整視角'; color: var(--bs-muted); font-size: 12px; font-weight: 600; margin-right: auto; }
+}
+@media (max-width: 600px) {
+  .bscene-view { height: clamp(270px, 39svh, 345px); }
+  .bscene-tools { gap: 2px 8px; padding: 6px 10px; }
+  .bscene .bscene-picker { flex-basis: 170px; }
+  .bscene-orbit { margin-left: auto; }
+  .bscene-sun { padding: 11px 11px 6px; }
+  .bscene .bscene-note { padding: 0 11px 10px; }
+}

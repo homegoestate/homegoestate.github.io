@@ -33,6 +33,19 @@ window.CATALOG_READY.then(()=>{
   const byDistrict = new Map(features.map(f=>[f.properties.name,[]]));
   communities.forEach(c=>{if(!byDistrict.has(c.district))byDistrict.set(c.district,[]);byDistrict.get(c.district).push(c);});
   const counts = name => name ? (byDistrict.get(name)||[]).length : communities.length;
+  let cityController = null, buildingController = null, preferCityScene = true;
+  function syncCityView() {
+    const available = !district && !!cityController;
+    const active = available && preferCityScene;
+    $('cityModeSwitch').hidden = !available;
+    $('cityScene').hidden = !active;
+    $('mapSvg').setAttribute('aria-hidden', String(active));
+    $('mapSvg').toggleAttribute('inert', active);
+    document.querySelector('.map-stage').classList.toggle('city-active', active);
+    $('showCityScene').setAttribute('aria-pressed', String(active));
+    $('showPlanMap').setAttribute('aria-pressed', String(!active));
+    cityController?.setActive(active);
+  }
   const lifeCount = name => lifeItems.filter(i=>(!name||i.district===name)&&i.kind!=='event-directory').length;
   const directoryCount = name => lifeItems.filter(i=>(!name||i.district===name)&&i.kind==='event-directory').length;
   let district='', selected=null, category='all', marketCategory='all', viewMode='market', period='all', kind='all', query='', page=1, sort='price';
@@ -276,9 +289,9 @@ window.CATALOG_READY.then(()=>{
     const cov=coverageOf(scopePool()),isCity=!district;
     $('districtTitle').textContent=district||'全市社區名冊';$('sceneLabel').textContent=district?'EXPLORE THE NEIGHBORHOOD':'THE WHOLE CITY';
     $('districtDescription').textContent=`名冊 ${num(cov.total)} · 可定位 ${num(cov.located)} · 有成交參考 ${num(cov.priced+cov.limited)} · 無可比成交 ${num(cov.total-cov.priced-cov.limited)}`;
-    $('mapTitle').textContent=district?`${district}，慢慢看。`:'全城，一眼看見。';
+    $('mapTitle').textContent=district?district+'社區地圖':cityController&&preferCityScene?'台南立體地圖':'台南行政區地圖';
     $('breadcrumb').textContent=district?`台南市 / ${district}`:'台灣 / 台南市';
-    $('mapHint').textContent=district?'點建築看均價；點數字展開聚合社區。':'選一個行政區，展開全區社區名冊。';
+    $('mapHint').textContent=district?'點建築查社區，點數字展開群組。':cityController&&preferCityScene?'拖曳旋轉，點行政區查社區。':'點選行政區，查看社區名冊。';
     $('mapStatus').innerHTML=isCity?`<strong>${num(cov.total)}</strong><span>筆社區名冊</span><small>${num(cov.located)} 筆有座標 · 37 個行政區</small>`:`<strong>${num(cov.located)}</strong><span>筆可定位名冊</span><small>${num(cov.total-cov.located)} 筆待補座標，仍列在名冊</small>`;
     $('legendText').textContent=district?'聚合大數為社區總數，小字為有樣本社區數':'數字為社區名冊數，顏色不是房價';
     $('readDistrictLife').textContent=`閱讀${district||'北區'}生活 ↗`;
@@ -305,7 +318,7 @@ window.CATALOG_READY.then(()=>{
     document.querySelectorAll('.district').forEach(el=>{el.classList.toggle('selected',el.dataset.name===name);el.classList.toggle('muted',!!name&&el.dataset.name!==name);el.setAttribute('aria-pressed',String(el.dataset.name===name));});
     $('thickness').querySelectorAll('path').forEach(el=>el.style.opacity=name&&el.dataset.name!==name?'.15':'1');
     document.querySelectorAll('.shortcuts button').forEach(el=>el.classList.toggle('active',el.dataset.name===name));
-    updateSummary();renderPins();renderDistrictBadges();renderList();renderLife();if(name)fitDistrict(name);else fly([0,0,1100,900]);
+    syncCityView();updateSummary();renderPins();renderDistrictBadges();renderList();renderLife();if(name)fitDistrict(name);else fly([0,0,1100,900]);
   }
   function selectCommunity(id){
     const c=byId.get(String(id));if(!c)return;closeLife();if(district!==c.district)chooseDistrict(c.district,true);setMode('market');selected=c.id;$('searchResults').hidden=true;renderList();renderDetail();renderPins();track('community_open',c.id);
@@ -316,6 +329,8 @@ window.CATALOG_READY.then(()=>{
     $('detail').innerHTML=`<div class="detail-toolbar"><span>社區資訊</span><button id="closeDetail" class="detail-close" aria-label="關閉社區資訊">關閉 ×</button></div><span class="detail-kicker">${esc(c.district)} / ${esc(kindLabels[c.kind]||c.kindLabel||'類型待核')}</span><div class="detail-art" aria-hidden="true"><svg viewBox="-40 -83 80 92">${buildingArt(c)}</svg></div><h2>${esc(c.name)}</h2><p class="address">${esc(c.address||'代表門牌待補')}</p>${queryActions(c)}<p class="official-query-note">官方入口開啟查詢首頁；複製門牌後，在官方頁設定地址與條件。</p><button type="button" id="floorSales" class="primary full" aria-haspopup="dialog">樓層查價</button>${filterControls('detail',false)}<div class="building-facts"><span>${valid(c.floors)?esc(c.floors)+' 樓':'樓層待核'}</span>${valid(c.buildingCount)?'<span>'+esc(c.buildingCount)+' 棟</span>':''}<span>${positionLabel(c)}</span></div><div class="metric"><span class="metric-label">${esc(categoryLabel())}<br>${esc(periodLabel())} · ${few?'少量成交均價':'算術平均單價'}</span><div class="metric-value ${enough?'':few?'limited':'insufficient'}">${enough?fmt(s.mean)+'<small>萬元／坪</small>':few?fmt(s.sampleMean)+'<small>萬元／坪 · '+num(s.eligibleCount)+' 筆</small>':'資料不足，不推估'}</div><div class="metrics"><div><span>可比 / 本類型匹配成交</span><strong>${num(s.eligibleCount)} / ${num(s.count)}<small> 筆</small></strong></div><div><span>中位單價</span><strong>${enough?fmt(s.median):few?fmt(s.sampleMedian):'—'}<small> 萬／坪</small></strong></div></div><p class="help">${enough?'可比單價範圍 '+fmt(s.min)+'–'+fmt(s.max)+' 萬／坪':few?'樣本少，僅供個案參考。少量單價範圍 '+fmt(s.sampleMin)+'–'+fmt(s.sampleMax)+' 萬／坪；不視為完整社區行情。':'此類型、期間尚無可比成交或資料缺漏，保留名冊、不推估均價。'}<br>期間最新成交：${esc(s.latestDate||'尚無匹配紀錄')}${period==='all'?'<br><strong>此為 101/08/01 起跨期歷史均價，非當期市場行情。</strong>':''}</p></div><dl class="community-evidence"><div><dt>成交樣本屋齡</dt><dd>${age===null?'資料待補':fmt(age)+' 年'}<small>${age===null?'沒有可核對的完成日期':'中位數 · '+num(s.ageSampleCount)+' 筆有日期樣本；計至 '+esc(meta.asOf||'資料基準日')}${s.agePrecision==='month'||s.agePrecision==='mixed'?'；部分日期精確至月，屋齡為約數':''}</small></dd></div><div><dt>使照登載戶數</dt><dd>${households===null?'來源待補':num(households)+' 戶'}<small>${esc(c.householdNote||c.householdCountNote||'使用執照的登載戶數，非目前社區住戶普查。')}</small>${c.householdSourceUrl?link(c.householdSourceUrl,c.householdSource||'戶數來源'):''}</dd></div><div><dt>已揭露成交戶別</dt><dd>${units===null?'戶別證據待補':num(units)+' 個不同戶別'}<small>僅計本類型、本期間可辨識的成交戶別，非社區總戶數。${s.unitIdentityCoverage?' 已辨識 '+num(s.unitIdentityCoverage.identifiedRows)+' / '+num(s.unitIdentityCoverage.transactionRows)+' 筆交易列。':''}</small></dd></div></dl><button id="transactionsButton" class="primary full">查看 ${num(s.count)} 筆本類型成交明細 ↗</button><button id="addCompare" class="full">${compared.includes(c.id)?'✓ 已加入比較 · 點此移除':'＋ 加入比較（最多 3 個）'}</button><div class="detail-section"><h3>這份資料涵蓋什麼</h3><p>${esc(c.matchNote||'僅涵蓋可確定門牌配對的交易，不推定名冊外門牌或其他棟別。')}</p><p>${esc(categoryLabel())} · ${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}<br>資料快照 ${esc(meta.asOf||'未提供')}</p>${c.approvalDate?'<p>名冊成立核准：'+esc(c.approvalDate)+'<br><span class="help">此日期不是建物完工年或屋齡。</span></p>':''}${(()=>{const aliases=[...new Set([c.apiAlias?.name,...(c.registrationAliases||[]).map(a=>a.name)].filter(n=>n&&n!==c.name))],addrs=[...new Set(c.exactAddresses||[])],gm=located(c)?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.lat+','+c.lon)}`:'',sv=located(c)?`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(c.lat+','+c.lon)}`:'';return `<div class="detail-more">${c.buildingPermit?'<p>使用執照：'+esc(c.buildingPermit)+'</p>':''}${aliases.length?'<p>名冊別名：'+aliases.map(esc).join('、')+'</p>':''}${addrs.length?'<p>名冊門牌：'+addrs.slice(0,6).map(esc).join('、')+(addrs.length>6?` 等 ${addrs.length} 筆`:'')+'</p>':''}<p>位置來源：${esc(c.positionQuality||'未提供')}</p>${gm?`<p class="map-links"><a class="source-link" href="${esc(gm)}" target="_blank" rel="noopener noreferrer">在 Google 地圖查看標示位置 ↗</a><a class="source-link" href="${esc(sv)}" target="_blank" rel="noopener noreferrer">查看附近街景 ↗</a></p>`:''}</div>`;})()}${link(c.sourceUrl,'次級來源：社區名冊')}<p class="help">${located(c)?positionLabel(c)+'（經度 '+esc(c.lon)+'、緯度 '+esc(c.lat)+'）'+'；輪廓依樓層分類示意，非實際外觀。':'來源缺少可信座標，保留在名冊、不臆測地圖位置。'}<br>成交條件仍須逐筆核對；不是銀行鑑價。</p></div><button id="communityFeedback" class="full">補充／回報這個社區</button>`;
     bindQueryActions($('detail'));bindFilterControls('detail',null,false);
     $('floorSales').onclick=()=>showFloorSales(c);
+    $('floorSales').insertAdjacentHTML('beforebegin','<button id="exploreBuilding" type="button" class="full" aria-haspopup="dialog">開啟 3D 樓層看成交 ↗</button>');
+    $('exploreBuilding').onclick=()=>showBuilding(c);
     $('floorSales').insertAdjacentHTML('afterend','<button id="environmentButton" type="button" aria-haspopup="dialog">日照與環境查詢</button>');
     $('environmentButton').onclick=()=>showEnvironment(c);
     $('closeDetail').onclick=closeDetail;$('communityFeedback').onclick=()=>feedback({district:c.district,communityId:c.id});$('transactionsButton').onclick=()=>showTransactions(c);
@@ -325,10 +340,17 @@ window.CATALOG_READY.then(()=>{
   $('infoDialog').addEventListener('close',()=>{
     if ($('infoDialog').open) return;
     txRequestEpoch++;
+    if ($('buildingStudio')) $('exploreBuilding')?.focus({preventScroll:true});
+    releaseBuilding();
     if ($('floorContents') && !$('detail').hidden) $('floorSales')?.focus({preventScroll:true});
     if ($('environmentPanel') && !$('detail').hidden) $('environmentButton')?.focus({preventScroll:true});
   });
-  function openDialog(title,html){txRequestEpoch++;$('dialogTitle').textContent=title;$('dialogBody').innerHTML=html;if(!$('infoDialog').open)$('infoDialog').showModal();$('infoDialog').scrollTop=0;}
+  function releaseBuilding(){
+    buildingController?.destroy();
+    buildingController=null;
+    $('infoDialog').classList.remove('building-studio');
+  }
+  function openDialog(title,html){releaseBuilding();txRequestEpoch++;$('dialogTitle').textContent=title;$('dialogBody').innerHTML=html;if(!$('infoDialog').open)$('infoDialog').showModal();$('infoDialog').scrollTop=0;}
   function txInPeriod(t){const p=periodInfo();return !!t.date&&t.date>=p.start&&t.date<=p.end;}
   function txInCategory(t){return marketCategory==='all'?t.propertyUse==='residential':t.category===marketCategory;}
   function drawFaultMap(root,c) {
@@ -375,6 +397,23 @@ window.CATALOG_READY.then(()=>{
     if (marketCategory !== 'all') url.searchParams.set('category', marketCategory);
     if (period !== 'all') url.searchParams.set('period', period);
     return url.href;
+  }
+  function showBuilding(c, params = new URLSearchParams()) {
+    return withTransactions(c, () => {
+      openDialog(c.name+'｜3D 樓層','<div id="buildingStudio"></div>');
+      $('infoDialog').classList.add('building-studio');
+      if (!window.StudioSales || !window.FloorSales) {
+        $('buildingStudio').innerHTML='<p>立體查詢暫時無法載入。</p><button id="studioFallback">前往樓層查價</button>';
+        $('studioFallback').onclick=()=>showFloorSales(c);
+        return;
+      }
+      buildingController=window.StudioSales.mount($('buildingStudio'),c,{
+        rows:c.transactions.filter(t=>txInPeriod(t)&&txInCategory(t)), asOf:meta.asOf, bounds:periodInfo(),
+        filters:categoryLabel()+' · '+periodLabel(), shareBase:floorLink(c), params, esc, copyValue,
+        coordinates:located(c)?{lat:Number(c.lat),lon:Number(c.lon)}:{},
+        openFloors:()=>showFloorSales(c),openEnvironment:()=>showEnvironment(c)
+      });
+    },'3D 樓層');
   }
   function showFloorSales(c) {
     return withTransactions(c, () => {
@@ -447,7 +486,7 @@ window.CATALOG_READY.then(()=>{
     openDialog('名冊的範圍，行情的依據',`<div class="method-intro"><strong>${num(communities.length)} 筆社區名冊 · 37 個行政區可查</strong><p>這是依目前取得來源整理的社區名冊，不是全市完整建築普查。低樓社區、用途待核及缺少行情的項目都保留；未收錄不代表不存在。</p></div><h3>資料覆蓋與缺口</h3><p>工務局清冊原始 ${valid(raw)?num(raw):'未提供'} 列，具名稱 ${num(cov.officialRegistryCount)} 列；核對重複後主目錄 ${num(communities.length)} 筆。<br>另保留舊圖台待核 ${num(legacyCommunities.length)} 筆，獨立查詢，不混入主目錄或行情統計。<br>清冊下載頁更新 ${esc(meta.registrySnapshot?.publishedAt||'2026-09-04')}；檔名標示資料截至 ${esc(meta.registrySnapshot?.fileAsOf||'2026-05-01')}。本次整理日期不表示清冊涵蓋當日全部建物。<br>可定位 ${num(current.located)} 筆；待補座標 ${num(current.total-current.located)} 筆。<br>${esc(periodLabel())}有可比行情 ${num(current.priced)} 筆（至少 5 筆可比成交）；另有 ${num(current.limited)} 筆名冊提供 1–4 筆少量成交參考，${num(current.total-current.priced-current.limited)} 筆名冊在此期間與類型下沒有可比成交。</p>${matchingCoverageText()}<p>未匹配資料不任意攤派給鄰近社區。名冊不是交易全量，交易配對也不等於社區全部棟別。</p><h3>交易批次與日期</h3><p>快照基準：${esc(meta.asOf||'未提供')}<br>${esc(batchDates())}<br>這批台南原始檔的最新交易日：${esc(latestBatch?.maxTransactionDate||'未提供')}<br>名冊住宅成交明細的最新交易日：${esc(latestMatched)}（含未納入均價的交易）。歷史統計從 ${esc(BASELINE)} 起算。<br>統計來源：${esc(meta.statisticalSource||'內政部公開實價資料')}<br>目前統計期別：${esc(periodLabel())}，${esc(periodInfo().start||'來源最早成交')} ～ ${esc(periodInfo().end||meta.asOf||'未提供')}。</p>${Array.isArray(meta.batches)?'<ul>'+meta.batches.map(b=>'<li>'+esc(typeof b==='string'?b:(b.label||b.file||JSON.stringify(b)))+'</li>').join('')+'</ul>':''}<h3>成交類型、時間與排序</h3><p>目前視角：${esc(categoryLabel())}；${esc(periodLabel())}，${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}。主清單、聚合清單、明細與比較共用同一分類與期別。</p><p>全部住宅僅納入用途可確認為住宅的成交，包含格局未揭露的住宅，不混入店面；套房依官方套房型態辨識，1 房不直接當套房。其餘住宅按官方房數分為 1、2、3、4、5 房以上；「用途／格局待核」保留不確定資料並顯示原始用途。顯示與統計下限固定 101/08/01（2012-08-01），更早或無法解析日期者不混入本期統計。</p><p>均價由高到低、成交樣本屋齡由低到高、使照戶數與已揭露成交戶別由多到少；缺值一律置後，同值依名稱、行政區與來源識別碼穩定排序。使照戶數依官方使用執照登載資料，非現況普查；成交戶別只計本類型、期間可辨識的不同戶別，不能代替社區總戶數。</p><h3>怎麼計算均價</h3><ol><li>以來源名冊可核對門牌匹配，不以相近位置、相似名稱猜測其他棟別。</li><li>主值是可比成交單價的算術平均；中位數作輔助。均價不是總價合計除以總坪數。</li><li>車位缺漏、特殊交易及其他排除原因保留於逐筆明細；1–4 筆真實可比成交另標「少量成交均價」，樣本少，僅供個案參考；0 筆才顯示「資料不足，不推估」。少量參考不計入可比行情數。</li><li>近 12／36 月採固定快照日期往前計算；101/08/01 起歷史混合不同市況，明示非當期行情。</li></ol><h3>每個行政區都可以查</h3><div class="table-scroll"><table><thead><tr><th>行政區</th><th>名冊</th><th>可定位</th><th>至少 5 筆</th><th>1–4 筆</th><th>無可比成交</th></tr></thead><tbody>${districtTable}</tbody></table></div><h3>地圖與建築圖示</h3><p>37 區的範圍取自內政部「鄉鎮市區界線」，採 Taiwan Atlas 的簡化圖形。圖形供區域探索，地籍界址請以測量成果為準。${link('https://data.gov.tw/dataset/7441','內政部區界資料')}${link('https://cdn.jsdelivr.net/npm/taiwan-atlas@2020.9.20/towns-10t.json','對照圖檔')}<br>北向上投影，以 cos(23°) 校正經度比例。區塊顏色表示名冊數量密度，與房價無關。社區依圖台或門牌座標標示；採主門牌或鄰近門牌推估的位置會在資訊卡註明。建築依 1–5、6–14、15 樓以上示意不同輪廓；缺樓層採中性圖示，不代表實測外型、實際高度或社區範圍。聚合數字包含全部對應名冊，點選可分頁查看全部。</p><h3>生活內容與回饋</h3><p>${lifeCount()} 則地方內容及 ${directoryCount()} 個官方活動查詢入口，各篇附來源與查閱日期。官方活動入口不代表當期有活動；未有可信座標者不猜測位置。可使用社區或內容的「補充／回報」提供修正。</p><h3>來源與逐批日期區間</h3><p class="help">以下為來源批次原始日期範圍，可能含已排除的異常日期；不等同本產品可比統計範圍。</p><div class="table-scroll"><table><thead><tr><th>來源批次</th><th>原始最早日期</th><th>原始最新日期</th><th>用途</th></tr></thead><tbody>${(meta.sources||[]).map(s=>`<tr><td>${link(s.url,s.label||s.url)}</td><td>${esc(s.dateMin||'—')}</td><td>${esc(s.dateMax||'—')}</td><td>${s.usedForStatistics===true?'實價統計':s.usedForStatistics===false?'留存來源審計':'名冊來源'}</td></tr>`).join('')}</tbody></table></div><h3>使用紀錄</h3><p>此公開版本不啟用訪客事件收集，也不顯示累積人數。回饋可複製或下載，再由使用者自行前往安心城正式回饋入口送出。</p><p class="help">這是可查證的資料快照，非即時行情、銀行鑑價或估價報告；個別交易仍須核對原始申報與物件條件。</p>`);
   };
   $('closeDialog').onclick=()=>$('infoDialog').close();$('infoDialog').onclick=e=>{if(e.target===$('infoDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
-  function updateSearch(){query=$('search').value.trim().toLocaleLowerCase();queryTerms=query.split(/\s+/).map(t=>normSearch(t).replace(/^台南市?/,'')).filter(Boolean);page=1;$('clearSearch').hidden=!query;setMode('market');renderList();const results=query?lifeItems.filter(c=>`${c.title} ${c.district} ${c.summary}`.toLocaleLowerCase().includes(query)):[];$('searchResults').hidden=!query;$('searchResults').innerHTML=query?`<p>已搜尋全市 ${num(communities.length)} 筆名冊，結果列於下方。${results.length?`另有 ${results.length} 則生活內容。`:''}</p>${results.slice(0,3).map(c=>`<button data-id="${esc(c.id)}">生活｜${esc(c.title)}<small>${esc(c.district)}</small></button>`).join('')}`:'';$('searchResults').querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>openLife(el.dataset.id));}
+  function updateSearch(){query=$('search').value.trim().toLocaleLowerCase();queryTerms=query.split(/\s+/).map(t=>normSearch(t).replace(/^台南市?/,'')).filter(Boolean);page=1;$('clearSearch').hidden=!query;setMode('market');renderList();const results=query?lifeItems.filter(c=>`${c.title} ${c.district} ${c.summary}`.toLocaleLowerCase().includes(query)):[];$('searchResults').hidden=!query;$('searchResults').innerHTML=query?`<p>已搜尋全市 ${num(communities.length)} 筆名冊，<a href="#communityList">查看搜尋結果 ↓</a>。${results.length?`另有 ${results.length} 則生活內容。`:''}</p>${results.slice(0,3).map(c=>`<button data-id="${esc(c.id)}">生活｜${esc(c.title)}<small>${esc(c.district)}</small></button>`).join('')}`:'';$('searchResults').querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>openLife(el.dataset.id));}
   $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(updateSearch,100);};$('search').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(searchTimer);updateSearch();$('search').blur();}if(e.key==='Escape')$('searchResults').hidden=true;};$('clearSearch').onclick=()=>{$('search').value='';updateSearch();};
   $('periodSelect').onchange=e=>applyMarketFilter('period',e.target.value);$('categorySelect').onchange=e=>applyMarketFilter('category',e.target.value);
   $('kindSelect').onchange=e=>{kind=e.target.value;page=1;renderList();renderPins();};$('sortSelect').onchange=e=>applyMarketFilter('sort',e.target.value);$('sortSelect').querySelector('[value="households"]').disabled=!householdAvailable;
@@ -455,7 +494,7 @@ window.CATALOG_READY.then(()=>{
   $('districtSelect').onchange=e=>chooseDistrict(e.target.value);
   $('districtShortcuts').innerHTML=['善化區','安南區','永康區','東區','北區','安平區'].map(name=>`<button data-name="${name}" class="${name==='善化區'?'shanhua-shortcut':''}">${name==='善化區'?'先看善化':name}<span>${num(counts(name))}</span></button>`).join('');$('districtShortcuts').querySelectorAll('button').forEach(el=>el.onclick=()=>chooseDistrict(el.dataset.name));
   $('backToCity').onclick=()=>chooseDistrict('');document.querySelector('.brand').onclick=e=>{e.preventDefault();chooseDistrict('');};
-  $('modeButton').onclick=()=>{const flat=document.body.classList.toggle('flat');$('modeButton').textContent=flat?'平面':'立體';$('modeButton').setAttribute('aria-pressed',String(!flat));};
+  $('modeButton').onclick=()=>{const flat=document.body.classList.toggle('flat');$('modeButton').textContent=flat?'平面圖示':'立體圖示';$('modeButton').setAttribute('aria-pressed',String(!flat));};
   function zoom(factor,at){cancelAnimationFrame(animation);const width=Math.max(.8,Math.min(1800,camera[2]*factor)),f=width/camera[2],p=at||[camera[0]+camera[2]/2,camera[1]+camera[3]/2];fly([p[0]-(p[0]-camera[0])*f,p[1]-(p[1]-camera[1])*f,width,camera[3]*f]);}
   $('zoomIn').onclick=()=>zoom(.62);$('zoomOut').onclick=()=>zoom(1.55);
   const svg=$('mapSvg'),mapPoint=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());};
@@ -513,17 +552,32 @@ window.CATALOG_READY.then(()=>{
   $('legacyButton').textContent=`另查舊圖台待核名冊 ${num(legacyCommunities.length)} 筆 ↗`;$('legacyButton').onclick=()=>showLegacy(query);
   $('catalogNote').textContent=`名冊與交易分開呈現；本類型無樣本的社區仍完整保留。每頁 ${PAGE_SIZE} 筆，可翻頁查閱全部。實價登錄連結為官方首頁，複製門牌後自行查詢。`; 
   $('lifeMode').onclick=()=>{setMode('life');renderLife();};$('marketMode').onclick=()=>setMode('market');$('northStart').onclick=()=>{chooseDistrict('北區');setMode('life');revealLife();};$('readDistrictLife').onclick=()=>{if(!district)chooseDistrict('北區');setMode('life');revealLife();};$('feedbackButton').onclick=()=>feedback({district});
+  if (window.CityScene && features.length) {
+    $('cityScene').hidden=false;
+    try {
+      cityController=window.CityScene.mount($('cityScene'),{features,counts:Object.fromEntries([...byDistrict].map(([name,items])=>[name,items.length])),onDistrict:name=>chooseDistrict(name)});
+    } catch { $('cityScene').hidden=true; }
+  }
+  $('showCityScene').onclick=()=>{preferCityScene=true;syncCityView();updateSummary();};
+  $('showPlanMap').onclick=()=>{preferCityScene=false;syncCityView();updateSummary();};
+  const sample=byId.get('community-registry-1314');
+  if(sample){
+    $('studioSample').hidden=false;
+    $('studioSample').querySelector('strong').textContent=sample.name+' ↗';
+    $('studioSample').onclick=()=>{selectCommunity(sample.id);showBuilding(sample);};
+  }
   renderMap();chooseDistrict('');renderCompare();
   const entry = new URLSearchParams(location.search);
   const target = byId.get(entry.get('community'));
-  if (target && entry.get('view') === 'floors') {
+  if (target && ['floors','building'].includes(entry.get('view'))) {
     const categoryParam = entry.get('category');
     if (Object.hasOwn(marketCategories, categoryParam)) marketCategory = categoryParam;
     if (['12m','36m'].includes(entry.get('period'))) period = entry.get('period');
     $('categorySelect').value = marketCategory;
     $('periodSelect').value = period;
     selectCommunity(target.id);
-    showFloorSales(target);
+    if(entry.get('view')==='building') showBuilding(target,entry);
+    else showFloorSales(target);
   } else if (target && entry.get('view') === 'environment') {
     selectCommunity(target.id);
     showEnvironment(target,entry);

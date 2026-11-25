@@ -59,8 +59,19 @@ for (const file of ['index.html','app.js','styles.css','data-loader.js','data-ma
 mustHave('tainan-map/index.html', 'src="floor-sales.js');
 mustHave('tainan-map/index.html', 'href="floor-sales.css');
 const floorContext = {window:{}};
+for (const module of ['scene-city','scene-building','studio-sales']) {
+  for (const extension of ['js','css']) {
+    mustHave('tainan-map/index.html', module + '.' + extension + '?');
+    assert.ok(existsSync(resolve(root,'tainan-map',module+'.'+extension)));
+  }
+  runInNewContext(read('tainan-map/'+module+'.js'), floorContext);
+}
+for (const api of ['CityScene','BuildingScene','StudioSales']) assert.equal(typeof floorContext.window[api].mount,'function');
+mustHave('tainan-map/index.html','id="studioSample"');
+mustHave('tainan-map/index.html','id="showPlanMap"');
 runInNewContext(read('tainan-map/floor-sales.js'), floorContext);
 const floors = floorContext.window.FloorSales;
+assert.deepEqual(Array.from(floors.groupRows(['十層','十一層','二十層','地下十層'].map(floor=>({floor}))).records, r=>r.floor.number),[10,11,20,-10]);
 for (const asset of ['environment.js','environment.css','environment-sun.js','environment-fault.js','environment-records.js']) {
   mustHave('tainan-map/index.html', asset + '?');
   assert.ok(existsSync(resolve(root,'tainan-map',asset)));
