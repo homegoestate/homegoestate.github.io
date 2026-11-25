@@ -13,6 +13,7 @@
 | 首頁及全站手機版樣式 | `styles.css` |
 | 地圖頁文字與控制項 | `tainan-map/index.html` |
 | 地圖、分類、排序、比較、成交明細 | `tainan-map/app.js` |
+| 樓層示意、各層成交、兩筆對照 | `tainan-map/floor-sales.js`、`tainan-map/floor-sales.css` |
 | 地圖手機版及外觀 | `tainan-map/styles.css` |
 | 品牌配色、頁首與新版視覺 | `tainan-map/brand.css` |
 | 城市模型插畫／首頁預覽圖 | `tainan-map/brand-city.svg`、`assets/tainan-map-preview.svg` |
@@ -22,6 +23,12 @@
 | 回饋草稿與正式回饋入口 | `tainan-map/feedback.js` |
 
 資料檔案由核對過的 V5 `dist/data.js` 分拆產生，不手改房價。`data/` 的檔名帶內容雜湊，更新資料時應一併產生摘要、各區明細與 manifest，再完整測試後發布。
+
+## 2026-11-25 樓層查價
+
+在社區資訊按「樓層查價」，可依原有期間與類型查看該社區的成交。資料直接取自本期分區明細，換期後自動反映。分享連結保留社區、成交類型與期間。[善化鄉景馨品大樓](https://homegoestate.github.io/tainan-map/?community=community-registry-1314&view=floors)
+
+逐筆比對成交日期、單價與車位處理方式。門牌與樓層示意供查價，實際朝向、戶內格局及遮蔭須有相應圖資。官方三維資料依市府開放範圍查詢。[府城南籍圈](https://landmap.tainan.gov.tw/gis/?fun=3ds)
 
 ## 2026-11-22 資料版本
 

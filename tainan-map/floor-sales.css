@@ -1,0 +1,753 @@
+/* Floor-level transaction viewer.  Selectors mirror floor-sales.js only. */
+
+.floor-sales {
+  --fs-paper: var(--paper, #f8f6ef);
+  --fs-white: var(--white, #fffef8);
+  --fs-ink: var(--ink, #304f3e);
+  --fs-muted: var(--muted, #77806d);
+  --fs-line: var(--line, #e0e2d3);
+  --fs-green: var(--green, #345c47);
+  --fs-teal: #126b77;
+  --fs-deep-teal: #12384b;
+  --fs-gold: var(--gold, #aa8b50);
+  color: var(--fs-ink);
+  font-size: 14px;
+  line-height: 1.65;
+  min-width: 0;
+}
+
+.floor-sales *,
+.floor-sales *::before,
+.floor-sales *::after {
+  box-sizing: border-box;
+}
+
+.floor-sales [hidden] {
+  display: none !important;
+}
+
+.floor-sales button,
+.floor-sales select,
+.floor-sales input {
+  font: inherit;
+}
+
+.floor-sales button,
+.floor-sales select,
+.floor-sales summary,
+.floor-sales input[type="checkbox"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.floor-sales button:focus-visible,
+.floor-sales summary:focus-visible,
+.floor-sales select:focus-visible,
+.floor-sales input:focus-visible,
+.floor-sales a:focus-visible {
+  outline: 3px solid #a9be85;
+  outline-offset: 3px;
+}
+
+.floor-sales > p:not(.floor-sales__notice),
+.floor-sales > label,
+.floor-sales > select {
+  margin: 10px 0;
+}
+
+.floor-sales__header {
+  background: linear-gradient(135deg, #f3f4e8, #fffdf6 68%);
+  border: 1px solid var(--fs-line);
+  border-radius: 13px;
+  margin-bottom: 10px;
+  padding: 10px 12px 9px;
+}
+
+.floor-sales__title {
+  color: var(--fs-deep-teal);
+  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.floor-sales__summary {
+  color: var(--fs-muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 2px 0 8px;
+}
+
+.floor-sales__controls {
+  align-items: center;
+  display: grid;
+  gap: 7px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.floor-sales__controls label {
+  color: var(--fs-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.floor-sales__addresses {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.floor-sales [data-floor-sales-address-select] {
+  background: #eeefe5;
+  border: 1px solid #d9dfcb;
+  border-radius: 8px;
+  color: var(--fs-ink);
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 10px;
+}
+
+.floor-sales [data-floor-sales-address-select]:disabled {
+  cursor: default;
+  opacity: .62;
+}
+
+/* The floor dialog keeps its share and official-map actions in one compact row. */
+#floorShareTools.row-actions {
+  align-items: stretch;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  margin: 6px 0 9px;
+  padding: 0;
+}
+
+#floorShareTools > button,
+#floorShareTools > .source-link {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 0;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+#floorShareTools > .source-link {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+}
+
+#floorShareTools > .copy-status {
+  grid-column: 1 / -1;
+  padding: 0;
+}
+
+#floorShareTools > .copy-status:empty {
+  display: none;
+}
+
+/* #dialogBody's h3 rule is intentionally stronger than component defaults. */
+#floorContents.floor-sales .floor-sales__title {
+  margin: 0;
+}
+
+#dialogBody:has(> #floorShareTools) > .shared-market-controls {
+  gap: 8px;
+  margin: 7px 0;
+}
+
+#dialogBody:has(> #floorShareTools) > .help {
+  line-height: 1.55;
+  margin: 5px 0 7px;
+}
+
+/* Doorplate groups: each official or unresolved address stays separate. */
+.floor-sales__address {
+  background: var(--fs-white);
+  border: 1px solid var(--fs-line);
+  border-left: 4px solid #c8a35b;
+  border-radius: 13px;
+  min-width: 0;
+  padding: 13px 14px 15px;
+}
+
+.floor-sales__address + .floor-sales__address {
+  margin-top: 0;
+}
+
+.floor-sales__address.is-unresolved {
+  border-left-color: #ad8b4a;
+  background: #fffdf7;
+}
+
+.floor-sales__address-heading {
+  align-items: flex-start;
+  display: grid;
+  gap: 4px 9px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.floor-sales__address-heading h4 {
+  color: var(--fs-deep-teal);
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__address-heading p {
+  color: var(--fs-muted);
+  font-size: 11px;
+  grid-column: 1 / -1;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.floor-sales__address-badge {
+  align-self: start;
+  background: #e4f0e8;
+  border: 1px solid #bfd8c9;
+  border-radius: 999px;
+  color: #3d6d5b;
+  font-size: 10px;
+  line-height: 1.35;
+  max-width: none;
+  padding: 4px 7px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.floor-sales__address.is-unresolved .floor-sales__address-badge {
+  background: #f8f0dd;
+  border-color: #dec78d;
+  color: #745f35;
+}
+
+.floor-sales__floors {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  margin-top: 12px;
+  min-width: 0;
+}
+
+/* Floor cards use depth faces as an abstract click cue, not an actual model. */
+.floor-sales__floor {
+  background: linear-gradient(110deg, #fffef9, #f0f5ec);
+  border: 1px solid #cbdcd0;
+  border-radius: 10px;
+  isolation: isolate;
+  min-width: 0;
+  position: relative;
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+}
+
+.floor-sales__floor::before,
+.floor-sales__floor::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.floor-sales__floor::before {
+  background: #c3d7cc;
+  border-radius: 0 4px 4px 0;
+  bottom: -5px;
+  left: 10px;
+  opacity: .62;
+  right: 7px;
+  height: 6px;
+  transform: skewX(-35deg);
+  transform-origin: top left;
+}
+
+.floor-sales__floor::after {
+  background: #89a99b;
+  bottom: -5px;
+  height: 5px;
+  left: 10px;
+  opacity: .38;
+  right: 8px;
+  transform: skewX(35deg);
+  transform-origin: top left;
+}
+
+.floor-sales__floor.is-unresolved-floor {
+  background: #f3f4ee;
+  border-color: #d4ddd5;
+}
+
+.floor-sales__floor-summary,
+.floor-sales__record-summary {
+  align-items: center;
+  cursor: pointer;
+  display: grid;
+  list-style: none;
+  min-height: 52px;
+  padding: 9px 11px;
+  text-align: left;
+}
+
+.floor-sales__floor-summary::-webkit-details-marker,
+.floor-sales__record-summary::-webkit-details-marker {
+  display: none;
+}
+
+.floor-sales__floor-summary::before {
+  color: var(--fs-teal);
+  content: "＋";
+  font-size: 15px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  margin-right: 7px;
+}
+
+.floor-sales__floor[open] > .floor-sales__floor-summary::before {
+  content: "−";
+}
+
+.floor-sales__floor-summary {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 3px 6px;
+}
+
+.floor-sales__floor-name {
+  color: var(--fs-deep-teal);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.4;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__floor-qualifier,
+.floor-sales__floor-count {
+  color: var(--fs-muted);
+  font-size: 10px;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.floor-sales__floor-qualifier {
+  grid-column: 2 / -1;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__floor-count {
+  align-self: start;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  max-width: 9ch;
+  text-align: right;
+}
+
+.floor-sales__floor-body {
+  border-top: 1px solid #dce6dc;
+  padding: 0 9px 10px;
+}
+
+.floor-sales__record-list {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 9px 0 0;
+  padding: 0;
+}
+
+/* Every transaction remains a separate auditable record. */
+.floor-sales__record {
+  background: #fffef9;
+  border: 1px solid #dbe5db;
+  border-radius: 9px;
+  list-style: none;
+  min-width: 0;
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+}
+
+.floor-sales__record.is-eligible {
+  border-left: 3px solid #7aaf98;
+}
+
+.floor-sales__record.is-excluded,
+.floor-sales__record.is-missing-price {
+  background: #fffaf0;
+  border-left: 3px solid #d2b473;
+}
+
+.floor-sales__record.is-future,
+.floor-sales__record.is-outside-period,
+.floor-sales__record.is-unresolved-floor,
+.floor-sales__record.is-unresolved-address {
+  border-style: dashed;
+}
+
+.floor-sales__record-summary {
+  gap: 5px 9px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 49px;
+  padding: 8px 10px;
+}
+
+.floor-sales__record-summary::after {
+  color: var(--fs-teal);
+  content: "＋";
+  font-size: 14px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.floor-sales__record-details[open] > .floor-sales__record-summary::after {
+  content: "−";
+}
+
+.floor-sales__record-date,
+.floor-sales__record-floor {
+  color: var(--fs-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.floor-sales__record-date {
+  color: var(--fs-deep-teal);
+  font-weight: 650;
+}
+
+.floor-sales__record-price {
+  color: var(--fs-teal);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__record-floor {
+  grid-column: 1 / -1;
+}
+
+.floor-sales__record-body {
+  border-top: 1px solid #e1e8de;
+  padding: 10px;
+}
+
+.floor-sales__compare-toggle {
+  align-items: center;
+  color: var(--fs-teal);
+  display: inline-flex;
+  gap: 7px;
+  line-height: 1.6;
+  min-height: 44px;
+  padding: 5px 0;
+}
+
+.floor-sales__compare-toggle input {
+  accent-color: var(--fs-teal);
+  height: 18px;
+  width: 18px;
+}
+
+.floor-sales__record-fields,
+.floor-sales__compare-record dl {
+  display: grid;
+  gap: 7px 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 8px 0 0;
+}
+
+.floor-sales__record-fields > div,
+.floor-sales__compare-record dl > div {
+  min-width: 0;
+}
+
+.floor-sales__record-fields dt,
+.floor-sales__compare-record dt {
+  color: var(--fs-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.floor-sales__record-fields dd,
+.floor-sales__compare-record dd {
+  color: var(--fs-ink);
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__status {
+  font-weight: 600;
+}
+
+.floor-sales__status--eligible {
+  color: #3f775f !important;
+}
+
+.floor-sales__status--excluded,
+.floor-sales__status--missing-price,
+.floor-sales__status--future {
+  color: #87672e !important;
+}
+
+.floor-sales__status--after,
+.floor-sales__status--before,
+.floor-sales__status--missing {
+  color: #71827a !important;
+}
+
+.floor-sales__record-note,
+.floor-sales__source {
+  color: var(--fs-muted);
+  font-size: 10px;
+  line-height: 1.75;
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__record-note strong {
+  color: #755f36;
+  font-weight: 650;
+}
+
+.floor-sales__source small {
+  font-size: inherit;
+}
+
+.floor-sales__notice {
+  background: #f1f3ed;
+  border: 1px dashed #cbd7cb;
+  border-radius: 9px;
+  color: #6f8078;
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 9px 0;
+  padding: 9px 11px;
+}
+
+.floor-sales__notice--warning {
+  background: #f8f1df;
+  border-style: solid;
+  border-color: #ead7a5;
+  color: #745f35;
+}
+
+.floor-sales__compare {
+  border-top: 1px solid var(--fs-line);
+  margin-top: 18px;
+  padding-top: 16px;
+}
+
+.floor-sales__compare-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  justify-content: space-between;
+}
+
+.floor-sales__compare-heading h3 {
+  color: var(--fs-ink);
+  font-family: "Noto Serif TC", "PMingLiU", serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.floor-sales__clear {
+  background: #fffdf7;
+  border: 1px solid #d5dfd1;
+  border-radius: 8px;
+  color: var(--fs-teal);
+  min-height: 44px;
+  padding: 7px 11px;
+}
+
+.floor-sales__clear:hover {
+  background: #e9f2ec;
+  border-color: #9fc5b8;
+}
+
+.floor-sales__compare-delta {
+  background: #eef4e9;
+  border: 1px solid #d7e4d3;
+  border-radius: 9px;
+  color: var(--fs-muted);
+  font-size: 11px;
+  line-height: 1.75;
+  margin: 9px 0;
+  padding: 9px 11px;
+}
+
+.floor-sales__compare-delta strong {
+  color: var(--fs-teal);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.floor-sales__compare-delta small {
+  display: block;
+  font-size: 10px;
+}
+
+.floor-sales__compare-grid {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.floor-sales__compare-record {
+  background: #fffef9;
+  border: 1px solid #d8e2d7;
+  border-radius: 11px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.floor-sales__compare-record h4 {
+  color: var(--fs-deep-teal);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.floor-sales__footnote {
+  border-top: 1px solid var(--fs-line);
+  color: var(--fs-muted);
+  font-size: 10px;
+  line-height: 1.8;
+  margin: 16px 0 0;
+  padding-top: 11px;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .floor-sales__floor:hover,
+  .floor-sales__record:hover {
+    box-shadow: 0 6px 15px #315c4714;
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 700px) {
+  .floor-sales__compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .floor-sales__address-heading h4 {
+    font-size: 15px;
+  }
+
+  .floor-sales__floor-summary,
+  .floor-sales__record-summary {
+    min-height: 48px;
+  }
+
+  .floor-sales__floor-summary,
+  .floor-sales__record-summary {
+    padding: 8px 9px;
+  }
+
+  .floor-sales__record-fields,
+  .floor-sales__compare-record dl {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .floor-sales__address {
+    padding: 9px 9px 10px;
+  }
+
+  .floor-sales__address-heading {
+    display: block;
+  }
+
+  .floor-sales__address-badge {
+    display: inline-flex;
+    margin-top: 5px;
+  }
+
+  .floor-sales__address-heading p {
+    margin-top: 2px;
+  }
+
+  .floor-sales__floors {
+    gap: 8px;
+  }
+
+  .floor-sales__header {
+    margin-bottom: 8px;
+    padding: 8px 9px 8px;
+  }
+
+  .floor-sales__controls {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .floor-sales__controls label {
+    white-space: normal;
+  }
+
+  #floorShareTools.row-actions {
+    gap: 6px;
+    margin: 4px 0 7px;
+  }
+
+  #floorShareTools > button,
+  #floorShareTools > .source-link {
+    min-height: 44px;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .floor-sales__record-fields,
+  .floor-sales__compare-record dl {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (pointer: coarse) {
+  .floor-sales__floor-summary,
+  .floor-sales__record-summary,
+  .floor-sales__compare-toggle,
+  .floor-sales__clear,
+  .floor-sales [data-floor-sales-address-select] {
+    min-height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floor-sales__floor,
+  .floor-sales__record {
+    transition: none;
+  }
+
+  .floor-sales__floor:hover,
+  .floor-sales__record:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .floor-sales__address,
+  .floor-sales__floor,
+  .floor-sales__record,
+  .floor-sales__compare-record,
+  .floor-sales__clear {
+    border: 1px solid ButtonText;
+  }
+
+  .floor-sales__floor::before,
+  .floor-sales__floor::after {
+    display: none;
+  }
+}

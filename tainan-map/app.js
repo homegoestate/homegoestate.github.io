@@ -81,14 +81,15 @@ window.CATALOG_READY.then(()=>{
   const coverageOf = items => ({total:items.length,located:items.filter(located).length,priced:items.filter(sufficient).length,limited:items.filter(limited).length});
   const addressFor=c=>c.address?(/^(臺|台)南市/.test(c.address)?c.address:'臺南市'+c.address):'';
   function queryActions(c){return `<div class="row-actions"><a class="official-lvr-link" href="${OFFICIAL_LVR}" target="_blank" rel="noopener noreferrer" title="開啟官方查詢首頁，再貼上門牌搜尋">實價登錄 ↗</a><button class="copy-address" data-copy-id="${esc(c.id)}" ${c.address?'':'disabled'}>複製門牌</button><span class="copy-status" aria-live="polite"></span></div>`;}
-  async function copyAddress(c,button){
-    const value=addressFor(c);if(!value)return;
+  async function copyValue(value,button,message,description){
+    if(!value)return;
     const status=button.parentElement.querySelector('.copy-status');let done=false;
     try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);done=true;}}catch{}
-    if(!done){const field=document.createElement('textarea');field.value=value;field.setAttribute('aria-label','待複製門牌');field.style.cssText='position:fixed;left:0;top:0;opacity:0;';document.body.append(field);field.select();try{done=document.execCommand('copy');}catch{}field.remove();}
-    if(done){button.textContent='✓ 已複製';status.textContent='已複製完整門牌，請貼到官方實價查詢。';}
-    else{status.innerHTML=`<label>請選取門牌複製<input class="copy-fallback" readonly value="${esc(value)}"></label>`;status.querySelector('input')?.select();}
+    if(!done){const field=document.createElement('textarea');field.value=value;field.setAttribute('aria-label','待複製'+description);field.style.cssText='position:fixed;left:0;top:0;opacity:0;';document.body.append(field);field.select();try{done=document.execCommand('copy');}catch{}field.remove();}
+    if(done){button.textContent='✓ 已複製';status.textContent=message;}
+    else{status.innerHTML=`<label>請選取${esc(description)}複製<input class="copy-fallback" readonly value="${esc(value)}"></label>`;status.querySelector('input')?.select();}
   }
+  function copyAddress(c,button){return copyValue(addressFor(c),button,'已複製完整門牌，請貼到官方實價查詢。','門牌');}
   function bindQueryActions(root){root.querySelectorAll('.copy-address').forEach(el=>el.onclick=()=>copyAddress(byId.get(el.dataset.copyId),el));}
   function communityRow(c,cluster=false){
     const s=stats(c),enough=sufficient(c),few=limited(c),age=ageValue(c),units=unitValue(c),households=householdValue(c);
@@ -312,30 +313,73 @@ window.CATALOG_READY.then(()=>{
   function renderDetail(){
     const c=byId.get(String(selected));if(!c)return;const s=stats(c),enough=sufficient(c),few=limited(c),age=ageValue(c),units=unitValue(c),households=householdValue(c);
     $('detail').hidden=false;document.body.classList.add('detail-open');
-    $('detail').innerHTML=`<div class="detail-toolbar"><span>社區資訊</span><button id="closeDetail" class="detail-close" aria-label="關閉社區資訊">關閉 ×</button></div><span class="detail-kicker">${esc(c.district)} / ${esc(kindLabels[c.kind]||c.kindLabel||'類型待核')}</span><div class="detail-art" aria-hidden="true"><svg viewBox="-40 -83 80 92">${buildingArt(c)}</svg></div><h2>${esc(c.name)}</h2><p class="address">${esc(c.address||'代表門牌待補')}</p>${queryActions(c)}<p class="official-query-note">官方入口開啟查詢首頁；複製門牌後，在官方頁設定地址與條件。</p>${filterControls('detail',false)}<div class="building-facts"><span>${valid(c.floors)?esc(c.floors)+' 樓':'樓層待核'}</span>${valid(c.buildingCount)?'<span>'+esc(c.buildingCount)+' 棟</span>':''}<span>${positionLabel(c)}</span></div><div class="metric"><span class="metric-label">${esc(categoryLabel())}<br>${esc(periodLabel())} · ${few?'少量成交均價':'算術平均單價'}</span><div class="metric-value ${enough?'':few?'limited':'insufficient'}">${enough?fmt(s.mean)+'<small>萬元／坪</small>':few?fmt(s.sampleMean)+'<small>萬元／坪 · '+num(s.eligibleCount)+' 筆</small>':'資料不足，不推估'}</div><div class="metrics"><div><span>可比 / 本類型匹配成交</span><strong>${num(s.eligibleCount)} / ${num(s.count)}<small> 筆</small></strong></div><div><span>中位單價</span><strong>${enough?fmt(s.median):few?fmt(s.sampleMedian):'—'}<small> 萬／坪</small></strong></div></div><p class="help">${enough?'可比單價範圍 '+fmt(s.min)+'–'+fmt(s.max)+' 萬／坪':few?'樣本少，僅供個案參考。少量單價範圍 '+fmt(s.sampleMin)+'–'+fmt(s.sampleMax)+' 萬／坪；不視為完整社區行情。':'此類型、期間尚無可比成交或資料缺漏，保留名冊、不推估均價。'}<br>期間最新成交：${esc(s.latestDate||'尚無匹配紀錄')}${period==='all'?'<br><strong>此為 101/08/01 起跨期歷史均價，非當期市場行情。</strong>':''}</p></div><dl class="community-evidence"><div><dt>成交樣本屋齡</dt><dd>${age===null?'資料待補':fmt(age)+' 年'}<small>${age===null?'沒有可核對的完成日期':'中位數 · '+num(s.ageSampleCount)+' 筆有日期樣本；計至 '+esc(meta.asOf||'資料基準日')}${s.agePrecision==='month'||s.agePrecision==='mixed'?'；部分日期精確至月，屋齡為約數':''}</small></dd></div><div><dt>使照登載戶數</dt><dd>${households===null?'來源待補':num(households)+' 戶'}<small>${esc(c.householdNote||c.householdCountNote||'使用執照的登載戶數，非目前社區住戶普查。')}</small>${c.householdSourceUrl?link(c.householdSourceUrl,c.householdSource||'戶數來源'):''}</dd></div><div><dt>已揭露成交戶別</dt><dd>${units===null?'戶別證據待補':num(units)+' 個不同戶別'}<small>僅計本類型、本期間可辨識的成交戶別，非社區總戶數。${s.unitIdentityCoverage?' 已辨識 '+num(s.unitIdentityCoverage.identifiedRows)+' / '+num(s.unitIdentityCoverage.transactionRows)+' 筆交易列。':''}</small></dd></div></dl><button id="transactionsButton" class="primary full">查看 ${num(s.count)} 筆本類型成交明細 ↗</button><button id="addCompare" class="full">${compared.includes(c.id)?'✓ 已加入比較 · 點此移除':'＋ 加入比較（最多 3 個）'}</button><div class="detail-section"><h3>這份資料涵蓋什麼</h3><p>${esc(c.matchNote||'僅涵蓋可確定門牌配對的交易，不推定名冊外門牌或其他棟別。')}</p><p>${esc(categoryLabel())} · ${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}<br>資料快照 ${esc(meta.asOf||'未提供')}</p>${c.approvalDate?'<p>名冊成立核准：'+esc(c.approvalDate)+'<br><span class="help">此日期不是建物完工年或屋齡。</span></p>':''}${(()=>{const aliases=[...new Set([c.apiAlias?.name,...(c.registrationAliases||[]).map(a=>a.name)].filter(n=>n&&n!==c.name))],addrs=[...new Set(c.exactAddresses||[])],gm=located(c)?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.lat+','+c.lon)}`:'',sv=located(c)?`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(c.lat+','+c.lon)}`:'';return `<div class="detail-more">${c.buildingPermit?'<p>使用執照：'+esc(c.buildingPermit)+'</p>':''}${aliases.length?'<p>名冊別名：'+aliases.map(esc).join('、')+'</p>':''}${addrs.length?'<p>名冊門牌：'+addrs.slice(0,6).map(esc).join('、')+(addrs.length>6?` 等 ${addrs.length} 筆`:'')+'</p>':''}<p>位置來源：${esc(c.positionQuality||'未提供')}</p>${gm?`<p class="map-links"><a class="source-link" href="${esc(gm)}" target="_blank" rel="noopener noreferrer">在 Google 地圖查看標示位置 ↗</a><a class="source-link" href="${esc(sv)}" target="_blank" rel="noopener noreferrer">查看附近街景 ↗</a></p>`:''}</div>`;})()}${link(c.sourceUrl,'次級來源：社區名冊')}<p class="help">${located(c)?positionLabel(c)+'（經度 '+esc(c.lon)+'、緯度 '+esc(c.lat)+'）'+'；輪廓依樓層分類示意，非實際外觀。':'來源缺少可信座標，保留在名冊、不臆測地圖位置。'}<br>成交條件仍須逐筆核對；不是銀行鑑價。</p></div><button id="communityFeedback" class="full">補充／回報這個社區</button>`;
+    $('detail').innerHTML=`<div class="detail-toolbar"><span>社區資訊</span><button id="closeDetail" class="detail-close" aria-label="關閉社區資訊">關閉 ×</button></div><span class="detail-kicker">${esc(c.district)} / ${esc(kindLabels[c.kind]||c.kindLabel||'類型待核')}</span><div class="detail-art" aria-hidden="true"><svg viewBox="-40 -83 80 92">${buildingArt(c)}</svg></div><h2>${esc(c.name)}</h2><p class="address">${esc(c.address||'代表門牌待補')}</p>${queryActions(c)}<p class="official-query-note">官方入口開啟查詢首頁；複製門牌後，在官方頁設定地址與條件。</p><button type="button" id="floorSales" class="primary full" aria-haspopup="dialog">樓層查價</button>${filterControls('detail',false)}<div class="building-facts"><span>${valid(c.floors)?esc(c.floors)+' 樓':'樓層待核'}</span>${valid(c.buildingCount)?'<span>'+esc(c.buildingCount)+' 棟</span>':''}<span>${positionLabel(c)}</span></div><div class="metric"><span class="metric-label">${esc(categoryLabel())}<br>${esc(periodLabel())} · ${few?'少量成交均價':'算術平均單價'}</span><div class="metric-value ${enough?'':few?'limited':'insufficient'}">${enough?fmt(s.mean)+'<small>萬元／坪</small>':few?fmt(s.sampleMean)+'<small>萬元／坪 · '+num(s.eligibleCount)+' 筆</small>':'資料不足，不推估'}</div><div class="metrics"><div><span>可比 / 本類型匹配成交</span><strong>${num(s.eligibleCount)} / ${num(s.count)}<small> 筆</small></strong></div><div><span>中位單價</span><strong>${enough?fmt(s.median):few?fmt(s.sampleMedian):'—'}<small> 萬／坪</small></strong></div></div><p class="help">${enough?'可比單價範圍 '+fmt(s.min)+'–'+fmt(s.max)+' 萬／坪':few?'樣本少，僅供個案參考。少量單價範圍 '+fmt(s.sampleMin)+'–'+fmt(s.sampleMax)+' 萬／坪；不視為完整社區行情。':'此類型、期間尚無可比成交或資料缺漏，保留名冊、不推估均價。'}<br>期間最新成交：${esc(s.latestDate||'尚無匹配紀錄')}${period==='all'?'<br><strong>此為 101/08/01 起跨期歷史均價，非當期市場行情。</strong>':''}</p></div><dl class="community-evidence"><div><dt>成交樣本屋齡</dt><dd>${age===null?'資料待補':fmt(age)+' 年'}<small>${age===null?'沒有可核對的完成日期':'中位數 · '+num(s.ageSampleCount)+' 筆有日期樣本；計至 '+esc(meta.asOf||'資料基準日')}${s.agePrecision==='month'||s.agePrecision==='mixed'?'；部分日期精確至月，屋齡為約數':''}</small></dd></div><div><dt>使照登載戶數</dt><dd>${households===null?'來源待補':num(households)+' 戶'}<small>${esc(c.householdNote||c.householdCountNote||'使用執照的登載戶數，非目前社區住戶普查。')}</small>${c.householdSourceUrl?link(c.householdSourceUrl,c.householdSource||'戶數來源'):''}</dd></div><div><dt>已揭露成交戶別</dt><dd>${units===null?'戶別證據待補':num(units)+' 個不同戶別'}<small>僅計本類型、本期間可辨識的成交戶別，非社區總戶數。${s.unitIdentityCoverage?' 已辨識 '+num(s.unitIdentityCoverage.identifiedRows)+' / '+num(s.unitIdentityCoverage.transactionRows)+' 筆交易列。':''}</small></dd></div></dl><button id="transactionsButton" class="primary full">查看 ${num(s.count)} 筆本類型成交明細 ↗</button><button id="addCompare" class="full">${compared.includes(c.id)?'✓ 已加入比較 · 點此移除':'＋ 加入比較（最多 3 個）'}</button><div class="detail-section"><h3>這份資料涵蓋什麼</h3><p>${esc(c.matchNote||'僅涵蓋可確定門牌配對的交易，不推定名冊外門牌或其他棟別。')}</p><p>${esc(categoryLabel())} · ${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}<br>資料快照 ${esc(meta.asOf||'未提供')}</p>${c.approvalDate?'<p>名冊成立核准：'+esc(c.approvalDate)+'<br><span class="help">此日期不是建物完工年或屋齡。</span></p>':''}${(()=>{const aliases=[...new Set([c.apiAlias?.name,...(c.registrationAliases||[]).map(a=>a.name)].filter(n=>n&&n!==c.name))],addrs=[...new Set(c.exactAddresses||[])],gm=located(c)?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.lat+','+c.lon)}`:'',sv=located(c)?`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(c.lat+','+c.lon)}`:'';return `<div class="detail-more">${c.buildingPermit?'<p>使用執照：'+esc(c.buildingPermit)+'</p>':''}${aliases.length?'<p>名冊別名：'+aliases.map(esc).join('、')+'</p>':''}${addrs.length?'<p>名冊門牌：'+addrs.slice(0,6).map(esc).join('、')+(addrs.length>6?` 等 ${addrs.length} 筆`:'')+'</p>':''}<p>位置來源：${esc(c.positionQuality||'未提供')}</p>${gm?`<p class="map-links"><a class="source-link" href="${esc(gm)}" target="_blank" rel="noopener noreferrer">在 Google 地圖查看標示位置 ↗</a><a class="source-link" href="${esc(sv)}" target="_blank" rel="noopener noreferrer">查看附近街景 ↗</a></p>`:''}</div>`;})()}${link(c.sourceUrl,'次級來源：社區名冊')}<p class="help">${located(c)?positionLabel(c)+'（經度 '+esc(c.lon)+'、緯度 '+esc(c.lat)+'）'+'；輪廓依樓層分類示意，非實際外觀。':'來源缺少可信座標，保留在名冊、不臆測地圖位置。'}<br>成交條件仍須逐筆核對；不是銀行鑑價。</p></div><button id="communityFeedback" class="full">補充／回報這個社區</button>`;
     bindQueryActions($('detail'));bindFilterControls('detail',null,false);
+    $('floorSales').onclick=()=>showFloorSales(c);
     $('closeDetail').onclick=closeDetail;$('communityFeedback').onclick=()=>feedback({district:c.district,communityId:c.id});$('transactionsButton').onclick=()=>showTransactions(c);
     $('addCompare').onclick=()=>{if(compared.includes(c.id))compared=compared.filter(id=>id!==c.id);else if(compared.length<3)compared.push(c.id);else{openDialog('已選滿 3 個社區','<p>請先移除一個社區，再加入新的比較對象。</p>');return;}renderCompare();renderDetail();};
   }
   let txRequestEpoch=0;
-  $('infoDialog').addEventListener('close',()=>{txRequestEpoch++;});
+  $('infoDialog').addEventListener('close',()=>{
+    if ($('infoDialog').open) return;
+    txRequestEpoch++;
+    if ($('floorContents') && !$('detail').hidden) $('floorSales')?.focus({preventScroll:true});
+  });
   function openDialog(title,html){txRequestEpoch++;$('dialogTitle').textContent=title;$('dialogBody').innerHTML=html;if(!$('infoDialog').open)$('infoDialog').showModal();$('infoDialog').scrollTop=0;}
   function txInPeriod(t){const p=periodInfo();return !!t.date&&t.date>=p.start&&t.date<=p.end;}
   function txInCategory(t){return marketCategory==='all'?t.propertyUse==='residential':t.category===marketCategory;}
-  async function showTransactions(c,txPage=1){
+  function floorLink(c) {
+    const url = new URL(location.pathname, location.origin);
+    url.searchParams.set('community', c.id);
+    url.searchParams.set('view', 'floors');
+    if (marketCategory !== 'all') url.searchParams.set('category', marketCategory);
+    if (period !== 'all') url.searchParams.set('period', period);
+    return url.href;
+  }
+  function showFloorSales(c) {
+    return withTransactions(c, () => {
+      const activeFilter = ['floorCategorySelect','floorPeriodSelect'].find(id => $(id) === document.activeElement);
+      const bounds = periodInfo();
+      const rows = c.transactions.filter(t => txInPeriod(t) && txInCategory(t));
+      const mapAddress = c.primaryExactAddresses?.[0] || c.exactAddresses?.[0] || c.address;
+      openDialog(c.name + '｜樓層查價', `
+        ${filterControls('floor',false)}
+        <p class="help">${esc(bounds.start)} ～ ${esc(bounds.end)} · 此條件共 ${num(rows.length)} 筆</p>
+        <div class="row-actions" id="floorShareTools">
+          <button type="button" id="copyFloorLink">複製社區查價連結</button>
+          ${link('https://landmap.tainan.gov.tw/gis/?fun=3ds','府城南籍圈・官方 3D 圖台')}
+          <span class="copy-status" role="status"></span>
+        </div>
+        <div id="floorContents"></div>
+        <p class="help">進入官方 3D 圖台後選「門牌」定位，可查看市府已開放的測繪成果。${mapAddress?' 本社區名冊門牌可參考 '+esc(mapAddress)+'。':''}</p>`);
+      if (window.FloorSales?.mount) {
+        window.FloorSales.mount($('floorContents'), c, rows, {asOf:meta.asOf, period:bounds});
+      } else {
+        $('floorContents').innerHTML = '<p role="alert">樓層查價元件未載入，仍可開啟逐筆明細。</p><button type="button" id="floorFallback">查看原始成交明細</button>';
+        $('floorFallback').onclick = () => showTransactions(c);
+      }
+      bindFilterControls('floor', () => showFloorSales(c), false);
+      $('copyFloorLink').onclick = e => copyValue(floorLink(c), e.currentTarget,'已複製這個社區、類型與期間的查價連結。','查價連結');
+      if (activeFilter) $(activeFilter).focus();
+    }, '樓層查價');
+  }
+  async function withTransactions(c,render,title='成交明細'){
     if(!Array.isArray(c.transactions)){
-      openDialog(c.name+'｜成交明細','<p role="status">正在載入 '+esc(c.district)+' 的原始成交明細…</p><p>分類、期間與均價已載入；明細取得後即可逐筆核對。</p>');
+      openDialog(c.name+'｜'+title,'<p role="status">正在載入 '+esc(c.district)+' 的原始成交明細…</p>');
       const requestEpoch=txRequestEpoch;
       try{
         await window.ensureDistrictTransactions(c.district);
-        if(requestEpoch!==txRequestEpoch||!$('infoDialog').open||selected!==c.id)return;
-        return showTransactions(c,txPage);
       }catch(error){
-        if(requestEpoch!==txRequestEpoch||!$('infoDialog').open)return;
+        if(requestEpoch!==txRequestEpoch||!$('infoDialog').open||selected!==c.id)return;
         openDialog(c.name+'｜明細暫時無法載入','<p role="alert">連線或資料檢查未完成，無法確認成交明細；這不代表沒有成交。</p><button id="retryTransactions" class="primary">重新載入明細</button>'+queryActions(c));
-        $('retryTransactions').onclick=()=>showTransactions(c,txPage);bindQueryActions($('dialogBody'));return;
+        $('retryTransactions').onclick=()=>withTransactions(c,render,title);bindQueryActions($('dialogBody'));return;
       }
+      if(requestEpoch!==txRequestEpoch||!$('infoDialog').open||selected!==c.id)return;
     }
+    render();
+  }
+  function showTransactions(c,txPage=1){return withTransactions(c,()=>renderTransactions(c,txPage));}
+  function renderTransactions(c,txPage){
     const rows=(c.transactions||[]).filter(t=>txInPeriod(t)&&txInCategory(t)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(a.id||'').localeCompare(String(b.id||''))),pages=Math.max(1,Math.ceil(rows.length/TX_PAGE_SIZE));txPage=Math.max(1,Math.min(txPage,pages));const shown=rows.slice((txPage-1)*TX_PAGE_SIZE,txPage*TX_PAGE_SIZE);
     const rooms=t=>[valid(t.roomCount)?t.roomCount+' 房':null,valid(t.hallCount)?t.hallCount+' 廳':null,valid(t.bathCount)?t.bathCount+' 衛':null].filter(Boolean).join(' / ')||'格局未提供';
     const uses={residential:'住宅',shop:'店面',non_residential:'非住宅',unknown:'用途待核'};
@@ -430,6 +474,17 @@ window.CATALOG_READY.then(()=>{
   $('catalogNote').textContent=`名冊與交易分開呈現；本類型無樣本的社區仍完整保留。每頁 ${PAGE_SIZE} 筆，可翻頁查閱全部。實價登錄連結為官方首頁，複製門牌後自行查詢。`; 
   $('lifeMode').onclick=()=>{setMode('life');renderLife();};$('marketMode').onclick=()=>setMode('market');$('northStart').onclick=()=>{chooseDistrict('北區');setMode('life');revealLife();};$('readDistrictLife').onclick=()=>{if(!district)chooseDistrict('北區');setMode('life');revealLife();};$('feedbackButton').onclick=()=>feedback({district});
   renderMap();chooseDistrict('');renderCompare();
+  const entry = new URLSearchParams(location.search);
+  const target = byId.get(entry.get('community'));
+  if (target && entry.get('view') === 'floors') {
+    const categoryParam = entry.get('category');
+    if (Object.hasOwn(marketCategories, categoryParam)) marketCategory = categoryParam;
+    if (['12m','36m'].includes(entry.get('period'))) period = entry.get('period');
+    $('categorySelect').value = marketCategory;
+    $('periodSelect').value = period;
+    selectCommunity(target.id);
+    showFloorSales(target);
+  }
 })();
 
 window.catalogLoaded();
