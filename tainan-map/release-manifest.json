@@ -1,7 +1,7 @@
 {
-  "version": "official-tainan-map-floors-20261125",
-  "preparedAt": "2026-11-25T04:24:42.299039+00:00",
-  "baselineCommit": "5d245ac02443445679b96023b378e5153c136637",
+  "version": "official-tainan-map-environment-20261125",
+  "preparedAt": "2026-11-25T04:50:48.839638+00:00",
+  "baselineCommit": "d9530f7584b495b941def260556be01c794c782a",
   "publicVisitorCountEnabled": false,
   "dataSnapshot": "2026-11-22",
   "files": {
@@ -18,16 +18,24 @@
       "sha256": "f96a72f63f261bd351b24106cb6e0f898d0b0f441eea14c2c5ff42509150001b"
     },
     "docs/TAINAN_MAP_V5.md": {
-      "bytes": 8049,
-      "sha256": "b9500377ad0dbcb9e5d512206a358273c5bcb399cbdea8a83caa94175bb369a8"
+      "bytes": 11113,
+      "sha256": "80c26ab2446bbfce5dfba698fdaa85daaa04635c5b540300f4ccc631bac7f300"
     },
     "index.html": {
       "bytes": 15127,
       "sha256": "4dc87fdd4a92c275add977b7c353701227865e8daa0cae1969c1e3f7317cb91f"
     },
+    "scripts/build-environment-fault.py": {
+      "bytes": 3896,
+      "sha256": "8205c6b400fe70085f0d9736b3316391a127b5bb95520d554d2f0af07df08286"
+    },
+    "scripts/build-map-soil.py": {
+      "bytes": 5797,
+      "sha256": "8df2c026ba1186d8e5e1d0dec40837a4d0abb4733a52becf3a748a284a451c2e"
+    },
     "scripts/site-smoke.mjs": {
-      "bytes": 8162,
-      "sha256": "ed49c7f7d609c56a96f7c0cd019e1cb5d0971aefd5bb62b2bd62aeced9585909"
+      "bytes": 10238,
+      "sha256": "d0d0d5572e8d9819553c11cec0039461d74f17a7d67a02cfc22a33c782668034"
     },
     "sitemap.xml": {
       "bytes": 571,
@@ -42,8 +50,8 @@
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 84425,
-      "sha256": "a76601a58d73dff2e2427e26a7a439895651e669165c7e235b998e4f027a50ff"
+      "bytes": 87317,
+      "sha256": "14a90df9935840e7dbbf6eacec60ce0654bea96d84d61e1a81b06d9efc0eaac6"
     },
     "tainan-map/brand-city.svg": {
       "bytes": 85701,
@@ -337,6 +345,30 @@
       "bytes": 157823,
       "sha256": "7e4975a3688f3a458ade0674c67a51437a431071b5eccbbce1329955699dc388"
     },
+    "tainan-map/environment-fault.js": {
+      "bytes": 62193,
+      "sha256": "cf9c59601f6c9660c101a321873e887b83d977a1b9f858c0e6fb28401cc965d8"
+    },
+    "tainan-map/environment-records.js": {
+      "bytes": 7662,
+      "sha256": "cf2a0510f65ab369ded9597d4309b0d9896226ebd36cf9e23b706dac922450d9"
+    },
+    "tainan-map/environment-soil.json": {
+      "bytes": 122609,
+      "sha256": "7327b4b4762204b3425f7d4b7b6758dd3130b6166ed3f6293034e3507cb8131b"
+    },
+    "tainan-map/environment-sun.js": {
+      "bytes": 6398,
+      "sha256": "c87c61a5dadf46489721fdfb4ed00d3514801f093137788c76896194ebf7daea"
+    },
+    "tainan-map/environment.css": {
+      "bytes": 4013,
+      "sha256": "5f967f0d3476c0a45fcdeaf8ac789f2c304be495c7859c9769eb7dc5bf0703a4"
+    },
+    "tainan-map/environment.js": {
+      "bytes": 11390,
+      "sha256": "d7fd381828008eb076b423401962e0c2653ee43b7b3e701f949004a0b6b26d23"
+    },
     "tainan-map/estimated-positions.js": {
       "bytes": 40662,
       "sha256": "17952beed23f62d5b529ba61409aead26ae7022f01c768b7f3ede0b49a08413d"
@@ -354,8 +386,8 @@
       "sha256": "39f709051fcfabafe99852289820c8b845254936ddf25de5984a09dba75de0c0"
     },
     "tainan-map/index.html": {
-      "bytes": 10687,
-      "sha256": "4fd468319182b72e0dc5f70be0b6c033945364230e17d2303b540760de469488"
+      "bytes": 11010,
+      "sha256": "219b7c66e1a346c5c9664536ad0abe0f195bc3981e7b81f36b7a2f89706dade3"
     },
     "tainan-map/life-data.js": {
       "bytes": 138647,

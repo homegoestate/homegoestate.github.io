@@ -68,6 +68,15 @@
 
 公開版不收集訪客事件、不顯示累積訪客數。不能把下載次數、測試次數或社區數量當成訪客數。回饋可先複製／下載，再由使用者自行送到安心城既有正式回饋入口；本頁不會假裝已送出給團隊。
 
+## 2026-11-25 社區日照與環境查詢
+
+社區卡的「日照與環境查詢」可開啟四個項目。分享網址保留社區與分頁，日照頁亦保留使用者選定的日期、窗向與遮蔽仰角。社區沒有座標時仍可查來源與門牌。地圖使用名冊代表點，主號和附近門牌估點只提供位置提示供地質複查。
+
+- **日照**以台灣時間按日期計算平坦地平線的日出、日落和白晝。選窗向及遮蔽仰角後，按每分鐘中點計算太陽位於垂直窗面前方且高於遮蔽物的時段，除以白晝分鐘得到直曬比例。這是晴天、單一遮蔽仰角的情境。參照 [NOAA 天文算法](https://gml.noaa.gov/grad/solcalc/calcdetails.html)；可逐日核對[中央氣象署臺南時刻](https://www.cwa.gov.tw/V8/C/K/astronomy_day.html)。[臺中 158PLUS](https://www.taichung.gov.tw/3300076/post)使用地籍建物模型連結樓層與實價，台南的立體測繪由[府城南籍圈](https://landmap.tainan.gov.tw/gis/?fun=3ds)提供查詢。
+- **活動斷層地質敏感區**比對經濟部地質調查及礦業管理中心已公告、涉及台南的區域面。距界線約 50 公尺內列為地號複查。全臺活動斷層線另有[活動斷層圖](https://faultgis.gsmma.gov.tw/gis/)；土地請按[官方地號查詢](https://gsa.gsmma.gov.tw/gwh/gsb97-1/sys_2014b_pg/index.cfm)核對。資料原檔、轉換與重製見 `scripts/build-environment-fault.py`。
+- **土壤液化**同時比對臺南市政府工務局[開放 SHP](https://data.gov.tw/dataset/122721)與[市府線上圖層](https://gis.liquid.net.tw/arcgis/rest/services/P04032/Soil_tainan/MapServer/0)。SHP 未附投影檔，經緯度外框和分類頂點與市府圖台指定 WGS84 後相符。使用 TWD97/TM2（121 分帶）檢查距任一來源圖界的 25 公尺複查範圍。資料不一致、未公開、界線附近、區域外及位置不明各自呈現。下載檔資源更新日為 2025-12-31。2026-11-25 核對現行名冊時，有 29 個可見社區的代表點在兩份資料中的分區不同，均標示待核。後續使用[市府資源頁](https://data.tainan.gov.tw/Resource/075ad516-b1cc-4b59-856a-816c303a76da)下載 SHP，並取得[同一圖台的四類完整幾何](https://gis.liquid.net.tw/arcgis/rest/services/P04032/Soil_tainan/MapServer/0/query?where=1%3D1&outFields=class&returnGeometry=true&outSR=4326&geometryPrecision=7&f=geojson)。以 pyshp、Shapely、pyproj 執行 `python scripts/build-map-soil.py municipal.zip --reference map.geojson --source-date YYYY-MM-DD --checked YYYY-MM-DD`，再執行 `node scripts/site-smoke.mjs`。兩份檔案的 SHA-256 留在比對檔。斷層和土壤採[政府資料開放授權條款第 1 版](https://data.gov.tw/license)。
+- **建物安全與海埔沿革**指向主管機關查詢與歷史圖資，分開呈現震後列管、建物使用和海岸變遷。以事件日期、解除列管文件、地號與基地鑽探分別查核。新增逐址資料前須取得可重製來源，並能辨識適用日期、範圍及後續更正。
+
 ## 發布與回復
 
 GitHub Pages 來源為 `main` 的根目錄。保留原官網服務、文件、安心城與預約流程。本次發布前已另存完整 108 檔 ZIP、SHA-256 清單及公開檔案比對。

@@ -61,6 +61,30 @@ mustHave('tainan-map/index.html', 'href="floor-sales.css');
 const floorContext = {window:{}};
 runInNewContext(read('tainan-map/floor-sales.js'), floorContext);
 const floors = floorContext.window.FloorSales;
+for (const asset of ['environment.js','environment.css','environment-sun.js','environment-fault.js','environment-records.js']) {
+  mustHave('tainan-map/index.html', asset + '?');
+  assert.ok(existsSync(resolve(root,'tainan-map',asset)));
+}
+for (const asset of ['environment-sun.js','environment-fault.js','environment-records.js']) {
+  runInNewContext(read('tainan-map/' + asset), floorContext);
+}
+const {MapSun, MapFaults, MapRecords} = floorContext.window;
+assert.equal(MapSun.day(22.9933,120.205,'2026-11-25').sunrise, '06:19');
+assert.equal(MapSun.day(22.9933,120.205,'2026-11-25').sunset, '17:13');
+assert.equal(MapSun.exposure(23,120.2,'2026-11-25','',''), null);
+assert.equal(MapSun.day(null,null,'2026-11-25'), null);
+assert.equal(MapSun.day(23,120.2,'2026-02-29'), null);
+const westWindow = angle => MapSun.exposure(23,120.2,'2026-11-25',270,angle).directMinutes;
+assert.ok(westWindow(0) > westWindow(20) && westWindow(20) > westWindow(90));
+assert.equal(westWindow(90),0);
+assert.equal(MapFaults.lookup({}).status,'no_coordinates');
+assert.equal(MapFaults.lookup({lat:23,lon:120.2,positionEstimated:'nearby'}).status,'approximate');
+assert.equal(typeof MapRecords.render,'function');
+const soil = JSON.parse(read('tainan-map/environment-soil.json'));
+const soilClasses = new Set(['high','medium','low','edge','unpublished','outside','disputed']);
+assert.match(soil.serviceSha256,/^[a-f0-9]{64}$/);
+assert.ok(Object.keys(soil.locations).length > 0 && Object.values(soil.locations).every(x => soilClasses.has(x)));
+assert.equal(soil.boundaryMetres,25);
 assert.equal(typeof floors.mount, 'function');
 const firstAddress = '善化區測試路17號';
 const adjacentAddress = '善化區測試路17之1號';
@@ -100,6 +124,15 @@ function verifiedJson(entry) {
   return JSON.parse(data);
 }
 const catalog = verifiedJson(manifest.summary);
+runInNewContext(read('tainan-map/estimated-positions.js'), floorContext);
+for (const community of catalog.communities) {
+  const estimate = floorContext.window.ESTIMATED_POSITIONS[community.id];
+  const point = community.lon && community.lat ? community : (estimate?.tier === 'exact' ? estimate : null);
+  if (point) {
+    const coordinate = Number(point.lon).toFixed(7) + ',' + Number(point.lat).toFixed(7);
+    assert.ok(Object.hasOwn(soil.locations,coordinate),'Refresh soil overlay for ' + community.id);
+  }
+}
 assert.equal(catalog.meta.asOf, manifest.asOf);
 assert.equal(catalog.communities.length, manifest.catalogCount);
 const registry = new Map(catalog.communities.map(community => [community.id, community]));
