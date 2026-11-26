@@ -27,6 +27,7 @@
     let sun = {date:params.get('date'), time:params.get('time')};
     root.innerHTML = `<nav class="studio-switch" aria-label="社區 3D 檢視項目">
       <button type="button" data-studio-view="floors" aria-pressed="true">3D 樓層成交</button>
+      <button type="button" data-studio-view="gaps" aria-pressed="false">同棟樓層價差</button>
       <button type="button" data-studio-view="ground" aria-pressed="false">斷層與地層下陷</button></nav>
       <div data-studio-panel="floors"><button type="button" class="studio-glance" aria-label="移至所選樓層成交"><span></span><strong></strong><i aria-hidden="true">↓</i></button>
       <div class="sales-studio-layout"><div class="studio-viewport"></div>
@@ -39,15 +40,27 @@
       <button id="studioCopy" type="button">分享門牌與樓層</button><span class="copy-status" role="status"></span></div>
       </section></div><footer class="studio-note">建物外觀、朝向及層高均為示意。太陽方向依社區座標試算，個戶採光須現場確認。
       <a href="https://landmap.tainan.gov.tw/gis/?fun=3ds" target="_blank" rel="noopener noreferrer">開啟台南市府 3D 圖台 ↗</a></footer></div>
+      <div data-studio-panel="gaps" hidden></div>
       <div data-studio-panel="ground" hidden></div>`;
     const el = selector => root.querySelector(selector);
     const groundPanel = el('[data-studio-panel="ground"]');
     let groundView;
-    function changePanel(view) {
+    let gapView, activeView = 'floors';
+    function changePanel(view, directLink = false) {
+      if (activeView === 'gaps' && view !== 'gaps' && gapView?.address && byDoor.has(gapView.address) && door !== gapView.address) {
+        door = gapView.address; select.value = door; displayDoor(null);
+      }
       for (const button of root.querySelectorAll('[data-studio-view]'))
         button.setAttribute('aria-pressed',String(button.dataset.studioView===view));
       for (const panel of root.querySelectorAll('[data-studio-panel]'))
         panel.hidden=panel.dataset.studioPanel!==view;
+      if (view === 'gaps' && !gapView) {
+        const gapPanel = el('[data-studio-panel="gaps"]');
+        if (window.FloorGaps) gapView = window.FloorGaps.mount(gapPanel, community, data, {
+          address:directLink ? params.get('address') : door, period:options.bounds, filters:options.filters
+        });
+        else gapPanel.textContent = '樓層價差目前無法載入，請重新整理再試。';
+      } else if (view === 'gaps' && activeView !== 'gaps') gapView?.selectDoor(door);
       if(view==='ground' && !groundView){
         if(window.CommunityGround) groundView=window.CommunityGround.mount(groundPanel,community,{
           esc,initialLayer:params.get('layer'),initialKind:params.get('measure'),initialScope:params.get('extent'),openDetails:()=>options.openEnvironment('ground'),
@@ -62,6 +75,7 @@
       }
       const dialog=root.closest('dialog');
       if(dialog)dialog.scrollTop=0;
+      activeView=view;
     }
     for(const button of root.querySelectorAll('[data-studio-view]'))button.onclick=()=>changePanel(button.dataset.studioView);
     const select = el('#studioDoor');
@@ -134,7 +148,8 @@
       options.copyValue(url.href,e.currentTarget,'已複製這個查詢畫面。','查詢連結');
     };
     displayDoor(params.has('floor') ? Number(params.get('floor')) : null,params.get('floor')==='all');
-    if(['fault','subsidence'].includes(params.get('layer')))changePanel('ground');
+    if(params.get('panel')==='gaps')changePanel('gaps', true);
+    else if(['fault','subsidence'].includes(params.get('layer')))changePanel('ground');
     return {destroy(){scene?.destroy();scene=null;}};
   }
   window.StudioSales={mount};

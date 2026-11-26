@@ -1,0 +1,115 @@
+.atlas-stories {
+  color: var(--atlas-ink, #142e32);
+  font-family: inherit;
+  container-type: inline-size;
+}
+.as-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.as-filters label {
+  flex: 1 1 122px;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #405956;
+}
+.as-filters select {
+  width: 100%;
+  min-height: 42px;
+  font: inherit;
+  color: #143e36;
+  border: 1px solid #becfc4;
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: #fff;
+}
+.as-article {
+  padding: clamp(16px, 4cqi, 28px);
+  background: #fffef9;
+  border: 1px solid #d2ded3;
+  border-radius: 12px;
+}
+.as-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: #49665b;
+  font-size: 13px;
+  font-weight: 600;
+}
+.as-meta [data-story-era] {
+  color: #6e5638;
+}
+.as-article h3 {
+  font: 700 clamp(21px, 4.5cqi, 29px)/1.38 "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  color: #163e34;
+  margin: 9px 0 16px;
+  overflow-wrap: anywhere;
+}
+.as-copy p {
+  margin: 0 0 12px;
+  color: #304941;
+  font-size: 15px;
+  line-height: 1.85;
+  max-width: 48em;
+}
+.as-actions, .as-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.as-actions button, .as-pager button {
+  border: 1px solid #c6d6cb;
+  background: #fffef9;
+  color: #175442;
+  border-radius: 7px;
+  min-height: 42px;
+  font-family: inherit;
+  font-weight: 650;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.as-actions button[data-story-communities] {
+  color: #fff;
+  background: #205749;
+  border-color: #205749;
+}
+.as-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #195a46;
+  text-underline-offset: 3px;
+}
+.as-sources {
+  margin-top: 16px;
+  padding-top: 9px;
+  border-top: 1px solid #d9e2d8;
+  color: #3a5a4f;
+  font-size: 13px;
+}
+.as-sources summary { cursor: pointer; padding: 5px 0; font-weight: 650; }
+.as-sources ul { padding-inline-start: 19px; margin: 6px 0 8px; }
+.as-sources li { margin: 6px 0; line-height: 1.65; }
+.as-sources a { color: #175d50; text-decoration: underline; text-underline-offset: 3px; }
+.as-sources p { margin: 8px 0 0; color: #57675f; line-height: 1.7; }
+.as-pager { justify-content: space-between; margin: 12px 0 2px; color: #456259; font-size: 13px; }
+.as-pager button:disabled { opacity: .46; cursor: default; }
+.atlas-stories :focus-visible { outline: 3px solid #9b702c; outline-offset: 3px; }
+@container (max-width: 270px) {
+  .as-filters { gap: 5px; }
+  .as-filters label { flex-basis: 100%; }
+  .as-pager { gap: 3px; }
+  .as-pager button { padding-inline: 7px; }
+}

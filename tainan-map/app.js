@@ -33,7 +33,7 @@ window.CATALOG_READY.then(()=>{
   const byDistrict = new Map(features.map(f=>[f.properties.name,[]]));
   communities.forEach(c=>{if(!byDistrict.has(c.district))byDistrict.set(c.district,[]);byDistrict.get(c.district).push(c);});
   const counts = name => name ? (byDistrict.get(name)||[]).length : communities.length;
-  let cityController = null, buildingController = null, preferCityScene = true;
+  let guide = null, cityController = null, buildingController = null, preferCityScene = true;
   function syncCityView() {
     const available = !district && !!cityController;
     const active = available && preferCityScene;
@@ -183,7 +183,7 @@ window.CATALOG_READY.then(()=>{
   function renderMap(){
     $('thickness').innerHTML=districts.map(d=>`<path data-name="${esc(d.name)}" d="${d.path}" fill="#427b80" stroke="#24565f" stroke-width=".8" vector-effect="non-scaling-stroke"/>`).join('');
     $('districts').innerHTML=districts.map(d=>`<path class="district" data-name="${esc(d.name)}" d="${d.path}" fill="${d.color}" fill-rule="evenodd" tabindex="0" role="button" aria-label="${esc(d.name)}，名冊 ${counts(d.name)} 個社區"><title>${esc(d.name)} · 名冊 ${counts(d.name)} 個社區</title></path>`).join('');
-    $('districts').querySelectorAll('.district').forEach(el=>{el.onclick=()=>{if(!dragged)chooseDistrict(el.dataset.name);};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chooseDistrict(el.dataset.name);}};});
+    $('districts').querySelectorAll('.district').forEach(el=>{el.onclick=()=>{if(!dragged)pickMapDistrict(el.dataset.name);};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickMapDistrict(el.dataset.name);}};});
     if(!features.length)$('mapHint').textContent='行政區圖尚未載入，仍可使用名冊搜尋。';
   }
   function pixelScale(){return 1/($('mapSvg').getScreenCTM()?.a||1);}
@@ -231,7 +231,7 @@ window.CATALOG_READY.then(()=>{
       const original=mapPoint(d.center,matrix),placed=mapPoint([x,y],matrix),displaced=Math.hypot(placed[0]-original[0],placed[1]-original[1])>5;
       return `<g class="district-badge ${compact?'compact':''} ${narrow?'minimal':''} ${d.name==='善化區'?'featured':''}" data-name="${esc(d.name)}" role="button" tabindex="0" aria-label="${esc(d.name)}，名冊 ${counts(d.name)} 個社區">${!district&&displaced?`<path class="badge-leader" d="M${d.center.join(',')}L${x},${y}"/>`:''}<g transform="translate(${x} ${y})"><g class="badge-scale" transform="scale(${px})">${(()=>{const art=!compact&&!narrow&&!district,tx=art?11:0;return `<rect class="badge-depth" x="${-bw/2}" y="${-bh/2+3.5}" width="${bw}" height="${bh}" rx="${compact?7:10}"/><rect x="${-bw/2}" y="${-bh/2}" width="${bw}" height="${bh}" rx="${compact?7:10}"/>${art?`<g transform="translate(${-bw/2+15} 12) scale(1.1)">${districtIcon(counts(d.name))}</g>`:''}<text class="district-label" x="${tx}" y="${narrow?3:compact?-2:-3}" text-anchor="middle">${esc(d.name)}</text><text class="district-count" x="${tx}" y="${compact?9:11}" text-anchor="middle">${num(counts(d.name))}</text>`;})()}</g></g></g>`;
     }).join('');
-    $('districtLabels').querySelectorAll('.district-badge').forEach(el=>{el.onclick=e=>{e.stopPropagation();if(!dragged)chooseDistrict(el.dataset.name);};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();chooseDistrict(el.dataset.name);}};});
+    $('districtLabels').querySelectorAll('.district-badge').forEach(el=>{el.onclick=e=>{e.stopPropagation();if(!dragged)pickMapDistrict(el.dataset.name);};el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickMapDistrict(el.dataset.name);}};});
   }
   function fly(target){cancelAnimationFrame(animation);const from=[...camera],start=performance.now(),duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:430;const tick=now=>{const t=duration?Math.min(1,(now-start)/duration):1,e=1-(1-t)**3;camera=target.map((v,i)=>from[i]+(v-from[i])*e);syncCamera();if(t<1)animation=requestAnimationFrame(tick);else {renderPins();renderDistrictBadges();}};animation=requestAnimationFrame(tick);}
   function fitDistrict(name){const d=districts.find(d=>d.name===name);if(!d)return;const [x1,y1,x2,y2]=d.bounds,w=Math.max(42,(x2-x1)*1.48),h=Math.max(42,(y2-y1)*1.5),width=Math.max(w,h*1100/900);fly([(x1+x2)/2-width/2,(y1+y2)/2-width*900/1100/2,width,width*900/1100]);}
@@ -347,6 +347,19 @@ window.CATALOG_READY.then(()=>{
     $('readDistrictLife').textContent=`閱讀${district||'北區'}生活 ↗`;
     $('periodNote').textContent=`${categoryLabel()} · ${periodLabel()}${periodInfo().start?' · '+periodInfo().start+' ～ '+periodInfo().end:''}${period==='all'?'；跨期歷史統計，非目前行情。':'；依資料快照計算，非即時房價。'} ${batchDates()}`;
     $('atlasStats').innerHTML=`<strong>${num(communities.length)}<span>筆社區名冊</span></strong><strong>37<span>行政區可切換</span></strong><strong>${num(communities.filter(located).length)}<span>筆有座標</span></strong>`;
+    guideMapCaption();
+  }
+  function guideMapCaption(){
+    if(guide?.task==='population'){
+      $('mapTitle').textContent='各區人口分布';
+      $('mapHint').textContent='點行政區看人口、排名與占比。';
+    }else if(guide?.task==='story' && district){
+      $('mapTitle').textContent=district;
+      $('mapHint').textContent='目前閱讀的故事所在行政區。';
+    }else if(!district && ['fault','subsidence'].includes(cityController?.getLayer())){
+      $('mapTitle').textContent=cityController.getLayer()==='fault'?'活動斷層敏感區':'地層下陷觀測';
+      $('mapHint').textContent='點圖中標記或從圖例選取，查看公告與觀測資料。';
+    }
   }
   function renderList(){
     const items=listPool().sort(compareCommunities);
@@ -361,14 +374,27 @@ window.CATALOG_READY.then(()=>{
     const turn=p=>{page=p;renderList();$('communityList').scrollIntoView({behavior:'smooth',block:'start'});};
     $('marketPrev').onclick=()=>turn(page-1);$('marketNext').onclick=()=>turn(page+1);$('marketPageInput').onchange=e=>turn(Math.max(1,Math.min(pages,Number(e.target.value)||1)));
   }
-  function closeDetail(){selected=null;$('detail').hidden=true;document.body.classList.remove('detail-open');document.querySelectorAll('.community-pin').forEach(el=>el.classList.remove('active'));renderList();}
+  function closeDetail(){
+    if(selected===null && $('detail').hidden) return;
+    selected=null;$('detail').hidden=true;document.body.classList.remove('detail-open');
+    document.querySelectorAll('.community-pin').forEach(el=>el.classList.remove('active'));
+    renderList();
+  }
+  function pickMapDistrict(name){
+    if (!guide?.pickDistrict(name)) chooseDistrict(name);
+  }
   function chooseDistrict(name,keepDetail=false){
+    guide?.rememberDistrict(name);
+    clearTimeout(searchTimer);
     district=name;page=1;query='';$('search').value='';$('clearSearch').hidden=true;$('searchResults').hidden=true;category='all';
     document.body.classList.toggle('district-focused',!!name);$('districtSelect').value=name;closeLife();if(!keepDetail)closeDetail();
     document.querySelectorAll('.district').forEach(el=>{el.classList.toggle('selected',el.dataset.name===name);el.classList.toggle('muted',!!name&&el.dataset.name!==name);el.setAttribute('aria-pressed',String(el.dataset.name===name));});
     $('thickness').querySelectorAll('path').forEach(el=>el.style.opacity=name&&el.dataset.name!==name?'.15':'1');
     document.querySelectorAll('.shortcuts button').forEach(el=>el.classList.toggle('active',el.dataset.name===name));
-    syncCityView();updateSummary();renderPins();renderDistrictBadges();renderList();renderLife();if(name)fitDistrict(name);else fly([0,0,1100,900]);
+    syncCityView();updateSummary();renderPins();renderDistrictBadges();renderList();
+    if(viewMode==='life')renderLife();
+    if(name)fitDistrict(name);else if(!cityController || !preferCityScene)fly([0,0,1100,900]);
+    else {cancelAnimationFrame(animation);camera=[0,0,1100,900];syncCamera();}
   }
   function selectCommunity(id){
     const c=byId.get(String(id));if(!c)return;closeLife();if(district!==c.district)chooseDistrict(c.district,true);setMode('market');selected=c.id;$('searchResults').hidden=true;renderList();renderDetail();renderPins();track('community_open',c.id);
@@ -385,6 +411,8 @@ window.CATALOG_READY.then(()=>{
       evidence.scrollIntoView({block:'start'});
     };
     $('floorSales').onclick=()=>showFloorSales(c);
+    $('detail').querySelector('.address').insertAdjacentHTML('afterend','<button type="button" class="gap-entry" id="openFloorGaps" aria-haspopup="dialog">比較樓層價差 <span aria-hidden="true">→</span></button>');
+    $('openFloorGaps').onclick=()=>showBuilding(c,new URLSearchParams({panel:'gaps'}));
     $('floorSales').insertAdjacentHTML('beforebegin','<button id="exploreBuilding" type="button" class="full" aria-haspopup="dialog">開啟 3D 樓層看成交 ↗</button>');
     $('exploreBuilding').onclick=()=>showBuilding(c);
     $('floorSales').insertAdjacentHTML('afterend','<button id="environmentButton" type="button" aria-haspopup="dialog">日照與環境查詢</button>');
@@ -488,7 +516,8 @@ window.CATALOG_READY.then(()=>{
         <div id="floorContents"></div>
         <p class="help">進入官方 3D 圖台後選「門牌」定位，可查看市府已開放的測繪成果。${mapAddress?' 本社區名冊門牌可參考 '+esc(mapAddress)+'。':''}</p>`);
       if (window.FloorSales?.mount) {
-        window.FloorSales.mount($('floorContents'), c, rows, {asOf:meta.asOf, period:bounds});
+        window.FloorSales.mount($('floorContents'), c, rows, {asOf:meta.asOf, period:bounds,
+          openGaps:address=>showBuilding(c,new URLSearchParams(address?{panel:'gaps',address}:{panel:'gaps'}))});
       } else {
         $('floorContents').innerHTML = '<p role="alert">樓層查價元件未載入，仍可開啟逐筆明細。</p><button type="button" id="floorFallback">查看原始成交明細</button>';
         $('floorFallback').onclick = () => showTransactions(c);
@@ -542,14 +571,30 @@ window.CATALOG_READY.then(()=>{
     openDialog('名冊的範圍，行情的依據',`<div class="method-intro"><strong>${num(communities.length)} 筆社區名冊 · 37 個行政區可查</strong><p>這是依目前取得來源整理的社區名冊，不是全市完整建築普查。低樓社區、用途待核及缺少行情的項目都保留；未收錄不代表不存在。</p></div><h3>資料覆蓋與缺口</h3><p>工務局清冊原始 ${valid(raw)?num(raw):'未提供'} 列，具名稱 ${num(cov.officialRegistryCount)} 列；核對重複後主目錄 ${num(communities.length)} 筆。<br>另保留舊圖台待核 ${num(legacyCommunities.length)} 筆，獨立查詢，不混入主目錄或行情統計。<br>清冊下載頁更新 ${esc(meta.registrySnapshot?.publishedAt||'2026-09-04')}；檔名標示資料截至 ${esc(meta.registrySnapshot?.fileAsOf||'2026-05-01')}。本次整理日期不表示清冊涵蓋當日全部建物。<br>可定位 ${num(current.located)} 筆；待補座標 ${num(current.total-current.located)} 筆。<br>${esc(periodLabel())}有可比行情 ${num(current.priced)} 筆（至少 5 筆可比成交）；另有 ${num(current.limited)} 筆名冊提供 1–4 筆少量成交參考，${num(current.total-current.priced-current.limited)} 筆名冊在此期間與類型下沒有可比成交。</p>${matchingCoverageText()}<p>未匹配資料不任意攤派給鄰近社區。名冊不是交易全量，交易配對也不等於社區全部棟別。</p><h3>交易批次與日期</h3><p>快照基準：${esc(meta.asOf||'未提供')}<br>${esc(batchDates())}<br>這批台南原始檔的最新交易日：${esc(latestBatch?.maxTransactionDate||'未提供')}<br>名冊住宅成交明細的最新交易日：${esc(latestMatched)}（含未納入均價的交易）。歷史統計從 ${esc(BASELINE)} 起算。<br>統計來源：${esc(meta.statisticalSource||'內政部公開實價資料')}<br>目前統計期別：${esc(periodLabel())}，${esc(periodInfo().start||'來源最早成交')} ～ ${esc(periodInfo().end||meta.asOf||'未提供')}。</p>${Array.isArray(meta.batches)?'<ul>'+meta.batches.map(b=>'<li>'+esc(typeof b==='string'?b:(b.label||b.file||JSON.stringify(b)))+'</li>').join('')+'</ul>':''}<h3>成交類型、時間與排序</h3><p>目前視角：${esc(categoryLabel())}；${esc(periodLabel())}，${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}。主清單、聚合清單、明細與比較共用同一分類與期別。</p><p>全部住宅僅納入用途可確認為住宅的成交，包含格局未揭露的住宅，不混入店面；套房依官方套房型態辨識，1 房不直接當套房。其餘住宅按官方房數分為 1、2、3、4、5 房以上；「用途／格局待核」保留不確定資料並顯示原始用途。顯示與統計下限固定 101/08/01（2012-08-01），更早或無法解析日期者不混入本期統計。</p><p>均價由高到低、成交樣本屋齡由低到高、使照戶數與已揭露成交戶別由多到少；缺值一律置後，同值依名稱、行政區與來源識別碼穩定排序。使照戶數依官方使用執照登載資料，非現況普查；成交戶別按本類型、期間的完整門牌去重。部分案件另用 114 年市府門牌表與逐筆地號核對，明細會標明來源。歷年各用途成交按官方交易編號去重，含住宅、店面與用途待核。</p><h3>怎麼計算均價</h3><ol><li>依行政區、正式名冊門牌比對。交易只填街路時使用該筆官方行政區欄。已核對使照的個案可逐筆以交易編號連到土地明細，並驗證單一地號、建物、完工日及總樓層。</li><li>主值是可比成交單價的算術平均；中位數作輔助。均價不是總價合計除以總坪數。</li><li>車位缺漏、特殊交易及其他排除原因保留於逐筆明細；1–4 筆真實可比成交另標「少量成交均價」，樣本少，僅供個案參考；0 筆才顯示「資料不足，不推估」。少量參考不計入可比行情數。</li><li>近 12／36 月採固定快照日期往前計算；101/08/01 起歷史混合不同市況，明示非當期行情。</li></ol><h3>每個行政區都可以查</h3><div class="table-scroll"><table><thead><tr><th>行政區</th><th>名冊</th><th>可定位</th><th>至少 5 筆</th><th>1–4 筆</th><th>無可比成交</th></tr></thead><tbody>${districtTable}</tbody></table></div><h3>地圖與建築圖示</h3><p>37 區的範圍取自內政部「鄉鎮市區界線」，採 Taiwan Atlas 的簡化圖形。圖形供區域探索，地籍界址請以測量成果為準。${link('https://data.gov.tw/dataset/7441','內政部區界資料')}${link('https://cdn.jsdelivr.net/npm/taiwan-atlas@2020.9.20/towns-10t.json','對照圖檔')}<br>北向上投影，以 cos(23°) 校正經度比例。區塊顏色表示名冊數量密度，與房價無關。社區依圖台或門牌座標標示；採主門牌或鄰近門牌推估的位置會在資訊卡註明。建築依 1–5、6–14、15 樓以上示意不同輪廓；缺樓層採中性圖示，不代表實測外型、實際高度或社區範圍。聚合數字包含全部對應名冊，點選可分頁查看全部。</p><h3>生活內容與回饋</h3><p>${lifeCount()} 則地方內容及 ${directoryCount()} 個官方活動查詢入口，各篇附來源與查閱日期。官方活動入口不代表當期有活動；未有可信座標者不猜測位置。可使用社區或內容的「補充／回報」提供修正。</p><h3>來源與逐批日期區間</h3><p class="help">以下為來源批次原始日期範圍，可能含已排除的異常日期；不等同本產品可比統計範圍。</p><div class="table-scroll"><table><thead><tr><th>來源批次</th><th>原始最早日期</th><th>原始最新日期</th><th>用途</th></tr></thead><tbody>${(meta.sources||[]).map(s=>`<tr><td>${link(s.url,s.label||s.url)}</td><td>${esc(s.dateMin||'—')}</td><td>${esc(s.dateMax||'—')}</td><td>${s.usedForStatistics===true?'實價統計':s.usedForStatistics===false?'留存來源審計':'名冊來源'}</td></tr>`).join('')}</tbody></table></div><h3>使用紀錄</h3><p>此公開版本不啟用訪客事件收集，也不顯示累積人數。回饋可複製或下載，再由使用者自行前往安心城正式回饋入口送出。</p><p class="help">這是可查證的資料快照，非即時行情、銀行鑑價或估價報告；個別交易仍須核對原始申報與物件條件。</p>`);
   };
   $('closeDialog').onclick=()=>$('infoDialog').close();$('infoDialog').onclick=e=>{if(e.target===$('infoDialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}};
-  function updateSearch(){query=$('search').value.trim().toLocaleLowerCase();queryTerms=query.split(/\s+/).map(t=>normSearch(t).replace(/^台南市?/,'')).filter(Boolean);page=1;$('clearSearch').hidden=!query;setMode('market');renderList();const results=query?lifeItems.filter(c=>`${c.title} ${c.district} ${c.summary}`.toLocaleLowerCase().includes(query)):[];$('searchResults').hidden=!query;$('searchResults').innerHTML=query?`<p>已搜尋全市 ${num(communities.length)} 筆名冊，<a href="#communityList">查看搜尋結果 ↓</a>。${results.length?`另有 ${results.length} 則生活內容。`:''}</p>${results.slice(0,3).map(c=>`<button data-id="${esc(c.id)}">生活｜${esc(c.title)}<small>${esc(c.district)}</small></button>`).join('')}`:'';$('searchResults').querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>openLife(el.dataset.id));}
+  function updateSearch(){
+    query=$('search').value.trim().toLocaleLowerCase();
+    queryTerms=query.split(/\s+/).map(t=>normSearch(t).replace(/^台南市?/, '')).filter(Boolean);
+    page=1;
+    $('clearSearch').hidden=!query;
+    if(viewMode!=='market') setMode('market'); else renderList();
+    const box=$('searchResults');
+    box.hidden=!query;
+    if(!query){box.replaceChildren();return;}
+    const matches=listPool().sort(compareCommunities);
+    const life=lifeItems.filter(c=>(c.title+' '+c.district+' '+c.summary).toLocaleLowerCase().includes(query));
+    box.innerHTML=matches.slice(0,3).map(c=>`<button type="button" data-quick-community="${esc(c.id)}"><strong>${esc(c.name)}</strong><small>${esc(c.district)} →</small></button>`).join('')+
+      (matches.length?`<a href="#communityList">看全部 ${num(matches.length)} 個符合社區 ↓</a>`:'<p>查無符合的社區，可改用路名或門牌。</p>')+
+      life.slice(0,2).map(c=>`<button type="button" data-life="${esc(c.id)}">生活 · ${esc(c.title)}</button>`).join('');
+    box.querySelectorAll('[data-quick-community]').forEach(b=>b.onclick=()=>selectCommunity(b.dataset.quickCommunity));
+    box.querySelectorAll('[data-life]').forEach(b=>b.onclick=()=>openLife(b.dataset.life));
+  }
   $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(updateSearch,100);};$('search').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(searchTimer);updateSearch();$('search').blur();}if(e.key==='Escape')$('searchResults').hidden=true;};$('clearSearch').onclick=()=>{$('search').value='';updateSearch();};
   $('periodSelect').onchange=e=>applyMarketFilter('period',e.target.value);$('categorySelect').onchange=e=>applyMarketFilter('category',e.target.value);
   $('kindSelect').onchange=e=>{kind=e.target.value;page=1;renderList();renderPins();};$('sortSelect').onchange=e=>applyMarketFilter('sort',e.target.value);$('sortSelect').querySelector('[value="households"]').disabled=!householdAvailable;
   [...districts].sort((a,b)=>a.name.localeCompare(b.name,'zh-TW')).forEach(d=>{const option=document.createElement('option');option.value=d.name;option.textContent=`${d.name} · 名冊 ${num(counts(d.name))}`;$('districtSelect').append(option);});
   $('districtSelect').onchange=e=>chooseDistrict(e.target.value);
   $('districtShortcuts').innerHTML=['善化區','安南區','永康區','東區','北區','安平區'].map(name=>`<button data-name="${name}" class="${name==='善化區'?'shanhua-shortcut':''}">${name==='善化區'?'先看善化':name}<span>${num(counts(name))}</span></button>`).join('');$('districtShortcuts').querySelectorAll('button').forEach(el=>el.onclick=()=>chooseDistrict(el.dataset.name));
-  $('backToCity').onclick=()=>chooseDistrict('');document.querySelector('.brand').onclick=e=>{e.preventDefault();chooseDistrict('');};
+  $('backToCity').onclick=()=>chooseDistrict('');document.querySelector('.brand').onclick=e=>{e.preventDefault();guide.select('price','');};
   $('modeButton').onclick=()=>{const flat=document.body.classList.toggle('flat');$('modeButton').textContent=flat?'平面圖示':'立體圖示';$('modeButton').setAttribute('aria-pressed',String(!flat));};
   function zoom(factor,at){cancelAnimationFrame(animation);const width=Math.max(.8,Math.min(1800,camera[2]*factor)),f=width/camera[2],p=at||[camera[0]+camera[2]/2,camera[1]+camera[3]/2];fly([p[0]-(p[0]-camera[0])*f,p[1]-(p[1]-camera[1])*f,width,camera[3]*f]);}
   $('zoomIn').onclick=()=>zoom(.62);$('zoomOut').onclick=()=>zoom(1.55);
@@ -611,16 +656,46 @@ window.CATALOG_READY.then(()=>{
   if (window.CityScene && features.length) {
     $('cityScene').hidden=false;
     try {
-      cityController=window.CityScene.mount($('cityScene'),{features,counts:Object.fromEntries([...byDistrict].map(([name,items])=>[name,items.length])),onDistrict:name=>chooseDistrict(name)});
+      cityController=window.CityScene.mount($('cityScene'),{features,counts:Object.fromEntries([...byDistrict].map(([name,items])=>[name,items.length])),onDistrict:pickMapDistrict});
     } catch { $('cityScene').hidden=true; }
   }
   $('showCityScene').onclick=()=>{preferCityScene=true;syncCityView();updateSummary();};
   $('showPlanMap').onclick=()=>{preferCityScene=false;syncCityView();updateSummary();};
+  guide=window.AtlasGuide.mount({
+    districts:features.map(f=>f.properties.name),
+    openPrices(name,keepLayer){
+      if(district!==name) chooseDistrict(name);
+      if(!keepLayer && cityController?.getLayer()!=='registry') cityController?.setLayer('registry');
+      if(viewMode!=='market') setMode('market');
+      updateSummary();
+    },
+    showCity(layer){
+      preferCityScene=true;
+      if(district) chooseDistrict(''); else syncCityView();
+      cityController?.setLayer(layer);
+    },
+    mapDistrict(name){
+      if(district!==name) chooseDistrict(name);
+      if(!name && cityController?.getLayer()==='population')cityController.setLayer('registry');
+      guideMapCaption();
+    },
+    highlightPopulation(name){cityController?.highlightDistrict?.(name);guideMapCaption();}
+  });
+  $('cityScene').addEventListener('city-layer-change',e=>{
+    guide.layerChanged(e.detail.layer);
+    updateSummary();
+  });
+  const menu=$('atlasMenu');
+  function closeMenu(){menu.setAttribute('aria-expanded','false');}
+  menu.onclick=()=>menu.setAttribute('aria-expanded',String(menu.getAttribute('aria-expanded')!=='true'));
+  $('atlasActions').addEventListener('click',closeMenu);
+  document.addEventListener('click',e=>{if(!e.target.closest('.masthead')) closeMenu();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape' && menu.getAttribute('aria-expanded')==='true'){closeMenu();menu.focus();}});
   const sample=byId.get('community-registry-1314');
   if(sample){
     $('studioSample').hidden=false;
     $('studioSample').querySelector('strong').textContent=sample.name+' ↗';
-    $('studioSample').onclick=()=>{selectCommunity(sample.id);showBuilding(sample);};
+    $('studioSample').onclick=()=>{selectCommunity(sample.id);showBuilding(sample,new URLSearchParams({panel:'gaps'}));};
   }
   renderMap();chooseDistrict('');renderCompare();
   const entry = new URLSearchParams(location.search);
@@ -639,6 +714,12 @@ window.CATALOG_READY.then(()=>{
     showEnvironment(target,entry);
   } else if (target && !entry.has('view')) {
     selectCommunity(target.id);
+  } else if (entry.get('layer')==='population' || entry.get('task')==='population') {
+    guide.select('population',entry.get('district'));
+  } else if (entry.get('topic')==='story') {
+    guide.select('story',entry.get('district'));
+  } else if (features.some(f=>f.properties.name===entry.get('district'))) {
+    guide.select('price',entry.get('district'));
   }
 })();
 

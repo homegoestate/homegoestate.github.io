@@ -184,6 +184,11 @@
 }
 #cityScene .city-layer-choice svg {width: 17px; height: 17px;}
 #cityScene [data-city-layer="registry"] {--theme-accent: #ffd599;}
+#cityScene [data-city-layer="population"] {--theme-accent: #a9d6b1;}
+#cityScene[data-layer="population"] .city-model-label:not(.is-flag) {
+  background: #eff6e5e8;
+  text-shadow: none;
+}
 #cityScene [data-city-layer="fault"] {--theme-accent: #ffa18a;}
 #cityScene [data-city-layer="subsidence"] {--theme-accent: #96e3ea;}
 #cityScene .city-layer-choice svg {color: var(--theme-accent);}
@@ -256,7 +261,12 @@
   #cityScene .city-model-tool { width: 35px; height: 39px; }
   #cityScene .city-model-tools { right: 10px; bottom: 8px; }
   #cityScene .city-model-layers {left:12px;gap:3px;max-width:calc(100% - 20px);}
-  #cityScene .city-layer-choice {gap:4px;padding:4px 7px;}
+  #cityScene .city-layer-choice {gap:3px;padding:4px 5px;}
+  #cityScene .city-layer-choice svg {display:none;}
   #cityScene .city-model-legend {left:12px;right:12px;}
   #cityScene .city-geo-select {max-width:127px;}
+}
+@media (min-width:366px) and (max-width:450px) {
+  #cityScene .city-layer-choice {gap:4px;padding:4px 6px;}
+  #cityScene .city-layer-choice svg {width:14px;}
 }

@@ -1,0 +1,69 @@
+.guide-heading h1 {
+  margin: 0 0 19px;
+  color: #183e37;
+  font: 700 clamp(27px,2.5vw,38px)/1.2 "Songti TC","Noto Serif TC","PMingLiU",serif;
+  letter-spacing: .035em;
+}
+.guide-tabs {display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 4px; padding: 4px; margin: 0 0 21px; background: #e6ece3; border: 1px solid #d4dfd2; border-radius: 14px;}
+.guide-tabs button {min-height: 46px; padding: 7px 2px; border: 0; border-radius: 10px; background: transparent; color: #35574c; font: inherit; font-weight: 650; cursor: pointer;}
+.guide-tabs button[aria-pressed="true"] {color: white; background: #245844; box-shadow: 0 2px 5px #1c462926;}
+.guide-tabs button:hover:not([aria-pressed="true"]) {background: #f5f8f1;}
+.guide-label {display: block; color: #29493f; font-size: 14px; font-weight: 700; margin: 0 0 7px;}
+.explorer > .search-box {margin-top: 0;}
+.explorer > .atlas-stats,.explorer > .shortcuts,.district-summary > .eyebrow,.section-title .snapshot-tag {display: none;}
+.explorer .studio-sample {background: transparent; border: 0; box-shadow: none; padding: 0; margin: 0 0 13px; min-height: 44px; color: #426756; text-align: left; justify-content: flex-start; gap: 11px;}
+.explorer .studio-sample span {color: #596d5b; font-size: 12px;}
+.explorer .studio-sample strong {font-size: 13px; color: #1c6147; text-decoration: underline; text-underline-offset: 3px;}
+.search-results button[data-quick-community] {width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; min-height: 44px; padding: 6px 8px;}
+.search-results button[data-quick-community] small {flex-shrink: 0;}
+.search-results > a {display: inline-block; padding: 10px 6px; font-size: 13px; color: #265a43;}
+.guide-content {min-width: 0; color: #203f36;}
+.guide-content[hidden], .pop-links[hidden] {display:none;}
+body:not([data-guide="price"]) .explorer > :is(.price-prompt,.search-box,.search-results,.studio-sample,.district-nav,.district-summary,.brand-service,.edition) {display: none !important;}
+#guidePopulation select {display:block; width:100%; padding:9px 12px; min-height:46px; border:1px solid #a8bdad; background:#fffef9; color:#1c4137; border-radius:8px; font:inherit;}
+.pop-stat {margin:16px 0 9px; padding:20px; border-radius:14px; color:#f3f5df; background:linear-gradient(130deg,#143f36,#276451); display:grid; gap:6px;}
+.pop-stat small {font-size:13px; color:#dcebd7;}
+.pop-stat strong {font:600 clamp(33px,3.4vw,49px)/1.14 Georgia,serif; font-variant-numeric:tabular-nums; letter-spacing:-.025em;}
+.pop-stat em {font:500 14px/1.2 system-ui,sans-serif;}
+.pop-stat a {color:#deebcd; font-size:12px; text-underline-offset:3px; width:fit-content; padding-block:3px;}
+.guide-content h2 {font-size:19px; margin:20px 0 8px; line-height:1.4;}
+.pop-ranking {list-style:none; margin:0; padding:0;}
+.pop-ranking button {position:relative; display:grid; width:100%; grid-template-columns:2ch 1fr auto; gap:10px; align-items:center; min-height:50px; padding:5px 8px 9px; border:0; border-bottom:1px solid #d6dfd4; background:transparent; text-align:left; cursor:pointer; font:inherit; color:#24483c;}
+.pop-ranking button::after {content:""; position:absolute; bottom:0; left:0; height:3px; width:var(--share); background:linear-gradient(90deg,#79aa83,#3a7258); border-radius:2px;}
+.pop-ranking button[aria-pressed="true"],.pop-ranking button:hover {background:#eaf1e6;}
+.pop-ranking small {font:italic 16px Georgia,serif; color:#62765d;}
+.pop-ranking b {font-variant-numeric:tabular-nums; font-size:14px;}
+.pop-more summary {min-height:44px; line-height:44px; cursor:pointer; font-size:14px; color:#28553f;}
+.pop-links {display:flex; gap:10px;flex-wrap:wrap;}
+.pop-links button,.gap-entry {border:1px solid #aac2ae; border-radius:8px; color:#26593f; background:#f0f5ea; padding:9px 12px; min-height:44px; cursor:pointer; font:inherit; font-size:14px;}
+.detail .gap-entry {display:flex; align-items:center; justify-content:space-between; width:100%; margin:12px 0; font-weight:700; color:#fff; background:#245844;}
+#atlasMenu {display:none;}
+body[data-guide="population"] #cityModeSwitch {display:none;}
+body[data-guide="story"] .map-stage:not(.city-active) :is(#pins,.map-status,.read-district-life,.map-footnote) {display:none;}
+@media(max-width:900px) {
+  #cityScene .city-model-canvas, #mapSvg {touch-action:pan-y;}
+  .masthead {min-height:57px; flex-wrap:nowrap; z-index:12; padding:6px 16px;}
+  #atlasMenu {display:block; background:transparent; color:#f1f6ea; border:1px solid #59726a; padding:5px 10px; min-height:42px; border-radius:8px; font:inherit; font-size:13px;}
+  #atlasMenu span {margin-left:4px;}
+  #atlasActions {display:none;}
+  #atlasMenu[aria-expanded="true"] + #atlasActions {position:absolute; right:10px; top:100%; display:grid; grid-template-columns:1fr; width:max-content; min-width:140px; padding:6px; z-index:10; border:1px solid #5b7668; border-radius:10px; background:#163c31; box-shadow:0 9px 22px #132b2038;}
+  #atlasActions > * {min-height:44px; text-align:left;}
+  .guide-heading,.guide-tabs,.price-prompt,.guide-content {margin-inline:max(16px,calc((100vw - 660px)/2));}
+  .guide-heading {order:-8; margin-top:17px;}
+  .guide-heading h1 {font-size:26px; margin-bottom:10px;}
+  .guide-tabs {order:-7; margin-bottom:13px; padding:3px;}
+  .guide-tabs button {min-height:43px;}
+  .price-prompt {order:-6; margin-bottom:5px;}
+  .explorer .search-box,.district-focused .explorer .search-box {margin:0 max(16px,calc((100vw - 660px)/2)) 3px;}
+  .explorer .studio-sample {margin:0 max(16px,calc((100vw - 660px)/2)) 5px; min-height:40px;}
+  .guide-content {order:-2; margin-bottom:16px;}
+  .explorer > .district-nav {order:-2; margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+  .district-nav .select-label {margin:0; font-size:12px; white-space:nowrap;}
+  .district-nav select {min-width:0; flex:1;}
+  .pop-stat {padding:17px; margin-top:12px;}
+  .guide-content h2 {margin-top:14px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  html {scroll-behavior:auto;}
+  .guide-tabs button,.guide-content * {scroll-behavior:auto; transition:none;}
+}

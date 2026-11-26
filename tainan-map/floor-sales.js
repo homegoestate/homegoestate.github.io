@@ -414,6 +414,7 @@
     if (community?.id !== undefined) root.dataset.communityId = String(community.id);
     root.innerHTML = `<div class="floor-sales__header">
       <h3 class="floor-sales__title">門牌與樓層成交</h3>
+      ${typeof state.options.openGaps === 'function' ? '<button type="button" class="fg-open" data-floor-open-gaps>看同棟各樓層價差</button>' : ''}
       <p class="floor-sales__summary" data-floor-sales-summary>${noRows ? '目前載入範圍沒有成交列。' : `本次載入 ${model.stats.total} 筆成交，其中 ${model.stats.comparable} 筆價格適合列入可比統計。`}</p>
       ${model.addresses.length > 1 ? `<div class="floor-sales__controls"><label for="floor-sales-address-select">同門牌篩選</label><select id="floor-sales-address-select" data-floor-sales-address-select aria-label="同門牌篩選"><option value="all" ${selectedAddressKey === 'all' ? 'selected' : ''}>全部門牌（分開顯示，不合併）</option>${model.addresses.map(address => `<option value="${esc(address.key)}" ${selectedAddressKey === address.key ? 'selected' : ''}>${esc(address.label)}${address.exact ? '（正式核對）' : '（待核）'}</option>`).join('')}</select></div>` : ''}
       ${Number.isInteger(buildingCount) && buildingCount > 1 ? `<p class="floor-sales__notice floor-sales__notice--warning" role="status">名冊列載 ${esc(buildingCount)} 棟；不同棟別依可核對門牌分開，不跨門牌合併。</p>` : ''}
@@ -457,6 +458,11 @@
       renderState(state, uiSnapshot);
     };
     state.onClick = event => {
+      if (event.target.closest?.('[data-floor-open-gaps]')) {
+        const address = state.model.addresses.find(item => item.exact && item.key === state.selectedAddressKey);
+        state.options.openGaps?.(address?.label);
+        return;
+      }
       const clear = event.target.closest?.(SELECTORS.clear);
       if (!clear) return;
       const uiSnapshot = captureUi(root);
@@ -508,5 +514,5 @@
   }
 
   host.FloorSales = Object.freeze({ version: VERSION, selectors: SELECTORS, classNames: CLASS_NAMES,
-    groupRows, groupTransactions: groupRows, mount });
+    groupRows, groupTransactions: groupRows, addressMatches, floorInfo, mount });
 })();

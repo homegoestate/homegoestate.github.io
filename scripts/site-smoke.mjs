@@ -59,6 +59,27 @@ for (const file of ['index.html','app.js','styles.css','data-loader.js','data-ma
 mustHave('tainan-map/index.html', 'src="floor-sales.js');
 mustHave('tainan-map/index.html', 'href="floor-sales.css');
 const floorContext = {window:{}};
+for (const file of ['atlas-guide.js','atlas-guide.css','population.js','floor-gaps.js','floor-gaps.css','district-stories.js','district-stories.css']) {
+  mustHave('tainan-map/index.html',file+'?');
+  assert.ok(existsSync(resolve(root,'tainan-map',file)));
+}
+for (const module of ['atlas-guide','population','floor-gaps','district-stories','district-boundaries']) {
+  runInNewContext(read('tainan-map/'+module+'.js'),floorContext);
+}
+const {AtlasPopulation, AtlasStories, DISTRICT_GEOJSON} = floorContext.window;
+const districtNames = Array.from(DISTRICT_GEOJSON.features,f=>f.properties.name).sort();
+assert.equal(districtNames.length,37);
+assert.deepEqual(Object.keys(AtlasPopulation.districts).sort(),districtNames);
+const ranked = Object.values(AtlasPopulation.districts).sort((a,b)=>b.population-a.population);
+assert(ranked.every((row,i)=>Number.isSafeInteger(row.population) && row.population>0 && row.rank===i+1));
+assert.equal(ranked.reduce((sum,row)=>sum+row.population,0),AtlasPopulation.total);
+assert.match(AtlasPopulation.period,/^\d{4}-(0[1-9]|1[0-2])$/);
+assert.deepEqual(Array.from(AtlasStories.districts).sort(),districtNames);
+assert(districtNames.every(name=>AtlasStories.stories.some(story=>story.districts.includes(name))));
+for (const story of AtlasStories.stories) {
+  assert(story.title && story.body.length && story.refs.length && story.map);
+  assert([...story.refs,story.map].every(key=>AtlasStories.sources[key]));
+}
 for (const module of ['scene-city','scene-building','studio-sales']) {
   for (const extension of ['js','css']) {
     mustHave('tainan-map/index.html', module + '.' + extension + '?');
