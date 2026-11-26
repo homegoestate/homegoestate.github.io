@@ -38,6 +38,19 @@ body:not([data-guide="price"]) .explorer > :is(.price-prompt,.search-box,.search
 .pop-links button,.gap-entry {border:1px solid #aac2ae; border-radius:8px; color:#26593f; background:#f0f5ea; padding:9px 12px; min-height:44px; cursor:pointer; font:inherit; font-size:14px;}
 .detail .gap-entry {display:flex; align-items:center; justify-content:space-between; width:100%; margin:12px 0; font-weight:700; color:#fff; background:#245844;}
 #atlasMenu {display:none;}
+.market-entries {display:flex; flex-wrap:wrap; align-items:center; column-gap:14px; row-gap:0; margin:2px 0 10px;}
+.market-entries #openMarket,.search-results #searchMarket,.detail .market-near {background:transparent; color:#235d47; border:0; cursor:pointer; min-height:44px; font:inherit; font-weight:650; font-size:13px; padding:4px 0; text-align:left; text-decoration:underline; text-underline-offset:3px;}
+.explorer .market-entries .studio-sample {margin:0; min-height:44px; gap:6px;}
+.market-entries .studio-sample strong {max-width:13em;}
+.search-official {display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px;}
+.search-results .search-official button {color:#235d47; min-height:44px; padding:4px 0; border:0; background:transparent; font-size:13px; font-weight:650; text-decoration:underline; text-underline-offset:3px;}
+body:not([data-guide="price"]) .explorer > .market-entries {display:none;}
+.detail .market-near {display:block; margin:-6px 0 8px;}
+.tx-all-rows {display:flex; gap:8px; align-items:center; color:#214c3e; min-height:44px; margin-bottom:8px; padding:6px 10px; background:#eef4ec; border-radius:8px; font-weight:650;}
+.tx-all-rows input {width:18px; height:18px; flex:none;}
+@media(max-width:900px) {
+  .explorer > .market-entries {order:-2; margin:0 max(16px,calc((100vw - 660px)/2)) 4px;}
+}
 body[data-guide="population"] #cityModeSwitch {display:none;}
 body[data-guide="story"] .map-stage:not(.city-active) :is(#pins,.map-status,.read-district-life,.map-footnote) {display:none;}
 @media(max-width:900px) {

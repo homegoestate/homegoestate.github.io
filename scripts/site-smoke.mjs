@@ -209,6 +209,57 @@ for (const [district, entry] of Object.entries(manifest.districts)) {
 }
 assert.equal(Object.keys(manifest.districts).length, new Set(catalog.communities.map(c => c.district)).size);
 assert.equal(transactionCount, manifest.transactionCount);
+for (const resource of ['market-ledger.js','market-ledger.css']) {
+  mustHave('tainan-map/index.html',resource+'?');
+  assert.ok(existsSync(resolve(root,'tainan-map',resource)));
+}
+for (const [folder,market] of [['market-ledger','sale'],['presale-ledger','presale']]) {
+  const directory = 'tainan-map/'+folder+'/';
+  const register = JSON.parse(read(directory+'manifest.json'));
+  assert.equal(register.schema,1);
+  assert.equal(register.market,market);
+  assert.match(register.latestBatch,/^\d{4}-\d{2}-\d{2}$/);
+  let count=0, cancelled=0, linked=0;
+  const seen=new Set();
+  for (const [district,entry] of Object.entries(register.districts)) {
+    let districtCount=0;
+    for (const part of entry.parts) {
+      const bytes=readFileSync(resolve(root,directory,part.file));
+      assert.equal(bytes.length,part.bytes);
+      assert.equal(createHash('sha256').update(bytes).digest('hex'),part.sha256);
+      const items=JSON.parse(bytes);
+      assert.equal(items.length,part.count);
+      if(part.gzip) assert.ok(gunzipSync(readFileSync(resolve(root,directory,part.gzip))).equals(bytes));
+      for (const row of items) {
+        const source=register.sources[row[8]];
+        assert.ok(source?.url && row[9]>=3 && row[9]<=source.rows+2, district+' source record');
+        const key=row[8]+':'+row[9];
+        assert.ok(!seen.has(key),'Source row repeated '+key);
+        seen.add(key);
+        assert.equal(typeof register.labels.types[row[2]],'string');
+        const flag=register.labels.flags[row[7]];
+        assert.equal(typeof flag,'string');
+        if (market==='presale') {
+          if (row[10]) assert.ok(register.projectDistricts[row[10].trim()]?.includes(district));
+          if (flag.includes('解約')) cancelled++;
+        } else {
+          assert.ok(row[12]===0 || row[12]===1);
+          linked+=row[12];
+        }
+      }
+      districtCount+=items.length;
+    }
+    assert.equal(districtCount,entry.count);
+    count+=districtCount;
+  }
+  assert.equal(count,register.count);
+  if(market==='presale') assert.equal(cancelled,register.cancellations);
+  if(market==='sale'){
+    assert.equal(register.communityVersion,manifest.version);
+    assert.equal(linked,register.communityRows);
+    assert.equal(count-linked,register.unlinkedRows);
+  }
+}
 for (const [id,units] of [['community-3424',191],['community-3287',27]]) {
   const c=registry.get(id);
   assert.equal(c.projectUnits.count,units);

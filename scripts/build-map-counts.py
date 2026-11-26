@@ -3,7 +3,10 @@
 Run with --batch (reviewed builder + raw, registry, acquisition), --land (saved
 official quarter land CSVs), --scratch (new work directory), and --map (public
 asset directory). Quarter land CSVs are named 107S1.csv etc. Their public URL
-is recorded with a SHA-256 for every source. --package-only reuses the local
+is recorded with a SHA-256 for every source. --archives holds the original
+moi-history-YYYYMMDD.zip files for the reviewed sale batches (default: the
+parent of --batch). Each archive must contain the reviewed primary CSV and
+the matching land member. --package-only reuses the local
 catalog build. The public manifest is written after the verified new assets.
 """
 import argparse
@@ -16,6 +19,7 @@ from pathlib import Path
 import re
 import shutil
 import unicodedata
+from zipfile import ZipFile
 import map_parcel_review
 
 
@@ -60,7 +64,43 @@ def relative_address(address, district, districts):
     return district + text
 
 
-def read_land(land_dir, batch_date, batch):
+def archived_land_sources(folder, builder, batch, scratch):
+    manifest = builder['source_manifest']()
+    paths, refs = [], {}
+    archive_dir = scratch / 'archive-land'
+    archive_dir.mkdir(exist_ok=True)
+    for name, evidence in sorted(manifest.items()):
+        match = re.fullmatch(r'moi-history-(\d{8})\.csv', name)
+        if not match:
+            continue
+        token = name[:-4]
+        original = primary_file(name, batch, builder)
+        archive = folder / (token + '.zip')
+        with ZipFile(archive) as z:
+            main = z.read('d_lvr_land_a.csv')
+            land = z.read('d_lvr_land_a_land.csv')
+        main_sha = digest(main)
+        if main_sha != evidence['sha256'] or original.read_bytes() != main:
+            raise ValueError('Archived primary does not match the reviewed sale batch: ' + name)
+        url = 'https://plvr.land.moi.gov.tw/DownloadHistory?type=history&fileName=' + match[1]
+        if evidence['sourceUrl'] != url:
+            raise ValueError('Unexpected archive URL: ' + name)
+        path = archive_dir / (token + '-land.csv')
+        path.write_bytes(land)
+        paths.append((token, name, path, url))
+        refs[token] = {'archiveSha256': digest(archive.read_bytes()), 'primarySha256': main_sha,
+                       'member': 'd_lvr_land_a_land.csv', 'primaryMember': 'd_lvr_land_a.csv'}
+    return paths, refs
+
+
+def primary_file(name, batch, builder):
+    paths = [p / name for p in (batch / 'raw', builder['INPUT_SALES_ROOT']) if (p / name).is_file()]
+    if not paths or any(p.read_bytes() != paths[0].read_bytes() for p in paths[1:]):
+        raise ValueError('Missing or conflicting primary file: ' + name)
+    return paths[0]
+
+
+def read_land(land_dir, batch_date, batch, builder, archives, scratch):
     cases_by_parcel = {(x['section'], x['parcel']): cid for cid, x in CASES.items()}
     files, references = {}, {}
     end_year = int(batch_date[:4]) - 1911
@@ -80,6 +120,8 @@ def read_land(land_dir, batch_date, batch):
         if (land_dir/'official-current-verify.csv').read_bytes() != primary.read_bytes():
             raise ValueError('Current primary and archived review batch differ: '+key)
         inputs.append((key, primary.name, path, 'https://plvr.land.moi.gov.tw/Download?fileName=d_lvr_land_a_land.csv'))
+    archive_inputs, archive_refs = archived_land_sources(archives, builder, batch, scratch)
+    inputs.extend(archive_inputs)
     for key, name, path, url in inputs:
         relevant, first, ambiguous = {}, {}, set()
         with path.open(encoding='utf-8-sig', newline='') as stream:
@@ -95,8 +137,39 @@ def read_land(land_dir, batch_date, batch):
                 if cid and tid not in relevant:
                     relevant[tid] = (cid, line)
         files[name] = {tid: value for tid, value in relevant.items() if tid not in ambiguous}
-        references[key] = {'url': url, 'sha256': digest(path.read_bytes())}
-    return files, references
+        references[key] = {'url': url, 'sha256': digest(path.read_bytes()), **archive_refs.get(key, {})}
+    sources = [(key, primary_file(name, batch, builder), path) for key, name, path, _ in inputs]
+    return files, references, sources
+
+
+def identical_current_rows(additional, files, sources, builder, batch):
+    # The reviewed builder sees the saved current version before its same-day
+    # archive. Attach archive evidence to that first occurrence only when the
+    # entire normalized sale row is identical in both versions.
+    for token, original, _ in sources:
+        if not token.startswith('moi-history-'):
+            continue
+        ids = files[original.name].keys() | additional.get(original.name, {}).keys()
+        if not ids:
+            continue
+        current_name = original.name.replace('moi-history-', 'moi-current-')
+        if not any((p / current_name).exists() for p in (batch/'raw', builder['INPUT_SALES_ROOT'])):
+            continue
+        archived = defaultdict(list)
+        for n, row in builder['csv_rows'](original):
+            if row['編號'] in ids:
+                archived[row['編號']].append((n, row))
+        current = defaultdict(list)
+        for _, row in builder['csv_rows'](primary_file(current_name, batch, builder)):
+            if row['編號'] in ids:
+                current[row['編號']].append(row)
+        for tid, rows in current.items():
+            if len(rows) == len(archived[tid]) == 1 and rows[0] == archived[tid][0][1]:
+                row = rows[0]
+                door = builder['sale_door'](row, row['鄉鎮市區'])
+                cid, ref = builder['parcel_match'](original.name, row, door, None)
+                if cid:
+                    additional.setdefault(current_name, {})[tid] = (cid, {**ref, 'archiveMainRow': archived[tid][0][0]})
 
 
 def pre_completion(t):
@@ -338,7 +411,7 @@ def package(args, land_refs, baseline, builder, initial_manifest):
     (args.scratch/'verified-data.js').write_bytes(full)
     for c in data['communities']:
         c.pop('transactions')
-    manifest = dict(baseline, version='V5-' + as_of.replace('-', '') + '-counts2',
+    manifest = dict(baseline, version='V5-' + as_of.replace('-', '') + '-land-archives',
                     sourceDataSha256=digest(full), transactionCount=audit['after'],
                     summary=pack(args.map, 'catalog', data), districts={})
     for i, (d, values) in enumerate(sorted(districts.items()), 1):
@@ -352,6 +425,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for flag in ('batch', 'land', 'doors', 'permits', 'scratch', 'map'):
         parser.add_argument('--' + flag, type=Path, required=True)
+    parser.add_argument('--archives', type=Path, help='Directory containing the official dated ZIPs')
     parser.add_argument('--package-only', action='store_true')
     parser.add_argument('--expected-manifest-sha', help='Reviewed hash when replacing a prior staged build')
     args = parser.parse_args()
@@ -364,16 +438,24 @@ def main():
     initial_manifest = load(live)
     if initial_manifest != base and digest(live.read_bytes()) != args.expected_manifest_sha:
         raise ValueError('Check the current manifest before replacing an earlier candidate')
-    files, urls = read_land(args.land, base['asOf'], args.batch)
+    files = {}
     additional = {}
     builder = install_builder(args.batch.resolve(), args.scratch.resolve(), files, additional)
+    archive_dir = args.archives or args.batch.parent
+    reviewed_files, urls, sources = read_land(args.land, base['asOf'], args.batch, builder, archive_dir, args.scratch)
+    files.update(reviewed_files)
+    baseline_catalog = load(args.map/base['summary']['json'])
+    for token, previous in baseline_catalog['meta'].get('parcelSaleSources', {}).items():
+        if token not in urls or any(urls[token].get(k) != v for k, v in previous.items()):
+            raise ValueError('Previously published land source changed or is missing: ' + token)
+    input_receipt = args.scratch/'parcel-source-receipt.json'
+    if args.package_only and (not input_receipt.is_file() or load(input_receipt) != urls):
+        raise ValueError('Full build required for the current parcel sources')
     if not args.package_only:
-        catalog = load(args.map/base['summary']['json'])['communities']
+        catalog = baseline_catalog['communities']
         groups = [load(args.map/e['json']) for e in base['districts'].values()]
-        primary = builder['INPUT_SALES_ROOT']
-        sources = [(key,primary/('moi-season-'+key+'.csv'), args.land/(key+'.csv'))
-                   if key[0].isdigit() else (key,args.batch/'raw'/(key+'.csv'),args.land/(key+'-land.csv')) for key in urls]
         additional.update(map_parcel_review.screen(args.permits,catalog,builder,relative_address,sources,args.doors,groups,CASES))
+        identical_current_rows(additional, files, sources, builder, args.batch)
         save(args.scratch/'parcel-reviewed-rows.json',additional)
         assert relative_address('健康路三段７００號', '安平區', builder['DISTRICTS']) == '安平區健康路三段700號'
         assert relative_address('東區健康路1號', '安平區', builder['DISTRICTS']) == '東區健康路1號'
@@ -388,6 +470,7 @@ def main():
         tx=builder['transaction'](row,'test:1',builder['date_of']('1070920'))
         assert not tx['eligible'] and '預售屋' in tx['exclusionReason']
         builder['main']()
+        save(input_receipt, urls)
     package(args, urls, base, builder, initial_manifest)
 
 

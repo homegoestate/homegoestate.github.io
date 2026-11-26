@@ -10,7 +10,7 @@
 .floor-gaps .fg-place {margin: 0; color: #516b5d; font-weight: 600; font-size: 13px;}
 .floor-gaps h3 {margin: 3px 0; font-size: clamp(23px, 3vw, 31px);}
 .fg-fields, .fg-pair {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px;}
-.fg-fields label, .fg-pair label {display: grid; gap: 3px; min-width: 0; font-size: 13px; font-weight: 650;}
+.fg-fields label, .fg-pair label {display: grid; grid-template-columns:minmax(0, 1fr); gap: 3px; min-width: 0; font-size: 13px; font-weight: 650;}
 .fg-fields select, .fg-pair select {
   min-width: 0; width: 100%; min-height: 42px;
   background: #fffef9; color: #163e34; border: 1px solid #a2b6a7;
@@ -29,6 +29,12 @@
 .fg-table thead small {font-weight: 400;}
 .fg-table tbody td:last-child {font-size: 13px;}
 .fg-note, .fg-scope {color: #53695c; font-size: 13px;}
+.fg-support {margin:10px 0 15px; padding:12px 14px; border:1px solid #becdbd; border-radius:8px; background:#f3f6ed;}
+.fg-support h4 {margin:0 0 5px; font-size:16px;}
+.fg-support p {margin:5px 0; font-size:14px;}
+.fg-support .fg-records {margin-top:7px; padding-bottom:0;}
+.fg-support .fg-note {font-size:13px;}
+.fg-support-single {margin:8px 0 12px;}
 .fg-scope {margin: 5px 0 0;}
 .fg-records, .fg-method {border-top: 1px solid #cfdacc; padding: 6px 0;}
 .fg-records summary, .fg-method summary {min-height: 40px; padding: 8px 0; font-weight: 650; cursor: pointer;}
@@ -38,6 +44,21 @@
 .fg-records li {display: grid; gap: 3px; padding: 8px 0; border-top: 1px solid #dbe3d6;}
 .fg-records small {overflow-wrap: anywhere; color: #53695c;}
 .fg-open {background: #234f40; color: #fffef2;}
+.fg-fields [hidden] {display:none;}
+.fg-fields label, .fg-pair label {overflow:hidden;}
+.fg-fields select:focus-visible, .fg-pair select:focus-visible {outline:2px solid #2d674e; outline-offset:-3px;}
+.fg-near-pick {grid-template-columns:minmax(0, 1fr); margin-top:10px;}
+.fg-near-levels {margin-top:8px;}
+.fg-overview {margin:24px 0 12px;}
+.fg-overview h4 {font-size:20px; margin:0;}
+.fg-overview .fg-note {margin:3px 0 6px;}
+.fg-overview-table td small {display:block; font-size:12px; color:#4c6459; font-weight:400;}
+.fg-overview-table .fg-evidence-row td {padding:0; border-bottom:1px solid #bbccbd;}
+.fg-overview-table tbody tr:has(+ .fg-evidence-row) > * {border-bottom:0;}
+.fg-evidence-row .fg-records {border:0; padding:0;}
+.fg-evidence-row .fg-records summary {color:#365e4c; font-size:13px; min-height:38px; padding:5px;}
+.fg-evidence-row ul {padding:0 7px 6px;}
+.floor-gaps [data-gap-all-records] {margin:9px 0; min-height:42px;}
 @media (max-width: 650px) {
   #buildingStudio .studio-switch {gap: 2px;}
   #buildingStudio .studio-switch button {font-size: 13px; padding-inline: 3px;}
@@ -47,4 +68,8 @@
   .fg-fields select, .fg-pair select {font-size: 16px; min-height: 44px;}
   .fg-answer, .fg-empty {padding: 10px 12px;}
   .fg-table th, .fg-table td {padding: 7px 3px;}
+  .fg-near-pick {grid-template-columns:minmax(0, 1fr);}
+  .fg-overview-table {font-size:14px;}
+  .fg-overview-table td {vertical-align:top;}
+  .fg-evidence-row .fg-records summary {min-height:44px;}
 }

@@ -57,7 +57,7 @@
       if (view === 'gaps' && !gapView) {
         const gapPanel = el('[data-studio-panel="gaps"]');
         if (window.FloorGaps) gapView = window.FloorGaps.mount(gapPanel, community, data, {
-          address:directLink ? params.get('address') : door, period:options.bounds, filters:options.filters
+          address:directLink ? params.get('address') : door, period:options.bounds, filters:options.filters, openFloors:options.openFloors
         });
         else gapPanel.textContent = '樓層價差目前無法載入，請重新整理再試。';
       } else if (view === 'gaps' && activeView !== 'gaps') gapView?.selectDoor(door);

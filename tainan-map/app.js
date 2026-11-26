@@ -399,6 +399,24 @@ window.CATALOG_READY.then(()=>{
   function selectCommunity(id){
     const c=byId.get(String(id));if(!c)return;closeLife();if(district!==c.district)chooseDistrict(c.district,true);setMode('market');selected=c.id;$('searchResults').hidden=true;renderList();renderDetail();renderPins();track('community_open',c.id);
   }
+  function openMarket(districtName='', text='', market='sale'){
+    if(window.MapMarketLedger){
+      window.MapMarketLedger.open({district:districtName,query:text,market});
+    }else{
+      openDialog('公開成交查詢',link(OFFICIAL_LVR,'內政部實價查詢')+'<p>市區成交查詢暫時無法載入，請重新整理或到官方查詢。</p>');
+    }
+  }
+  function communityMarket(c){
+    const addresses=c.primaryExactAddresses||[];
+    const representative=addresses[0] || c.exactAddresses?.[0] || c.address || '';
+    const local=String(representative).replace(/^(臺|台)南市/,'').replace(c.district,'').trim();
+    const road=local.match(/^[^、，,\d]{1,15}?(?:大道|路|街)(?:[一二三四五六七八九十０-９0-9]+段)?/);
+    openMarket(c.district,road ? road[0] : (local.match(/^[^、，,號]+號/)?.[0] || ''));
+  }
+  $('openMarket').onclick=()=>{
+    const text=$('search').value.trim();
+    openMarket(text?'':district,text);
+  };
   function renderDetail(){
     const c=byId.get(String(selected));if(!c)return;const s=stats(c),enough=sufficient(c),few=limited(c),age=ageValue(c);
     $('detail').hidden=false;document.body.classList.add('detail-open');
@@ -412,6 +430,8 @@ window.CATALOG_READY.then(()=>{
     };
     $('floorSales').onclick=()=>showFloorSales(c);
     $('detail').querySelector('.address').insertAdjacentHTML('afterend','<button type="button" class="gap-entry" id="openFloorGaps" aria-haspopup="dialog">比較樓層價差 <span aria-hidden="true">→</span></button>');
+    $('openFloorGaps').insertAdjacentHTML('afterend','<button type="button" id="nearMarket" class="market-near" aria-haspopup="dialog">另查附近公開成交 ↗</button>');
+    $('nearMarket').onclick=()=>communityMarket(c);
     $('openFloorGaps').onclick=()=>showBuilding(c,new URLSearchParams({panel:'gaps'}));
     $('floorSales').insertAdjacentHTML('beforebegin','<button id="exploreBuilding" type="button" class="full" aria-haspopup="dialog">開啟 3D 樓層看成交 ↗</button>');
     $('exploreBuilding').onclick=()=>showBuilding(c);
@@ -542,14 +562,15 @@ window.CATALOG_READY.then(()=>{
     }
     render();
   }
-  function showTransactions(c,txPage=1){return withTransactions(c,()=>renderTransactions(c,txPage));}
-  function renderTransactions(c,txPage){
-    const rows=(c.transactions||[]).filter(t=>txInPeriod(t)&&txInCategory(t)).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(a.id||'').localeCompare(String(b.id||''))),pages=Math.max(1,Math.ceil(rows.length/TX_PAGE_SIZE));txPage=Math.max(1,Math.min(txPage,pages));const shown=rows.slice((txPage-1)*TX_PAGE_SIZE,txPage*TX_PAGE_SIZE);
+  function showTransactions(c,txPage=1,allRows=false){return withTransactions(c,()=>renderTransactions(c,txPage,allRows));}
+  function renderTransactions(c,txPage,allRows){
+    const rows=(c.transactions||[]).filter(t=>allRows || (txInPeriod(t)&&txInCategory(t))).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(a.id||'').localeCompare(String(b.id||''))),pages=Math.max(1,Math.ceil(rows.length/TX_PAGE_SIZE));txPage=Math.max(1,Math.min(txPage,pages));const shown=rows.slice((txPage-1)*TX_PAGE_SIZE,txPage*TX_PAGE_SIZE);
     const rooms=t=>[valid(t.roomCount)?t.roomCount+' 房':null,valid(t.hallCount)?t.hallCount+' 廳':null,valid(t.bathCount)?t.bathCount+' 衛':null].filter(Boolean).join(' / ')||'格局未提供';
     const uses={residential:'住宅',shop:'店面',non_residential:'非住宅',unknown:'用途待核'};
-    openDialog(c.name+'｜成交明細',`${filterControls('tx',false)}<p class="filter-context"><strong>${esc(categoryLabel())} · ${esc(periodLabel())}</strong><br>${esc(periodInfo().start)} ～ ${esc(periodInfo().end)} · 共 ${num(rows.length)} 筆。未納入統計的資料仍保留，每頁 ${TX_PAGE_SIZE} 筆。</p>${queryActions(c)}<p class="help">住宅與店面分開統計；套房依官方建物型態辨識，不以 1 房推定。屋齡依來源完成日期計算，部分只精確至月。成屋可比單價排除交易早於可確認完工日的案件；日期只有月份者，同月份保留原分類。各筆皆保留排除原因。</p><div class="table-scroll"><table class="transaction-table"><thead><tr><th>交易日期／類型</th><th>總價含車位<br>萬元</th><th>面積含車位<br>坪</th><th>可比單價<br>萬元／坪</th><th>用途／格局</th><th>完成日期／屋齡</th><th>樓層／車位</th><th>統計狀態／原始列</th></tr></thead><tbody>${shown.map(t=>`<tr><td>${esc(t.date||'日期待核')}<br><small>${esc(t.categoryLabel||marketCategories[t.category]||'分類待核')}</small></td><td>${fmt(t.priceWan)}</td><td>${fmt(t.areaPing)}</td><td>${fmt(t.unitWan)}</td><td>${esc(t.mainUse||uses[t.propertyUse]||'用途待核')}<br>${esc(rooms(t))}<br><small>${esc(t.buildingType||'建物型態未提供')}</small></td><td>${esc(t.buildingCompletionDate||t.buildingCompletionRaw||'完成日期未提供')}<br>${valid(t.ageYears)?fmt(t.ageYears)+' 年':'屋齡待補'}${t.completionPrecision==='month'?'<br><small>來源精確至月，屋齡約數</small>':''}</td><td>${esc(t.floor||'樓層未提供')}<br>${esc(t.address||'門牌待核')}<br>${esc(t.parkingMode||'車位待核')}${t.unitDoorplateRow114?'<br><small>戶別與 114 年市府門牌表第 '+num(t.unitDoorplateRow114)+' 列相符</small>':t.unitIdentity?'<br><small>原始成交列揭露樓室</small>':''}</td><td>${t.eligible===true?'納入可比統計':`<span class="badge">未納入：${esc(t.exclusionReason||'待核對')}</span>`}<br><small>${esc(t.notes||'')}<br>來源列 ${esc(t.sourceRow||t.id||'未提供')}${t.parcelMatch?'<br>同批土地明細 '+esc(t.parcelMatch.parcel)+' · 第 '+num(t.parcelMatch.landRow)+' 列 '+link(meta.parcelSaleSources?.[t.parcelMatch.season]?.url,'內政部土地明細')+(t.parcelMatch.officialPlateRow114?'<br>同門牌見 114 年市府門牌表第 '+num(t.parcelMatch.officialPlateRow114)+' 列 '+link(meta.unitDoorplateSource?.url,'市府門牌資料'):''):''}${Array.isArray(t.sourceRows)&&t.sourceRows.length>1?'<br>合併相同資料 '+t.sourceRows.length+' 個來源列':''}</small></td></tr>`).join('')||'<tr><td colspan="8">此類型、期間尚無可確定匹配紀錄，不使用其他類型或鄰近社區價格填補。</td></tr>'}</tbody></table></div><nav id="transactionsPager" class="pager"><button id="txPrev" ${txPage<=1?'disabled':''}>上一頁</button><span>第 ${txPage} / ${pages} 頁 · ${num(rows.length)} 筆</span><button id="txNext" ${txPage>=pages?'disabled':''}>下一頁</button></nav><p class="help">資料快照 ${esc(meta.asOf||'未提供')}。顯示範圍最早自 101/08/01 起，日期無法解析者不混入期間統計。原始批次與方法可從主頁「資料與方法」查閱。</p>`);
-    bindFilterControls('tx',()=>showTransactions(c,1),false);bindQueryActions($('dialogBody'));
-    $('txPrev').onclick=()=>showTransactions(c,txPage-1);$('txNext').onclick=()=>showTransactions(c,txPage+1);
+    openDialog(c.name+'｜成交明細',`<label class="tx-all-rows"><input id="txAllRows" type="checkbox" ${allRows?'checked':''}> 顯示本社區全部已配對成交（${num(c.transactions.length)} 筆）</label>${allRows?'':filterControls('tx',false)}<p class="filter-context"><strong>${allRows?'全期、全部用途':esc(categoryLabel())+' · '+esc(periodLabel())}</strong><br>${allRows?'含已配對的店面、車位與待核紀錄':esc(periodInfo().start)+' ～ '+esc(periodInfo().end)} · 共 ${num(rows.length)} 筆。未納入統計的資料仍保留，每頁 ${TX_PAGE_SIZE} 筆。</p>${queryActions(c)}<p class="help">住宅與店面分開統計；套房依官方建物型態辨識，不以 1 房推定。屋齡依來源完成日期計算，部分只精確至月。成屋可比單價排除交易早於可確認完工日的案件；日期只有月份者，同月份保留原分類。各筆皆保留排除原因。</p><div class="table-scroll"><table class="transaction-table"><thead><tr><th>交易日期／原登錄地址</th><th>總價含車位<br>萬元</th><th>面積含車位<br>坪</th><th>可比單價<br>萬元／坪</th><th>用途／格局</th><th>完成日期／屋齡</th><th>樓層／車位</th><th>統計狀態／原始列</th></tr></thead><tbody>${shown.map(t=>`<tr><td>${esc(t.date||'日期待核')}<br><small>${esc(t.address||'原檔未揭露門牌')}<br>${esc(t.categoryLabel||marketCategories[t.category]||'分類待核')}</small></td><td>${fmt(t.priceWan)}</td><td>${fmt(t.areaPing)}</td><td>${fmt(t.unitWan)}</td><td>${esc(t.mainUse||uses[t.propertyUse]||'用途待核')}<br>${esc(rooms(t))}<br><small>${esc(t.buildingType||'建物型態未提供')}</small></td><td>${esc(t.buildingCompletionDate||t.buildingCompletionRaw||'完成日期未提供')}<br>${valid(t.ageYears)?fmt(t.ageYears)+' 年':'屋齡待補'}${t.completionPrecision==='month'?'<br><small>來源精確至月，屋齡約數</small>':''}</td><td>${esc(t.floor||'樓層未提供')}<br>${esc(t.address||'門牌待核')}<br>${esc(t.parkingMode||'車位待核')}${t.unitDoorplateRow114?'<br><small>戶別與 114 年市府門牌表第 '+num(t.unitDoorplateRow114)+' 列相符</small>':t.unitIdentity?'<br><small>原始成交列揭露樓室</small>':''}</td><td>${t.eligible===true?'納入可比統計':`<span class="badge">未納入：${esc(t.exclusionReason||'待核對')}</span>`}<br><small>${esc(t.notes||'')}<br>來源列 ${esc(t.sourceRow||t.id||'未提供')}${t.parcelMatch?'<br>同批土地明細 '+esc(t.parcelMatch.parcel)+' · 第 '+num(t.parcelMatch.landRow)+' 列 '+link(meta.parcelSaleSources?.[t.parcelMatch.season]?.url,'內政部土地明細')+(t.parcelMatch.officialPlateRow114?'<br>同門牌見 114 年市府門牌表第 '+num(t.parcelMatch.officialPlateRow114)+' 列 '+link(meta.unitDoorplateSource?.url,'市府門牌資料'):''):''}${Array.isArray(t.sourceRows)&&t.sourceRows.length>1?'<br>合併相同資料 '+t.sourceRows.length+' 個來源列':''}</small></td></tr>`).join('')||'<tr><td colspan="8">此類型、期間尚無可確定匹配紀錄，不使用其他類型或鄰近社區價格填補。</td></tr>'}</tbody></table></div><nav id="transactionsPager" class="pager"><button id="txPrev" ${txPage<=1?'disabled':''}>上一頁</button><span>第 ${txPage} / ${pages} 頁 · ${num(rows.length)} 筆</span><button id="txNext" ${txPage>=pages?'disabled':''}>下一頁</button></nav><p class="help">資料快照 ${esc(meta.asOf||'未提供')}。顯示範圍最早自 101/08/01 起，日期無法解析者不混入期間統計。原始批次與方法可從主頁「資料與方法」查閱。</p>`);
+    if(!allRows)bindFilterControls('tx',()=>showTransactions(c,1),false);bindQueryActions($('dialogBody'));
+    $('txAllRows').onchange=e=>showTransactions(c,1,e.target.checked);
+    $('txPrev').onclick=()=>showTransactions(c,txPage-1,allRows);$('txNext').onclick=()=>showTransactions(c,txPage+1,allRows);
   }
   function showCompare(){
     const rows=compared.map(id=>byId.get(String(id))).filter(Boolean);if(rows.length<2)return;
@@ -583,9 +604,12 @@ window.CATALOG_READY.then(()=>{
     const matches=listPool().sort(compareCommunities);
     const life=lifeItems.filter(c=>(c.title+' '+c.district+' '+c.summary).toLocaleLowerCase().includes(query));
     box.innerHTML=matches.slice(0,3).map(c=>`<button type="button" data-quick-community="${esc(c.id)}"><strong>${esc(c.name)}</strong><small>${esc(c.district)} →</small></button>`).join('')+
-      (matches.length?`<a href="#communityList">看全部 ${num(matches.length)} 個符合社區 ↓</a>`:'<p>查無符合的社區，可改用路名或門牌。</p>')+
+      (matches.length?`<a href="#communityList">看全部 ${num(matches.length)} 個符合社區 ↓</a>`:'<p>社區名冊找不到這個名稱，可繼續查官方成交。</p>')+
+      '<div class="search-official"><button type="button" id="searchMarket">查路段買賣成交 →</button><button type="button" id="searchPresale">找預售建案成交 →</button></div>'+
       life.slice(0,2).map(c=>`<button type="button" data-life="${esc(c.id)}">生活 · ${esc(c.title)}</button>`).join('');
     box.querySelectorAll('[data-quick-community]').forEach(b=>b.onclick=()=>selectCommunity(b.dataset.quickCommunity));
+    $('searchMarket').onclick=()=>openMarket('',$('search').value.trim());
+    $('searchPresale').onclick=()=>openMarket('',$('search').value.trim(),'presale');
     box.querySelectorAll('[data-life]').forEach(b=>b.onclick=()=>openLife(b.dataset.life));
   }
   $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(updateSearch,100);};$('search').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(searchTimer);updateSearch();$('search').blur();}if(e.key==='Escape')$('searchResults').hidden=true;};$('clearSearch').onclick=()=>{$('search').value='';updateSearch();};
@@ -691,7 +715,7 @@ window.CATALOG_READY.then(()=>{
   $('atlasActions').addEventListener('click',closeMenu);
   document.addEventListener('click',e=>{if(!e.target.closest('.masthead')) closeMenu();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape' && menu.getAttribute('aria-expanded')==='true'){closeMenu();menu.focus();}});
-  const sample=byId.get('community-registry-1314');
+  const sample=byId.get('community-registry-1353');
   if(sample){
     $('studioSample').hidden=false;
     $('studioSample').querySelector('strong').textContent=sample.name+' ↗';
@@ -714,6 +738,8 @@ window.CATALOG_READY.then(()=>{
     showEnvironment(target,entry);
   } else if (target && !entry.has('view')) {
     selectCommunity(target.id);
+  } else if (entry.get('view')==='market') {
+    openMarket(entry.get('district')||'',entry.get('q')||'',entry.get('market')==='presale'?'presale':'sale');
   } else if (entry.get('layer')==='population' || entry.get('task')==='population') {
     guide.select('population',entry.get('district'));
   } else if (entry.get('topic')==='story') {

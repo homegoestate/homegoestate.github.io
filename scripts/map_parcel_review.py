@@ -116,7 +116,9 @@ def screen(folder, catalog, builder, relative, sources, doors_file, baseline_gro
             cid=c['id']
             if door in c['exactAddresses'] and owners.get(tid,cid)==cid:
                 known.add(cid)
-            if tid in owners or door in c['exactAddresses']:
+            # Previously verified parcel matches need the same evidence again
+            # when the published catalog itself is the rebuild baseline.
+            if owners.get(tid,cid) != cid or door in c['exactAddresses']:
                 continue
             eligible[cid].append((tid,door,full,token,line,sec,lot,main_path.name))
     target={full for rows in eligible.values() for _,_,full,*_ in rows}
