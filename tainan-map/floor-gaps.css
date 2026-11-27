@@ -59,6 +59,47 @@
 .fg-evidence-row .fg-records summary {color:#365e4c; font-size:13px; min-height:38px; padding:5px;}
 .fg-evidence-row ul {padding:0 7px 6px;}
 .floor-gaps [data-gap-all-records] {margin:9px 0; min-height:42px;}
+#detailFloorCard {
+  clear:both; margin:12px 0; padding:12px 0 0; border-top:2px solid #326747;
+  color:#1c3b30; line-height:1.45; font-variant-numeric:tabular-nums;
+}
+#detailFloorCard h3 {margin:0; color:#183e31; font-size:20px; line-height:1.25;}
+#detailFloorCard h3 small {font:500 12px/1.4 system-ui,sans-serif; color:#435e50; white-space:nowrap;}
+#detailFloorCard p {margin:4px 0; font-size:13px; color:#435c50; line-height:1.5;}
+#detailFloorCard .fl-scope, #detailFloorCard .fl-note {font-size:12px;}
+#detailFloorCard [data-fl-address] {margin:7px 0 2px; overflow-wrap:anywhere; font-size:14px; font-weight:650;}
+#detailFloorCard [data-fl-address] label {display:block; font-size:12px;}
+#detailFloorCard [data-fl-door] {
+  display:block; width:100%; min-width:0; height:44px; padding:3px 8px; margin-top:2px;
+  text-overflow:ellipsis; color:#1c3b30; background:#fff; border:1px solid #aabdb0; border-radius:5px; font:inherit; font-size:16px;
+}
+#detailFloorCard .fl-labels, #detailFloorCard .fl-row > summary {
+  display:grid; grid-template-columns:minmax(35px,.67fr) minmax(42px,.8fr) minmax(57px,1.08fr) minmax(60px,1.1fr);
+  align-items:center; gap:3px; padding:4px 5px; text-align:right;
+}
+#detailFloorCard .fl-labels {background:#e5eee6; color:#365044; font-size:12px; font-weight:650;}
+#detailFloorCard .fl-labels > :first-child, #detailFloorCard .fl-row > summary > :first-child {text-align:left;}
+#detailFloorCard .fl-row {border-bottom:1px solid #d2ded4;}
+#detailFloorCard .fl-row > summary {min-height:44px; cursor:pointer; color:#264439; font-size:14px; list-style:none;}
+#detailFloorCard .fl-row > summary::-webkit-details-marker {display:none;}
+#detailFloorCard .fl-row > summary > :first-child {font-weight:700; white-space:nowrap;}
+#detailFloorCard .fl-row > summary > :first-child::before {content:'›'; display:inline-block; margin-right:3px; color:#557463;}
+#detailFloorCard .fl-row[open] > summary > :first-child::before {transform:rotate(90deg);}
+#detailFloorCard .fl-row > summary > strong {font-size:16px; color:#133d30;}
+#detailFloorCard .fl-row small {display:block; color:#54695c; font-size:11px; font-weight:400;}
+#detailFloorCard .fl-row[open] > summary {background:#edf4ed;}
+#detailFloorCard .fl-delta {font-weight:650;}
+#detailFloorCard .fl-evidence {padding:4px 8px 9px; background:#f3f6ef;}
+#detailFloorCard .fl-neighbors {display:grid; gap:3px; padding-bottom:6px; border-bottom:1px solid #d3dfd3;}
+#detailFloorCard .fl-evidence ul {list-style:none; padding:0; margin:0;}
+#detailFloorCard .fl-evidence li {display:grid; margin:0; padding:7px 0; border-top:1px solid #d3dfd3; font-size:13px; overflow-wrap:anywhere;}
+#detailFloorCard .fl-evidence li small {font-size:12px;}
+#detailFloorCard .fl-pair > summary {min-height:44px; display:flex; align-items:center; font-size:14px; color:#27553e; text-decoration:underline; cursor:pointer;}
+#detailFloorCard .fl-pair {padding-bottom:3px;}
+#detailFloorCard .fl-more {margin:4px 0; width:100%; min-height:44px; color:#295540; background:#f3f7f1;}
+#detailFloorCard [hidden] {display:none;}
+.parcel-resurvey {display:grid; gap:2px; margin:5px 0; color:#345842; font-size:12px; overflow-wrap:anywhere;}
+.parcel-resurvey a {color:#24543d; text-decoration:underline; text-underline-offset:2px; padding:4px 0;}
 @media (max-width: 650px) {
   #buildingStudio .studio-switch {gap: 2px;}
   #buildingStudio .studio-switch button {font-size: 13px; padding-inline: 3px;}

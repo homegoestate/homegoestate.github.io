@@ -136,7 +136,7 @@ window.CATALOG_READY.then(()=>{
   const cnNum=s=>{const m=s.match(/^([一二兩三四五六七八九])?十([一二三四五六七八九])?$/);if(m)return (m[1]?CN[m[1]]:1)*10+(m[2]?CN[m[2]]:0);return [...s].map(ch=>CN[ch]??ch).join('');};
   const normSearch=s=>String(s??'').normalize('NFKC').toLocaleLowerCase().replace(/臺/g,'台').replace(/[零〇一二兩三四五六七八九十]+(?=[段巷弄樓鄰])/g,m=>String(cnNum(m))).replace(/之/g,'-').replace(/[\s,，、。．.()（）_]+/g,'');
   const searchIndex=new Map();
-  const indexOf=c=>{let v=searchIndex.get(c.id);if(v===undefined){v=normSearch([c.name,c.district,c.address,c.apiAlias?.name,c.apiAlias?.address,c.buildingPermit,...(c.exactAddresses||[]),...(c.parcelMatchedAddresses||[]),...(c.officialAddressAliases||[]).map(a=>a.address),...(c.registrationAliases||[]).flatMap(a=>[a.name,a.address,a.buildingPermit])].filter(Boolean).join('|'));searchIndex.set(c.id,v);}return v;};
+  const indexOf=c=>{let v=searchIndex.get(c.id);if(v===undefined){v=normSearch([c.name,c.district,c.address,c.apiAlias?.name,c.apiAlias?.address,c.buildingPermit,...(c.exactAddresses||[]),...(c.parcelMatchedAddresses||[]),...(c.verifiedDoorAddresses||[]),...(c.officialAddressAliases||[]).map(a=>a.address),...(c.registrationAliases||[]).flatMap(a=>[a.name,a.address,a.buildingPermit])].filter(Boolean).join('|'));searchIndex.set(c.id,v);}return v;};
   let queryTerms=[];
   const matching = c => !query || queryTerms.every(t=>indexOf(c).includes(t));
   const listPool = () => (query?communities:(district?byDistrict.get(district)||[]:communities)).filter(c=>matching(c)&&(kind==='all'||c.kind===kind));
@@ -387,6 +387,7 @@ window.CATALOG_READY.then(()=>{
     guide?.rememberDistrict(name);
     clearTimeout(searchTimer);
     district=name;page=1;query='';$('search').value='';$('clearSearch').hidden=true;$('searchResults').hidden=true;category='all';
+    window.MarketPulse?.setDistrict(name);
     document.body.classList.toggle('district-focused',!!name);$('districtSelect').value=name;closeLife();if(!keepDetail)closeDetail();
     document.querySelectorAll('.district').forEach(el=>{el.classList.toggle('selected',el.dataset.name===name);el.classList.toggle('muted',!!name&&el.dataset.name!==name);el.setAttribute('aria-pressed',String(el.dataset.name===name));});
     $('thickness').querySelectorAll('path').forEach(el=>el.style.opacity=name&&el.dataset.name!==name?'.15':'1');
@@ -397,7 +398,7 @@ window.CATALOG_READY.then(()=>{
     else {cancelAnimationFrame(animation);camera=[0,0,1100,900];syncCamera();}
   }
   function selectCommunity(id){
-    const c=byId.get(String(id));if(!c)return;closeLife();if(district!==c.district)chooseDistrict(c.district,true);setMode('market');selected=c.id;$('searchResults').hidden=true;renderList();renderDetail();renderPins();track('community_open',c.id);
+    const c=byId.get(String(id));if(!c)return;closeLife();if(district!==c.district)chooseDistrict(c.district,true);setMode('market');selected=c.id;$('searchResults').hidden=true;renderList();renderDetail();$('detail').scrollTop=0;renderPins();track('community_open',c.id);
   }
   function openMarket(districtName='', text='', market='sale'){
     if(window.MapMarketLedger){
@@ -417,8 +418,26 @@ window.CATALOG_READY.then(()=>{
     const text=$('search').value.trim();
     openMarket(text?'':district,text);
   };
+  async function loadFloorCard(root, c, preferredAddress){
+    root.innerHTML='<h3>各樓層成交</h3><p role="status">正在載入這個行政區的明細…</p>';
+    try {
+      if (!Array.isArray(c.transactions)) await window.ensureDistrictTransactions(c.district);
+      if (!root.isConnected || selected !== c.id) return;
+      const model = window.FloorSales.groupRows(c.transactions,c,{asOf:meta.asOf,period:{start:BASELINE,end:meta.asOf},parcelResurveySources:meta.parcelResurveySources});
+      const card = window.FloorGaps.mountCard(root,c,model,{include:t=>txInPeriod(t)&&txInCategory(t),
+        address:preferredAddress, filters:categoryLabel()+' · '+periodLabel(),period:periodInfo()});
+      const openGaps = $('openFloorGaps');
+      openGaps.onclick = () => showBuilding(c,new URLSearchParams(card?.address?{panel:'gaps',address:card.address}:{panel:'gaps'}));
+    } catch {
+      if (!root.isConnected || selected !== c.id) return;
+      root.innerHTML='<h3>各樓層成交</h3><p role="alert">樓層成交資料暫時無法載入。</p><button type="button">重新載入樓層成交</button>';
+      root.querySelector('button').onclick=()=>loadFloorCard(root,c,preferredAddress);
+    }
+  }
   function renderDetail(){
     const c=byId.get(String(selected));if(!c)return;const s=stats(c),enough=sufficient(c),few=limited(c),age=ageValue(c);
+    const previousCard=$('detailFloorCard');
+    const preferredAddress=previousCard?.dataset.community===String(c.id) ? previousCard.querySelector('[data-fl-door]')?.value : '';
     $('detail').hidden=false;document.body.classList.add('detail-open');
     $('detail').innerHTML=`<div class="detail-toolbar"><span class="detail-identity"><strong>${esc(c.name)}</strong><small>${esc(c.district)}</small></span><button id="closeDetail" class="detail-close" aria-label="關閉社區資訊">關閉 ×</button></div><span class="detail-kicker">${esc(c.district)} / ${esc(kindLabels[c.kind]||c.kindLabel||'類型待核')}</span><div class="detail-art" aria-hidden="true"><svg viewBox="-40 -83 80 92">${buildingArt(c)}</svg></div><h2>${esc(c.name)}</h2><p class="address">${esc(c.address||'代表門牌待補')}</p>${quantityGlance(c)}${queryActions(c)}<p class="official-query-note">官方入口開啟查詢首頁；複製門牌後，在官方頁設定地址與條件。</p><button type="button" id="floorSales" class="primary full" aria-haspopup="dialog">樓層查價</button>${filterControls('detail',false)}<div class="building-facts"><span>${valid(c.floors)?esc(c.floors)+' 樓':'樓層待核'}</span><span>${positionLabel(c)}</span></div><div class="metric"><span class="metric-label">${esc(categoryLabel())}<br>${esc(periodLabel())} · ${few?'少量成交均價':'算術平均單價'}</span><div class="metric-value ${enough?'':few?'limited':'insufficient'}">${enough?fmt(s.mean)+'<small>萬元／坪</small>':few?fmt(s.sampleMean)+'<small>萬元／坪 · '+num(s.eligibleCount)+' 筆</small>':'資料不足，不推估'}</div><div class="metrics"><div><span>可比 / 本類型匹配成交</span><strong>${num(s.eligibleCount)} / ${num(s.count)}<small> 筆</small></strong></div><div><span>中位單價</span><strong>${enough?fmt(s.median):few?fmt(s.sampleMedian):'—'}<small> 萬／坪</small></strong></div></div><p class="help">${enough?'可比單價範圍 '+fmt(s.min)+'–'+fmt(s.max)+' 萬／坪':few?'樣本少，僅供個案參考。少量單價範圍 '+fmt(s.sampleMin)+'–'+fmt(s.sampleMax)+' 萬／坪；不視為完整社區行情。':'此類型、期間尚無可比成交或資料缺漏，保留名冊、不推估均價。'}<br>期間最新成交：${esc(s.latestDate||'尚無匹配紀錄')}${period==='all'?'<br><strong>此為 101/08/01 起跨期歷史均價，非當期市場行情。</strong>':''}</p></div><dl class="community-evidence"><div><dt>成交樣本屋齡</dt><dd>${age===null?'資料待補':fmt(age)+' 年'}<small>${age===null?'沒有可核對的完成日期':'中位數 · '+num(s.ageSampleCount)+' 筆有日期樣本；計至 '+esc(meta.asOf||'資料基準日')}${s.agePrecision==='month'||s.agePrecision==='mixed'?'；部分日期精確至月，屋齡為約數':''}</small></dd></div>${detailCounts(c)}</dl><button id="transactionsButton" class="primary full">查看 ${num(s.count)} 筆本類型成交明細 ↗</button><button id="addCompare" class="full">${compared.includes(c.id)?'✓ 已加入比較 · 點此移除':'＋ 加入比較（最多 3 個）'}</button><div class="detail-section"><h3>這份資料涵蓋什麼</h3><p>${esc(c.matchNote||'僅涵蓋可確定門牌配對的交易，不推定名冊外門牌或其他棟別。')}</p><p>${esc(categoryLabel())} · ${esc(periodInfo().start)} ～ ${esc(periodInfo().end)}<br>資料快照 ${esc(meta.asOf||'未提供')}</p>${c.approvalDate?'<p>名冊成立核准：'+esc(c.approvalDate)+'<br><span class="help">此日期不是建物完工年或屋齡。</span></p>':''}${(()=>{const aliases=[...new Set([c.apiAlias?.name,...(c.registrationAliases||[]).map(a=>a.name)].filter(n=>n&&n!==c.name))],addrs=[...new Set(c.exactAddresses||[])],gm=located(c)?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.lat+','+c.lon)}`:'',sv=located(c)?`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(c.lat+','+c.lon)}`:'';return `<div class="detail-more">${c.buildingPermit?'<p>使用執照：'+esc(c.buildingPermit)+'</p>':''}${aliases.length?'<p>名冊別名：'+aliases.map(esc).join('、')+'</p>':''}${addrs.length?'<p>名冊門牌：'+addrs.slice(0,6).map(esc).join('、')+(addrs.length>6?` 等 ${addrs.length} 筆`:'')+'</p>':''}${c.parcelMatchedAddresses?.length?'<p>土地明細逐筆核對的交易門牌：'+c.parcelMatchedAddresses.map(esc).join('、')+'</p>':''}<p>位置來源：${esc(c.positionQuality||'未提供')}</p>${gm?`<p class="map-links"><a class="source-link" href="${esc(gm)}" target="_blank" rel="noopener noreferrer">在 Google 地圖查看標示位置 ↗</a><a class="source-link" href="${esc(sv)}" target="_blank" rel="noopener noreferrer">查看附近街景 ↗</a></p>`:''}</div>`;})()}${link(c.sourceUrl,'次級來源：社區名冊')}<p class="help">${located(c)?positionLabel(c)+'（經度 '+esc(c.lon)+'、緯度 '+esc(c.lat)+'）'+'；輪廓依樓層分類示意，非實際外觀。':'來源缺少可信座標，保留在名冊、不臆測地圖位置。'}<br>成交條件仍須逐筆核對；不是銀行鑑價。</p></div><button id="communityFeedback" class="full">補充／回報這個社區</button>`;
     bindQueryActions($('detail'));bindFilterControls('detail',null,false);
@@ -433,6 +452,12 @@ window.CATALOG_READY.then(()=>{
     $('openFloorGaps').insertAdjacentHTML('afterend','<button type="button" id="nearMarket" class="market-near" aria-haspopup="dialog">另查附近公開成交 ↗</button>');
     $('nearMarket').onclick=()=>communityMarket(c);
     $('openFloorGaps').onclick=()=>showBuilding(c,new URLSearchParams({panel:'gaps'}));
+    const floorCard=document.createElement('section');
+    floorCard.id='detailFloorCard';
+    floorCard.dataset.community=String(c.id);
+    floorCard.setAttribute('aria-label','各樓層成交');
+    $('openFloorGaps').before(floorCard);
+    loadFloorCard(floorCard,c,preferredAddress);
     $('floorSales').insertAdjacentHTML('beforebegin','<button id="exploreBuilding" type="button" class="full" aria-haspopup="dialog">開啟 3D 樓層看成交 ↗</button>');
     $('exploreBuilding').onclick=()=>showBuilding(c);
     $('floorSales').insertAdjacentHTML('afterend','<button id="environmentButton" type="button" aria-haspopup="dialog">日照與環境查詢</button>');
@@ -512,7 +537,7 @@ window.CATALOG_READY.then(()=>{
         return;
       }
       buildingController=window.StudioSales.mount($('buildingStudio'),c,{
-        rows:c.transactions.filter(t=>txInPeriod(t)&&txInCategory(t)), asOf:meta.asOf, bounds:periodInfo(),
+        rows:c.transactions.filter(t=>txInPeriod(t)&&txInCategory(t)), asOf:meta.asOf, bounds:periodInfo(),parcelResurveySources:meta.parcelResurveySources,
         filters:categoryLabel()+' · '+periodLabel(), shareBase:floorLink(c), params, esc, copyValue,
         coordinates:located(c)?{lat:Number(c.lat),lon:Number(c.lon)}:{},
         openFloors:()=>showFloorSales(c),openEnvironment:topic=>showEnvironment(c,new URLSearchParams(topic?{topic}:{}))
@@ -536,7 +561,7 @@ window.CATALOG_READY.then(()=>{
         <div id="floorContents"></div>
         <p class="help">進入官方 3D 圖台後選「門牌」定位，可查看市府已開放的測繪成果。${mapAddress?' 本社區名冊門牌可參考 '+esc(mapAddress)+'。':''}</p>`);
       if (window.FloorSales?.mount) {
-        window.FloorSales.mount($('floorContents'), c, rows, {asOf:meta.asOf, period:bounds,
+        window.FloorSales.mount($('floorContents'), c, rows, {asOf:meta.asOf, period:bounds,parcelResurveySources:meta.parcelResurveySources,
           openGaps:address=>showBuilding(c,new URLSearchParams(address?{panel:'gaps',address}:{panel:'gaps'}))});
       } else {
         $('floorContents').innerHTML = '<p role="alert">樓層查價元件未載入，仍可開啟逐筆明細。</p><button type="button" id="floorFallback">查看原始成交明細</button>';
@@ -571,6 +596,11 @@ window.CATALOG_READY.then(()=>{
     if(!allRows)bindFilterControls('tx',()=>showTransactions(c,1),false);bindQueryActions($('dialogBody'));
     $('txAllRows').onchange=e=>showTransactions(c,1,e.target.checked);
     $('txPrev').onclick=()=>showTransactions(c,txPage-1,allRows);$('txNext').onclick=()=>showTransactions(c,txPage+1,allRows);
+    const tableRows=$('dialogBody').querySelectorAll('tbody tr');
+    shown.forEach((row,i)=>{
+      const proof=window.FloorSales?.resurveyMarkup(row,meta.parcelResurveySources);
+      if(proof)tableRows[i]?.lastElementChild?.insertAdjacentHTML('beforeend',proof);
+    });
   }
   function showCompare(){
     const rows=compared.map(id=>byId.get(String(id))).filter(Boolean);if(rows.length<2)return;

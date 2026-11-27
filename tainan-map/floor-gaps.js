@@ -55,6 +55,7 @@
     const row = record.row;
     if (!record.current || !record.address.exact || row.singleBuilding !== true ||
         !record.floor.single || !Number.isInteger(record.floor.number) || record.floor.number === 0) return false;
+    if (record.address.source === 'verified-door' || record.address.source === 'parcel') return true;
     const raw = String(row.address || '').normalize('NFKC').trim();
     // Each record must independently name one doorplate. An inferred unit ID alone is insufficient.
     if (!sameReportedDoor(raw, record.address.label, district) || (raw.match(/號/g) || []).length !== 1) return false;
@@ -173,7 +174,7 @@
       const side = record => {
         const row = record.row;
         return `<span>${level(record.floor.number)} · ${esc(row.date)} · ${price(wholeCents(row.unitWan))} 萬／坪</span>
-          <small>${esc(row.address)}${row.transactionId ? ' · '+esc(row.transactionId) : ''}</small>`;
+          <small>${esc(row.address)}${row.transactionId ? ' · '+esc(row.transactionId) : ''}</small>${host.FloorSales.resurveyMarkup(row,record.resurveySources)}`;
       };
       return `<li data-gap-support-pair><strong>${i === 0 ? '所選配對' : '配對 '+(i+1)} · ${signedDelta(delta)} 萬／坪</strong>${side(pair.lower)}${side(pair.higher)}</li>`;
     }).join('');
@@ -185,23 +186,29 @@
       <p class="fg-note">在目前查詢期間內，回看 ${evidence.start} ～ ${evidence.end}。每一組皆符合相同門牌、兩個樓層、格局、用途、建物型態與車位拆算條件。</p><ul>${rows}</ul></details></section>`;
   }
 
-  function group(model, community) {
+  function exactDoors(model, community) {
     const doors = new Map();
     function addDoor(label) {
       if (!doors.has(label)) doors.set(label, {label, samples:[], records:[], reported:0});
       return doors.get(label);
     }
-    for (const label of [...(community.primaryExactAddresses || []), ...(community.exactAddresses || [])]) {
+    for (const label of host.FloorSales.doorOptions(community)) {
       if (label) addDoor(label);
     }
-    const groups = new Map();
     for (const record of model.records) {
       if (!record.address.exact || !record.current) continue;
-      const row = record.row, label = record.address.label;
-      const door = addDoor(label);
+      const door = addDoor(record.address.label);
       door.reported++;
-      if (!locatable(record, community.district)) continue;
-      door.records.push(record);
+      if (locatable(record, community.district)) door.records.push(record);
+    }
+    return doors;
+  }
+
+  function group(model, community) {
+    const doors = exactDoors(model, community);
+    const groups = new Map();
+    for (const {label, records} of doors.values()) for (const record of records) {
+      const row = record.row;
       if (!hasProfile(record)) continue;
       const period = row.date.slice(0, 4) + (row.date.slice(5, 7) < '07' ? '-1' : '-2');
       const size = Math.floor(row.areaPing / 2) * 2;
@@ -247,17 +254,19 @@
     select.disabled = list.length <= 1;
   }
 
-  function recordMarkup(record) {
+  function recordMarkup(record, marker = 'data-gap-record') {
     const r = record.row;
     const layout = [r.roomCount,r.hallCount,r.bathCount].every(n => Number.isFinite(n)) ? roomLayout(r) : '格局待核';
     const terms = [r.mainUse || '用途待核', layout, r.parkingMode || '車位待核'];
     if (Number.isFinite(r.areaPing)) terms.push(`移轉總坪數 ${area(r.areaPing)} 坪`);
     if (Number.isFinite(r.priceWan)) terms.push(`總價 ${area(r.priceWan)} 萬元`);
-    return `<li data-gap-record="${esc(record.key)}"><strong>${level(record.floor.number)} · ${esc(r.date)} · ${hasPrice(record) ? price(wholeCents(r.unitWan))+' 萬／坪' : '未列入單價統計'}</strong>
+    if (record.address.source === 'verified-door') terms.push(`使照 ${r.doorMatch.permitNumber} · 114 年市府門牌第 ${r.doorMatch.officialPlateRow114} 列`);
+    if (record.address.source === 'parcel') terms.push(`使照基地：${r.parcelMatch.parcel} · 同批土地明細第 ${r.parcelMatch.landRow} 列`);
+    return `<li ${marker}="${esc(record.key)}"><strong>${level(record.floor.number)} · ${esc(r.date)} · ${hasPrice(record) ? price(wholeCents(r.unitWan))+' 萬／坪' : '未列入單價統計'}</strong>
       <span>${esc(r.address)}</span><small>${esc(terms.join(' · '))}</small>
       ${!hasPrice(record) ? `<small>${esc(r.exclusionReason || record.price.label || '用途或價格待核')}</small>` : ''}
       ${r.transactionId ? `<small>實價登錄編號 ${esc(r.transactionId)}</small>` : ''}
-      ${r.sourceRow ? `<small>來源 ${esc(String(r.sourceRow).split(/[\\/]/).pop())}</small>` : ''}</li>`;
+      ${r.sourceRow ? `<small>來源 ${esc(String(r.sourceRow).split(/[\\/]/).pop())}</small>` : ''}${host.FloorSales.resurveyMarkup(r,record.resurveySources)}</li>`;
   }
 
   function overviewMarkup(door) {
@@ -269,7 +278,7 @@
         const distribution = priced > 1 ? `最低 ${price(stats.low)} ～ 最高 ${price(stats.high)}` : priced === 1 ? '僅一筆可比單價' : '無可比單價';
         return `<tr data-gap-overview-floor="${f.n}"><th scope="row">${level(f.n)}</th><td><strong>${priced ? price(stats.cents) : '—'}</strong><small>${distribution}</small></td>
           <td>${count} 筆<small>${priced} 筆可比</small></td><td>${f.from === f.through ? f.from : `${f.from}<br>～ ${f.through}`}</td></tr>
-          <tr class="fg-evidence-row"><td colspan="4"><details class="fg-records" data-gap-overview-evidence="${f.n}"><summary>核對 ${level(f.n)}的 ${count} 筆成交</summary><ul>${f.records.map(recordMarkup).join('')}</ul></details></td></tr>`;
+          <tr class="fg-evidence-row"><td colspan="4"><details class="fg-records" data-gap-overview-evidence="${f.n}"><summary>核對 ${level(f.n)}的 ${count} 筆成交</summary><ul>${f.records.map(r => recordMarkup(r)).join('')}</ul></details></td></tr>`;
       }).join('');
       return `<table class="fg-table fg-overview-table" data-gap-use="${section.use}"><caption>${uses[section.use]} · ${section.floors.length} 個樓層</caption>
         <thead><tr><th scope="col">樓層</th><th scope="col">中位單價<br><small>萬元／坪</small></th><th scope="col">成交數</th><th scope="col">成交日期</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -277,6 +286,149 @@
     const omitted = door.reported - door.records.length;
     return `<section class="fg-overview" data-gap-overview><h4>這個門牌各樓層賣多少？</h4>
       <p class="fg-note">目前條件共 ${door.records.length} 筆可定位到單一樓層。每層的格局、坪數與成交年份可能不同。${omitted ? `另有 ${omitted} 筆門牌有對應，但樓層、棟數或原始地址待核。` : ''}</p>${sections}</section>`;
+  }
+
+  // The catalog can establish a continuous run of above-ground floors only for a
+  // single registered building. Otherwise use individual floors seen at this door,
+  // including verified transactions outside the selected filters.
+  function floorLedger(community, door, include) {
+    const buckets = new Map();
+    for (const record of door.records) {
+      const n = record.floor.number;
+      if (!buckets.has(n)) buckets.set(n, []);
+      if (include(record.row)) buckets.get(n).push(record);
+    }
+    const top = Number(community.floors);
+    const knownHeight = Number(community.buildingCount) === 1 && Number.isInteger(top) && top > 0 && top <= 150 &&
+      ![...buckets.keys()].some(n => n > top);
+    if (knownHeight) for (let n = 1; n <= top; n++) if (!buckets.has(n)) buckets.set(n, []);
+    const floors = [...buckets].sort(([a], [b]) => b-a).map(([n, records]) => {
+      records.sort((a,b) => b.row.date.localeCompare(a.row.date));
+      const priced = records.filter(hasPrice).map(r => r.row);
+      return {n, records, stats:priced.length ? summarizeFloor(n, priced) : null};
+    });
+    const byLevel = new Map(floors.map(f => [f.n, f]));
+    for (const floor of floors) {
+      floor.lower = byLevel.get(floor.n === 1 ? -1 : floor.n-1);
+      floor.delta = floor.stats && floor.lower?.stats ? floor.stats.cents - floor.lower.stats.cents : null;
+    }
+    return {knownHeight, floors};
+  }
+
+  function mountCard(root, community, model, options) {
+    const doors = [...exactDoors(model, community).values()];
+    const inView = record => options.include(record.row);
+    // Start at a door with current records when possible. A selector keeps the
+    // other registered doors accessible even when they have no transactions.
+    const countInView = door => door.records.filter(inView).length;
+    const ranked = doors.map(d => ({d, count:countInView(d)})).sort((a,b) =>
+      b.count-a.count || b.d.records.length-a.d.records.length).map(item => item.d);
+    let door = ranked.find(d => d.label === options.address) || ranked[0];
+    root.innerHTML = `<h3>各樓層成交 <small>萬元／坪</small></h3><p class="fl-scope">${esc(options.filters)}<br>${esc(options.period.start)} ～ ${esc(options.period.end)}</p>
+      <div data-fl-address></div><div data-fl-ledger></div>`;
+    const address = root.querySelector('[data-fl-address]');
+    const ledger = root.querySelector('[data-fl-ledger]');
+    if (!door) {
+      ledger.innerHTML = '<p class="fl-empty">名冊缺精確門牌，尚無法把成交分到各樓層。</p>';
+      return;
+    }
+    if (ranked.length > 1) {
+      address.innerHTML = '<label>查詢門牌<select data-fl-door></select></label>';
+      const select = address.querySelector('select');
+      for (const d of ranked) select.add(new Option(d.label, d.label));
+      select.value = door.label;
+      select.onchange = () => { door = ranked.find(d => d.label === select.value); draw(); };
+    } else address.textContent = door.label;
+
+    function floorEvidence(floor, floors, knownHeight) {
+      const lower = floor.lower;
+      const upperN = floor.n === -1 ? 1 : floor.n+1, lowerN = floor.n === 1 ? -1 : floor.n-1;
+      function adjacent(direction, n) {
+        const other = floors.find(f => f.n === n);
+        if (!other && knownHeight && n > Number(community.floors)) return `樓上：本層為名冊地上最高層。`;
+        const title = `本層對${direction} ${level(n)}`;
+        if (other?.stats && floor.stats) {
+          const diff = floor.stats.cents-other.stats.cents;
+          return diff ? `${title}：每坪${diff > 0 ? '高' : '低'} ${price(Math.abs(diff))} 萬元。` : `${title}：顯示的中位單價相同。`;
+        }
+        const missing = f => f.records.length ? '缺可比單價' : '本期未揭露成交';
+        const reasons = [];
+        if (!floor.stats) reasons.push('本層'+missing(floor));
+        if (!other) reasons.push(level(n)+'的樓層資料待核');
+        else if (!other.stats) reasons.push(level(n)+missing(other));
+        return title+'：'+reasons.join('、')+'。';
+      }
+      const neighbors = `<p class="fl-neighbors" data-fl-neighbors><strong>本層中位單價比較</strong><span>${adjacent('樓上',upperN)}</span><span>${adjacent('樓下',lowerN)}</span></p>`;
+      const sampleText = f => `${level(f.n)}有 ${f.stats.count} 筆可比，成交於 ${f.stats.from}${f.stats.from !== f.stats.through ? ' ～ '+f.stats.through : ''}`;
+      let comparison = '';
+      if (floor.delta !== null) {
+        const pair = nearPairs([...floor.records, ...lower.records]).pairs[0];
+        comparison = `<p>${sampleText(floor)}。${sampleText(lower)}。</p>`;
+        if (pair) {
+          const diff = wholeCents(pair.higher.row.unitWan) - wholeCents(pair.lower.row.unitWan);
+          comparison += `<details class="fl-pair"><summary>核對 ${level(floor.n)}、${level(lower.n)} 的一組相近成交</summary><p>${nearCriteria}，且用途、格局、型態及車位拆算方式相同。這兩筆實際相差 ${signedDelta(diff)} 萬元／坪。</p>
+            <ul>${recordMarkup(pair.higher, 'data-fl-pair-record')}${recordMarkup(pair.lower, 'data-fl-pair-record')}</ul></details>`;
+        } else comparison += `<p class="fl-no-pair">${level(floor.n)}、${level(lower.n)} 缺少條件相近的配對成交。</p>`;
+      }
+      const evidence = floor.records.length
+        ? `<p><strong>${level(floor.n)}成交明細 · ${floor.records.length} 筆</strong></p><ul>${floor.records.map(r => recordMarkup(r, 'data-fl-record')).join('')}</ul>`
+        : '<p>這個門牌在所選類型及期間沒有可定位到本層的成交。</p>';
+      return neighbors+comparison+evidence;
+    }
+    function draw() {
+      const {knownHeight, floors} = floorLedger(community, door, options.include);
+      const reported = (model.addresses.find(a => a.exact && a.label === door.label)?.records || []).filter(r => r.current && inView(r)).length;
+      const assigned = countInView(door);
+      const qualifier = knownHeight ? `名冊地上 ${community.floors} 層` : '總層數待核，僅列歷來已核對樓層';
+      const omitted = reported > assigned ? `另有 ${reported-assigned} 筆單一門牌、棟數或樓層待核。` : '';
+      const unknownAddress = model.records.filter(r => r.current && !r.address.exact && inView(r)).length;
+      const unassigned = unknownAddress ? `社區另有 ${unknownAddress} 筆未核定門牌。` : '';
+      if (!floors.length) {
+        ledger.innerHTML = `<p class="fl-empty">這個門牌尚無可核對的樓層成交。${esc(omitted+unassigned)}</p>`;
+        return;
+      }
+      const rows = floors.map(f => {
+        const count = f.records.length, priced = f.stats?.count || 0;
+        const lowerLabel = f.n === 1 ? 'B1' : (f.n < 0 ? 'B'+(-f.n+1) : (f.n-1)+'樓');
+        const gap = f.delta !== null ? signedDelta(f.delta) : '—';
+        return `<details class="fl-row" data-fl-floor="${f.n}">
+          <summary><span>${f.n < 0 ? 'B'+(-f.n) : f.n+'樓'}</span><span>${count} 筆<small>${count ? '可比 '+priced : '未揭露'}</small></span>
+            <strong>${priced ? price(f.stats.cents) : '—'}${count && !priced ? '<small>無可比價</small>' : ''}</strong>
+            <span class="fl-delta">${gap}<small>${f.delta !== null ? '對 '+lowerLabel : !priced ? '本層缺價' : '下一層缺價'}</small></span></summary>
+          <div class="fl-evidence" data-fl-evidence></div></details>`;
+      }).join('');
+      ledger.innerHTML = `<p class="fl-totals">${esc(qualifier)} · 本期 ${assigned} 筆</p>
+        <div class="fl-labels" aria-hidden="true"><span>樓層</span><span>成交</span><span>中位單價</span><span>比下一層</span></div>
+        <div class="fl-rows">${rows}</div><button type="button" class="fl-more" hidden></button>
+        <p class="fl-note">點樓層核對逐筆成交與配對。只有一筆可比時顯示該筆單價。各層的格局、坪數與成交年份可能不同。${esc(omitted+unassigned)}</p>`;
+      const elements = [...ledger.querySelectorAll('[data-fl-floor]')];
+      elements.forEach((row, i) => {
+        row.querySelector('summary').setAttribute('aria-label', level(floors[i].n)+'，'+floors[i].records.length+' 筆成交，'+
+          (floors[i].stats ? '中位單價每坪 '+price(floors[i].stats.cents)+' 萬元' : '無可比單價')+
+          (floors[i].delta !== null ? '，比下一層每坪 '+signedDelta(floors[i].delta)+' 萬元' : '')+'，查看明細');
+        row.addEventListener('toggle', () => {
+          const target = row.querySelector('[data-fl-evidence]');
+          if (row.open && !target.firstChild) target.innerHTML = floorEvidence(floors[i], floors, knownHeight);
+        });
+      });
+      if (floors.length > 6) {
+        // Show a contiguous slice containing comparable adjacent levels when available.
+        let center = floors.findIndex(f => f.delta !== null);
+        if (center < 0) center = Math.max(0, floors.findIndex(f => f.records.length));
+        const start = Math.min(Math.max(0, center-1), floors.length-5);
+        const more = ledger.querySelector('.fl-more');
+        const display = expanded => {
+          elements.forEach((el,i) => { el.hidden = !expanded && (i < start || i >= start+5); });
+          more.textContent = expanded ? '收合樓層表' : `顯示全部 ${floors.length} 個樓層`;
+          more.setAttribute('aria-expanded', String(expanded));
+        };
+        more.hidden = false;
+        more.onclick = () => display(more.getAttribute('aria-expanded') !== 'true');
+        display(false);
+      }
+    }
+    draw();
+    return {get address() { return door.label; }};
   }
 
   function emptyReason(door, model) {
@@ -414,7 +566,7 @@
       [baseline, target] = selected;
       const floorRows = floors.map(f => `<tr data-gap-floor="${f.n}"><th scope="row">${level(f.n)}</th><td><strong>${price(f.cents)}</strong></td><td>${f.count}</td><td>${f.from}${f.from === f.through ? '' : '<br>至 '+f.through}</td></tr>`).join('');
       const transactions = floors.flatMap(f => f.entries.map(row => ({floor:f.n, row}))).sort((a, b) => b.row.date.localeCompare(a.row.date));
-      const item = ({floor, row}) => `<li><strong>${level(floor)} · ${price(Math.round(row.unitWan * 100))} 萬／坪</strong><span>${esc(row.date)} · 移轉 ${area(row.areaPing)} 坪</span><small>${esc(row.address)}</small></li>`;
+      const item = ({floor, row}) => `<li><strong>${level(floor)} · ${price(Math.round(row.unitWan * 100))} 萬／坪</strong><span>${esc(row.date)} · 移轉 ${area(row.areaPing)} 坪</span><small>${esc(row.address)}</small>${host.FloorSales.resurveyMarkup(row,options.parcelResurveySources)}</li>`;
       const single = floors.length === 1;
       results.innerHTML = `<div class="fg-answer">${single ?
         `<strong data-gap-empty>只有 ${level(floors[0].n)}有符合條件的成交</strong><p>同組還需要另一個樓層的紀錄，才能算價差。</p>` :
@@ -475,5 +627,5 @@
       }
     };
   }
-  host.FloorGaps = {group, independentPairs, mount};
+  host.FloorGaps = {group, independentPairs, locatable, mount, mountCard, floorLedger};
 })();

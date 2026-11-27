@@ -17,7 +17,7 @@
   'use strict';
 
   const host = typeof window !== 'undefined' ? window : globalThis;
-  const VERSION = '2026-11-25.2';
+  const VERSION = '2026-11-27.1';
   const TODAY = () => new Date().toISOString().slice(0, 10);
   const FLOOR_TOKEN = /(?:地下)?([0-9零〇一二兩三四五六七八九十百千]+)層/g;
   const FLOOR_ONLY = /^[0-9零〇一二兩三四五六七八九十百千]+層$/;
@@ -132,6 +132,55 @@
     const source = compact(value);
     return (source.match(/號/g) || []).length > 1 || /號[、,，]/.test(source);
   }
+  function doorOptions(community) {
+    return [...new Set([...officialAddresses(community), ...(community?.parcelMatchedAddresses || []),
+      ...(community?.verifiedDoorAddresses || [])].map(normalize).filter(Boolean))];
+  }
+
+  function reportedUnit(value, district, door) {
+    let text = normalize(value).replace(/^(?:臺|台)南(?:市|縣)/,'');
+    if (text.startsWith(district)) text = text.slice(district.length);
+    if (!text || /[、,;~～至到()（）?\s\uE000-\uF8FF]/.test(text)) return null;
+    const parts = text.match(/^([^號—–-]+?)(\d+(?:[之-]\d+)?號(?:之\d+)?)(?:([零〇一二兩三四五六七八九十百千\d]+)(?:樓|層|[Ff])(?:[之-](\d+))?)?$/);
+    if (!parts) return null;
+    let [,street,house,floor,unit] = parts;
+    if (house.includes('-')) {
+      const pair = house.match(/^(\d+)-(\d+)號$/);
+      if (!pair || Number(pair[1]) <= Number(pair[2])) return null;
+      house = pair[1]+'之'+pair[2]+'號';
+    }
+    street = street.replace(/([路街道])([一二三四五六七八九])段/g, (_,road,n) => road+CN[n]+'段');
+    const local = normalize(door).slice(district.length);
+    const source = street+house;
+    if (!door.startsWith(district) || !source.endsWith(local)) return null;
+    const prefix = source.slice(0, source.length-local.length);
+    if (prefix && !/^(?:[^路街段巷弄號區]{1,8}[里村](?:\d+鄰)?|\d+鄰)$/.test(prefix)) return null;
+    const number = floor ? toChineseNumber(floor) : null;
+    if (floor && !(number > 0)) return null;
+    return {full:door+(number ? number+'樓'+(unit ? '之'+Number(unit) : '') : ''), number};
+  }
+
+  function reviewedAddress(row, community) {
+    const proof = row?.doorMatch || row?.parcelMatch;
+    const door = normalize(proof?.door), district = normalize(community?.district);
+    if (!door || !district || row.singleBuilding !== true) return null;
+    const reviewed = !!row.doorMatch;
+    const candidates = reviewed ? community.verifiedDoorAddresses : community.parcelMatchedAddresses;
+    if (!candidates?.includes(door)) return null;
+    const unit = reportedUnit(row.address, district, door);
+    if (!unit || (unit.number && unit.number !== floorInfo(row.floor).number)) return null;
+    if (reviewed && (proof.rule !== 'single-building-door' || !community.registrySourceId ||
+        String(proof.registryId) !== String(community.registrySourceId) || !proof.permitNumber ||
+        !Number.isInteger(proof.officialPlateRow114) || proof.officialPlateRow114 <= 0 ||
+        !unit.number || unit.full !== proof.fullAddress)) return null;
+    if (!reviewed && (!proof.parcel || !Number.isInteger(proof.landRow))) return null;
+    if (row.unitIdentity) {
+      const identity = reportedUnit(row.unitIdentity, district, door);
+      if (!identity || (identity.number && unit.number && identity.full !== unit.full)) return null;
+    }
+    return {key:'official:'+compact(door), label:door, exact:true, source:reviewed?'verified-door':'parcel', raw:row.address, reason:''};
+  }
+
   function addressInfo(row, community, rowKey) {
     const rawAddress = normalize(row?.address), rawUnit = normalize(row?.unitIdentity);
     const candidates = [rawUnit, rawAddress].filter(Boolean);
@@ -141,7 +190,9 @@
       return { key: `multiple:${rowKey}`, label: `多門牌待核：${raw}`, exact: false, source: 'transaction', raw,
         reason: '本列登載多個門牌，須核對各門牌對應的戶別' };
     }
-    const exact = officialAddresses(community).find(address => candidates.some(value => addressMatches(value, address)));
+    const reviewed = reviewedAddress(row, community);
+    if (reviewed) return reviewed;
+    const exact = !row?.doorMatch && officialAddresses(community).find(address => candidates.some(value => addressMatches(value, address)));
     if (exact) return { key: `official:${compact(exact)}`, label: exact, exact: true, source: 'official', raw: rawUnit || rawAddress, reason: '' };
     const base = addressBase(rawUnit || rawAddress);
     if (base) return {
@@ -184,6 +235,24 @@
     return { key: 'eligible', label: '納入可比統計（沿用原始可比單價）' };
   }
 
+  function resurveyMarkup(row, sources) {
+    const proof = row?.doorMatch?.resurvey;
+    if (!proof || !sources) return '';
+    return Object.entries(proof).map(([parcel, key]) => {
+      const source = sources[key];
+      const validLot = value => Array.isArray(value) && value.length === 3 && typeof value[1] === 'string' && /^\d{8}$/.test(value[2]);
+      if (!source || !validLot(source.old) || !validLot(source.new) || !Number.isInteger(source.row) || source.row < 2 ||
+          parcel !== source.new[1]+':'+source.new[2] || !/^https:\/\/[^\s]+$/.test(source.url)) return '';
+      const lot = values => {
+        const [code, section, number] = values;
+        const sub = Number(number.slice(4));
+        return esc(section)+' '+Number(number.slice(0,4))+(sub ? '-'+sub : '')+' 地號（'+esc(code)+'／'+esc(number)+'）';
+      };
+      return `<span class="parcel-resurvey" data-resurvey-source="${esc(key)}"><span>重測前：${lot(source.old)}</span><span>重測後：${lot(source.new)}</span>
+        <a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">市府新舊地號對照表 · 第 ${source.row} 列 ↗</a></span>`;
+    }).join('');
+  }
+
   /** Pure, DOM-free grouping.  It keeps excluded rows in every floor group. */
   function groupRows(rows, community = {}, options = {}) {
     const source = Array.isArray(rows) ? rows : [];
@@ -193,6 +262,7 @@
       const period = periodStatus(row, options), price = comparableStatus(row, period);
       const record = { key, row, address, floor, period, price, current: period.inPeriod, future: period.future,
         floorLocated: floor.single, doorplateLocated: address.exact, comparable: price.key === 'eligible', singleBuilding: row?.singleBuilding !== false };
+      if (row?.doorMatch?.resurvey) record.resurveySources = options.parcelResurveySources;
       if (!addresses.has(address.key)) addresses.set(address.key, { key: address.key, label: address.label, exact: address.exact,
         source: address.source, reason: address.reason, records: [], floors: new Map() });
       const group = addresses.get(address.key); group.records.push(record);
@@ -232,6 +302,8 @@
   }
   function recordStatusText(record) {
     const parts = [record.price.label];
+    if (record.address.source === 'verified-door') parts.push('使照與 114 年市府完整門牌第 '+record.row.doorMatch.officialPlateRow114+' 列逐筆核對');
+    if (record.address.source === 'parcel') parts.push('交易土地明細第 '+record.row.parcelMatch.landRow+' 列與使照基地核對');
     if (record.row?.unitDoorplateRow114) parts.push('戶別由成交門牌與樓層比對 114 年市府門牌資料（第 '+record.row.unitDoorplateRow114+' 列）');
     if (!record.current && record.period.label) parts.push(record.period.label);
     if (!record.floorLocated) parts.push(record.floor.reason || '無法定位至單樓');
@@ -285,7 +357,7 @@
           </dl>
           ${normalize(row.exclusionReason) ? `<p class="floor-sales__record-note"><strong>排除原因：</strong>${esc(row.exclusionReason)}</p>` : ''}
           ${normalize(row.notes) ? `<p class="floor-sales__record-note"><strong>原始備註：</strong>${esc(row.notes)}</p>` : ''}
-          ${sourceRow ? `<p class="floor-sales__source"><small>來源列：${esc(sourceRow)}</small></p>` : ''}
+          ${sourceRow ? `<p class="floor-sales__source"><small>來源列：${esc(sourceRow)}</small></p>` : ''}${resurveyMarkup(row,record.resurveySources)}
         </div>
       </details>
     </li>`;
@@ -514,5 +586,5 @@
   }
 
   host.FloorSales = Object.freeze({ version: VERSION, selectors: SELECTORS, classNames: CLASS_NAMES,
-    groupRows, groupTransactions: groupRows, addressMatches, floorInfo, mount });
+    groupRows, groupTransactions: groupRows, addressMatches, doorOptions, floorInfo, resurveyMarkup, mount });
 })();

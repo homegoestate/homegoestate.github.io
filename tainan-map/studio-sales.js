@@ -6,17 +6,17 @@
 
   function mount(root, community, options) {
     const {esc, params, rows} = options;
-    const data = window.FloorSales.groupRows(rows, community, {asOf:options.asOf, period:options.bounds});
+    const data = window.FloorSales.groupRows(rows, community, {asOf:options.asOf, period:options.bounds, parcelResurveySources:options.parcelResurveySources});
     const byDate = (a,b) => String(b.row.date).localeCompare(String(a.row.date));
-    const records = data.records.filter(r => r.address.exact && r.row.singleBuilding === true &&
-      r.floor.single && Number.isInteger(r.floor.number) && r.floor.number !== 0).sort(byDate);
+    const records = data.records.filter(r => window.FloorGaps?.locatable ? window.FloorGaps.locatable(r, community.district) :
+      r.address.exact && r.row.singleBuilding === true && r.floor.single && Number.isInteger(r.floor.number) && r.floor.number !== 0).sort(byDate);
     const byDoor = new Map();
     for (const record of records) {
       const label = record.address.label;
       if (!byDoor.has(label)) byDoor.set(label, []);
       byDoor.get(label).push(record);
     }
-    for (const label of [...(community.primaryExactAddresses || []), ...(community.exactAddresses || [])]) {
+    for (const label of window.FloorSales.doorOptions(community)) {
       if (typeof label === 'string' && label && !byDoor.has(label)) byDoor.set(label, []);
     }
     const doors = [...byDoor.keys()];
@@ -57,7 +57,7 @@
       if (view === 'gaps' && !gapView) {
         const gapPanel = el('[data-studio-panel="gaps"]');
         if (window.FloorGaps) gapView = window.FloorGaps.mount(gapPanel, community, data, {
-          address:directLink ? params.get('address') : door, period:options.bounds, filters:options.filters, openFloors:options.openFloors
+          address:directLink ? params.get('address') : door, period:options.bounds, filters:options.filters, openFloors:options.openFloors,parcelResurveySources:options.parcelResurveySources
         });
         else gapPanel.textContent = '樓層價差目前無法載入，請重新整理再試。';
       } else if (view === 'gaps' && activeView !== 'gaps') gapView?.selectDoor(door);
@@ -97,7 +97,7 @@
         const value = record.comparable ? '<strong>'+num(r.unitWan)+'</strong><span> 萬元／坪</span>' : '<strong>未列入可比</strong>';
         const extra = [r.priceWan == null ? null : '總價 '+num(r.priceWan)+' 萬元', r.areaPing == null ? null : num(r.areaPing)+' 坪', r.parkingMode].filter(Boolean);
         if(r.unitDoorplateRow114)extra.push('戶別經 114 年市府門牌資料核對');
-        return `<li><time>${esc(r.date)}</time><p class="studio-unit-price">${value}</p><p>${esc(r.unitIdentity || r.address)}</p><small>${esc(extra.join(' · '))}</small>${record.comparable?'':'<small>'+esc(record.price.label)+'</small>'}</li>`;
+        return `<li><time>${esc(r.date)}</time><p class="studio-unit-price">${value}</p><p>${esc(r.unitIdentity || r.address)}</p><small>${esc(extra.join(' · '))}</small>${record.comparable?'':'<small>'+esc(record.price.label)+'</small>'}${window.FloorSales.resurveyMarkup(r,record.resurveySources)}</li>`;
       };
       const empty = currentFloor == null ? '請點模型或從選單選擇樓層，查看當層資料。' : '目前條件下，沒有可對應到這個門牌與樓層的成交。';
       el('#studioReadout').innerHTML = `<div class="studio-readout-heading"><h3>${esc(heading)}</h3>${currentFloor==null?'':'<span>'+matching.length+' 筆</span>'}</div>` +

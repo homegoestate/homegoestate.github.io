@@ -1,7 +1,7 @@
 {
-  "version": "official-tainan-map-market-evidence-20261126",
-  "preparedAt": "2026-11-26T15:21:25.467508+00:00",
-  "baselineCommit": "6dd3a0fc1e6a7c1439356f4c8ce1be40db5dd897",
+  "version": "official-tainan-map-floor-pulse-20261127",
+  "preparedAt": "2026-11-27T01:58:42.083810+00:00",
+  "baselineCommit": "5e73142ea03dde53df8586f7b21e8bbe324f9763",
   "publicVisitorCountEnabled": false,
   "dataSnapshot": "2026-11-22",
   "files": {
@@ -18,8 +18,8 @@
       "sha256": "f96a72f63f261bd351b24106cb6e0f898d0b0f441eea14c2c5ff42509150001b"
     },
     "docs/TAINAN_MAP_V5.md": {
-      "bytes": 21758,
-      "sha256": "0e768fb8364bf4c5c7a8895f30195206675ecabb818908d141ec60b78d009cb4"
+      "bytes": 25121,
+      "sha256": "903dd5970a1209f1ecac38ab81f6218561ec4a776d133e8a4e53545a6f08f041"
     },
     "index.html": {
       "bytes": 15127,
@@ -30,12 +30,16 @@
       "sha256": "8205c6b400fe70085f0d9736b3316391a127b5bb95520d554d2f0af07df08286"
     },
     "scripts/build-map-counts.py": {
-      "bytes": 26572,
-      "sha256": "7aa3092a60c92f83c1844298dd38ef0f1eb9b55981815145196d45617b5cf7e4"
+      "bytes": 29646,
+      "sha256": "898fc34bac762dc881a7d40f3e056ea39064e095d250d4c30bdbaaa4b2f6fbbb"
     },
     "scripts/build-map-market-ledger.py": {
-      "bytes": 10930,
-      "sha256": "4128335b6d0dfa61c1ee62b104e12f3f931d61d2851f1ec806be1d770f14ca48"
+      "bytes": 14211,
+      "sha256": "02ac44a2e23d0b0dddd90e9b45aa1dd8288b860e84072caf7fa4767d97edef46"
+    },
+    "scripts/build-map-market-pulse.py": {
+      "bytes": 12666,
+      "sha256": "b8edde5bc30e8f2be3b32909f48ebb849102bbc8546620b9800549a7dec0a45b"
     },
     "scripts/build-map-presale-ledger.py": {
       "bytes": 12827,
@@ -53,17 +57,29 @@
       "bytes": 8136,
       "sha256": "798a7d8267481fa65eb0bfc1d6c3c7c0acb0416add764adb6b9eff0fdf496171"
     },
+    "scripts/map_door_review.py": {
+      "bytes": 15573,
+      "sha256": "b85d92673bac5aaaa3f6db515f0036b267363899e1322f46f83d65fb39436ba1"
+    },
     "scripts/map_parcel_review.py": {
       "bytes": 7600,
       "sha256": "7ab826e4485e65978ed2c6f0548d8be7e736e2691872da312c4fa8ad7f3df29e"
     },
+    "scripts/map_resurvey_review.py": {
+      "bytes": 2851,
+      "sha256": "0755f167bce7203da162a025626d65c047b67bff73568545964107e612bb8079"
+    },
     "scripts/site-smoke.mjs": {
-      "bytes": 16628,
-      "sha256": "f677d1970628636a5052585b6a0c45cc56b988c360ae7f6fb19b60ce2b158c47"
+      "bytes": 18921,
+      "sha256": "449ecb4947711aa52d28c1c10694dab8b0a0d02b7098747a0a11ee3510eebdd2"
     },
     "scripts/sync-map-population.py": {
       "bytes": 10511,
       "sha256": "a464345a5cc4548cac3aadcb3e11f13d027207ba65ec7cbf5ac5566cbf02b8ff"
+    },
+    "scripts/verify-map-door-links.py": {
+      "bytes": 10190,
+      "sha256": "358aa51674faaa928e0a0b256220c349efc229e8107cb5c26adc503568b8ac7f"
     },
     "sitemap.xml": {
       "bytes": 571,
@@ -73,13 +89,17 @@
       "bytes": 35192,
       "sha256": "345afdc337bf969385cda4e920de4a700d4eb3f4fa4e516b9190f2f5b3789897"
     },
+    "tainan-map/address-floors.js": {
+      "bytes": 8098,
+      "sha256": "8b9eac55f4e3173028006c35f8174ba16dc8a056c959f342924541b124de1478"
+    },
     "tainan-map/analytics-client.js": {
       "bytes": 188,
       "sha256": "adab7061008edb5a40399ad0ec86b4c94e9dc722363f97486115019d982e734a"
     },
     "tainan-map/app.js": {
-      "bytes": 101373,
-      "sha256": "5b1be5262bbabe19d1f4edf6eea43cd19bec9efec6288a581fef7549db18987f"
+      "bytes": 103526,
+      "sha256": "2bede8b6de8971ddcd1d0e912ead7baf5ca0e940692cd2c4ff8b9bb520db4d1c"
     },
     "tainan-map/atlas-guide.css": {
       "bytes": 7457,
@@ -115,19 +135,19 @@
     },
     "tainan-map/data-loader.js": {
       "bytes": 3490,
-      "sha256": "8e4f1acf13710d5927b5a4d61a23f03dfd69ead6537d5b60e365cf30dbd8133b"
+      "sha256": "287e229965171d4d2243cf8cdb803d3c80dc32a46f4aae4f226298ad1bcd778d"
     },
     "tainan-map/data-manifest.json": {
-      "bytes": 12474,
-      "sha256": "981e5d671da1c3f2d77c0fbaee6b74cd2db5dcd2962824fd4d6a3d7893e2a4a9"
+      "bytes": 13132,
+      "sha256": "1494b2f81b3b3a91bb9c266161d4dfce25a2efd119d5a33ff10f5816326090f6"
     },
-    "tainan-map/data/catalog-700c2cc4c4ca.json": {
-      "bytes": 29930136,
-      "sha256": "700c2cc4c4cae5b1e30f4a1e83dbf3e035beb46a6a6117f7d4cded11bba68846"
+    "tainan-map/data/catalog-c275715b27bf.json": {
+      "bytes": 29995359,
+      "sha256": "c275715b27bf6ba43798bed8d8468b335ca14a5b53114cdb17d1e71dc8df9e18"
     },
-    "tainan-map/data/catalog-700c2cc4c4ca.json.gz": {
-      "bytes": 1476839,
-      "sha256": "61db5e600f92c2ff1ef1f1270518d0467ffeaf2c9196542ffab73d276ba06c21"
+    "tainan-map/data/catalog-c275715b27bf.json.gz": {
+      "bytes": 1484023,
+      "sha256": "fdca3b5fe05a8a313e0ee1052b57f476f26e2d71d27189917517abc7c70c9839"
     },
     "tainan-map/data/transactions-01-f54926134ba1.json": {
       "bytes": 59,
@@ -145,29 +165,29 @@
       "bytes": 5264,
       "sha256": "ccf7a1e9c2fb08b6f30ca6d0f57588e304f7908c1c1228a4606c9b5557a5fadc"
     },
-    "tainan-map/data/transactions-03-f3f099afd3e4.json": {
-      "bytes": 5822788,
-      "sha256": "f3f099afd3e4a8b89d6f6c68f3566a9659560954d798fe7232c72a152f40eca2"
+    "tainan-map/data/transactions-03-ff97797c2a51.json": {
+      "bytes": 6130643,
+      "sha256": "ff97797c2a51ac965df0c8198fb30bba018dcce5f33e0a9eb346385409a62d4e"
     },
-    "tainan-map/data/transactions-03-f3f099afd3e4.json.gz": {
-      "bytes": 457485,
-      "sha256": "3037665ddbab940825199b96c40f6000d3d898d8d91779e0dd01ac3214b82137"
+    "tainan-map/data/transactions-03-ff97797c2a51.json.gz": {
+      "bytes": 473083,
+      "sha256": "009d822ba4070b35609b382ebd94d11d1224fe613ac9e3f10b9ab6459cbb2c64"
     },
-    "tainan-map/data/transactions-04-b04b934ab4b4.json": {
-      "bytes": 2746332,
-      "sha256": "b04b934ab4b4888d1a5bdb34cd179e8183890352e591c81384ab635edc98539b"
+    "tainan-map/data/transactions-04-99791b9ce6e1.json": {
+      "bytes": 2772972,
+      "sha256": "99791b9ce6e1c69ad1764e9dca6960afb1faf80be938a5a84c80666cf7fdae76"
     },
-    "tainan-map/data/transactions-04-b04b934ab4b4.json.gz": {
-      "bytes": 186000,
-      "sha256": "32ac8c4c947553e38720755d05babe39cd5758280c008a60c128e89a135a5cfc"
+    "tainan-map/data/transactions-04-99791b9ce6e1.json.gz": {
+      "bytes": 188000,
+      "sha256": "3c607c30f6070810d2c1121cb5de03b2115b508a3eadb83e466cef301505071f"
     },
-    "tainan-map/data/transactions-05-34ce971f85de.json": {
-      "bytes": 1003649,
-      "sha256": "34ce971f85de54c5de1015b705ab3799077b7ea8e339f4e6f5a5869f5bdca186"
+    "tainan-map/data/transactions-05-7c6bb8c551e1.json": {
+      "bytes": 1128101,
+      "sha256": "7c6bb8c551e1e7cf756791de8def049c7d4c309a143904787c23194be261454f"
     },
-    "tainan-map/data/transactions-05-34ce971f85de.json.gz": {
-      "bytes": 70175,
-      "sha256": "2899cfa032d38f6719735e15c5b07fa5c944adca41380ee70b75dfd7df577548"
+    "tainan-map/data/transactions-05-7c6bb8c551e1.json.gz": {
+      "bytes": 78676,
+      "sha256": "067e288f18b90292fa3ed29d077306d4c2af034e6f1e71efc3f61d879e047b8a"
     },
     "tainan-map/data/transactions-06-276307053eca.json": {
       "bytes": 82819,
@@ -177,13 +197,13 @@
       "bytes": 6803,
       "sha256": "4dc8952a64f6f314bf012906ccf8d4b3bb2d26fb768186fed38e4facd51ab0ab"
     },
-    "tainan-map/data/transactions-07-e919b41d0764.json": {
-      "bytes": 4497350,
-      "sha256": "e919b41d0764b1e32888453da45c653464167213de431837b50145bc69297b41"
+    "tainan-map/data/transactions-07-075837f8db16.json": {
+      "bytes": 4538100,
+      "sha256": "075837f8db163d4c17cc6fbd0f91371a57c51a253ffe5d36c9f219ba137b1724"
     },
-    "tainan-map/data/transactions-07-e919b41d0764.json.gz": {
-      "bytes": 328971,
-      "sha256": "383187a582a31beb517b8748a08776f0296117e834f92f9e77018a327248d82e"
+    "tainan-map/data/transactions-07-075837f8db16.json.gz": {
+      "bytes": 331600,
+      "sha256": "58f3b428e6b39ddc80895405930f0488574c4fc5242bf46833cc379565c76bff"
     },
     "tainan-map/data/transactions-08-55f14a5f3847.json": {
       "bytes": 2166869,
@@ -193,13 +213,13 @@
       "bytes": 166308,
       "sha256": "d84135f729fe1d71d08a3ac95a66a7e1af48973f0c14778c181926f352c416f7"
     },
-    "tainan-map/data/transactions-09-f4547ebb4e6b.json": {
-      "bytes": 2308253,
-      "sha256": "f4547ebb4e6b8f00755132877f0b7ea09d6b8dca88dda51f0db2c83c0a829bae"
+    "tainan-map/data/transactions-09-355d2dc819d8.json": {
+      "bytes": 2480648,
+      "sha256": "355d2dc819d8428a0d1a1d8c21c6db52fd1224851955ab8882823ea7c5ea4392"
     },
-    "tainan-map/data/transactions-09-f4547ebb4e6b.json.gz": {
-      "bytes": 157457,
-      "sha256": "35c4b0d5dbc972043025c419333f44b3148df6ebb378d4a32bdebb2132f7e621"
+    "tainan-map/data/transactions-09-355d2dc819d8.json.gz": {
+      "bytes": 167718,
+      "sha256": "e28c64f4d99732502de37ebc88b7307eb2983107c1774b969ed7a6a6b8de0af4"
     },
     "tainan-map/data/transactions-10-d80e5ca08e0b.json": {
       "bytes": 21,
@@ -225,21 +245,21 @@
       "bytes": 237547,
       "sha256": "da620fd15bd030a7d164f6717021ad784b70927970d68c2f5c02552666f2d8dc"
     },
-    "tainan-map/data/transactions-13-0d55a0d97e44.json": {
-      "bytes": 176006,
-      "sha256": "0d55a0d97e4418aa9ca232a714443e6b99b0dd3ddf353ad936d3f8d1e42a8ade"
+    "tainan-map/data/transactions-13-92a0a140de2f.json": {
+      "bytes": 565919,
+      "sha256": "92a0a140de2f987eb69e45c7803832d9edb2989e2e37c5dc9c81e3ec74d61f77"
     },
-    "tainan-map/data/transactions-13-0d55a0d97e44.json.gz": {
-      "bytes": 13121,
-      "sha256": "81ae7ee4b7b7cdefcf61f27a06d9fa8221d55176e3b66b75444065f3e63e5512"
+    "tainan-map/data/transactions-13-92a0a140de2f.json.gz": {
+      "bytes": 33912,
+      "sha256": "93bdc3b8ab2d326504ef053539759a57572f6cf38c624103dff2287ea361e3d9"
     },
-    "tainan-map/data/transactions-14-c087d87eba0d.json": {
-      "bytes": 8040865,
-      "sha256": "c087d87eba0dfec7b34a39b94556d18ffbc2e406fa9abee6c77439911dd053ca"
+    "tainan-map/data/transactions-14-92fdbc10335c.json": {
+      "bytes": 8194055,
+      "sha256": "92fdbc10335cdfd147535536565d3e786fd8a53b0745a549f430c22881e85d6f"
     },
-    "tainan-map/data/transactions-14-c087d87eba0d.json.gz": {
-      "bytes": 561068,
-      "sha256": "8c3b9ece68bce70599857986d83524485e4affd4eaa1e646a612177dbc932833"
+    "tainan-map/data/transactions-14-92fdbc10335c.json.gz": {
+      "bytes": 568666,
+      "sha256": "7fcbbc0b1c0c6fa7d89f548561363258e813d5c913c713f156d74920e921bdf8"
     },
     "tainan-map/data/transactions-15-0a3a5f2c9585.json": {
       "bytes": 47482,
@@ -281,29 +301,29 @@
       "bytes": 44445,
       "sha256": "b90e562fa8881dead0cb5c4fe1a9b6a207ebb28cea6201674e17059c2b6f2900"
     },
-    "tainan-map/data/transactions-20-ab90636e55d4.json": {
-      "bytes": 1936585,
-      "sha256": "ab90636e55d4b1153cbc42c3e85a1166fab28dbdfb6308ddbaf265a643a8a4f4"
+    "tainan-map/data/transactions-20-e393530eb1be.json": {
+      "bytes": 1980213,
+      "sha256": "e393530eb1be2bedfbeeeddb185a7d7bc0f8978bdcbe05f62aad72ac5abf8725"
     },
-    "tainan-map/data/transactions-20-ab90636e55d4.json.gz": {
-      "bytes": 127307,
-      "sha256": "bf0d1ce681f24f9b49e53bdb0a6229f6bda633d829525cc046bb7b72f4e2523d"
+    "tainan-map/data/transactions-20-e393530eb1be.json.gz": {
+      "bytes": 130529,
+      "sha256": "d1b052bb5391f60cce219e5564eeb97cc0871470e6428dfb4c705c2e3dffcf0e"
     },
-    "tainan-map/data/transactions-21-d55a00e27927.json": {
-      "bytes": 1432820,
-      "sha256": "d55a00e27927b971de1867216167b364944f4a091fea32df6e4bc26912da8706"
+    "tainan-map/data/transactions-21-9da8789cb2b7.json": {
+      "bytes": 1441082,
+      "sha256": "9da8789cb2b7742c61dad627e41c593d7b132d2549e9888b484a98ad8b254b9c"
     },
-    "tainan-map/data/transactions-21-d55a00e27927.json.gz": {
-      "bytes": 112598,
-      "sha256": "be9119d4fc25ca1a2058e3bdd4586bc8f01bee9a51233a6b1ec81ba93ec05b7f"
+    "tainan-map/data/transactions-21-9da8789cb2b7.json.gz": {
+      "bytes": 113510,
+      "sha256": "bf050710b728096539c8f42ec79c9eda884672d18748160f54303e4ed1a944c5"
     },
-    "tainan-map/data/transactions-22-f00d313991b5.json": {
-      "bytes": 4659126,
-      "sha256": "f00d313991b51ed0f90355f8883386b1c46d17abe14c86319103a2ab84679195"
+    "tainan-map/data/transactions-22-06cda1e5bfc5.json": {
+      "bytes": 4713219,
+      "sha256": "06cda1e5bfc5441fc7c40551345b943568a958d611a77f9a23a9e3e8f56f18a4"
     },
-    "tainan-map/data/transactions-22-f00d313991b5.json.gz": {
-      "bytes": 383653,
-      "sha256": "1dd7a2ccb835abdf28c43c5e350f9231f7daba3daa5dbc0856971988a2eb3d21"
+    "tainan-map/data/transactions-22-06cda1e5bfc5.json.gz": {
+      "bytes": 386916,
+      "sha256": "3887af49d771a5aa56f1c732b767ebc0eb301f897f18d6e6674eea0ba25fe70d"
     },
     "tainan-map/data/transactions-23-28d46946ce31.json": {
       "bytes": 48871,
@@ -329,13 +349,13 @@
       "bytes": 41,
       "sha256": "117f89d67333111e418fd2e5ba88eb709c2d616ad447264ea31b534932e0c8b9"
     },
-    "tainan-map/data/transactions-26-08dc7af502df.json": {
-      "bytes": 1542874,
-      "sha256": "08dc7af502df51118586801234ef0304bfd100423c4eed0e97e8b4f196fd8b2f"
+    "tainan-map/data/transactions-26-abe08e6fda00.json": {
+      "bytes": 1557149,
+      "sha256": "abe08e6fda00e2a98911ff57325fb61b83f956749ee80ead24383a5e2bc08d61"
     },
-    "tainan-map/data/transactions-26-08dc7af502df.json.gz": {
-      "bytes": 109953,
-      "sha256": "89e48b018a6aa054fee89d308ba4641f68ce0367fd4fb7057b8b13599422c505"
+    "tainan-map/data/transactions-26-abe08e6fda00.json.gz": {
+      "bytes": 111293,
+      "sha256": "faf2c8cddb85661a6853a3420af08a68d6e6cc01a5804fdbe099db3b846ebea5"
     },
     "tainan-map/data/transactions-27-3d1ecb702199.json": {
       "bytes": 12030450,
@@ -442,620 +462,652 @@
       "sha256": "6613481239dc83e0a5fece376a318c889df5c31284adefebdc4282d60a6f2db1"
     },
     "tainan-map/floor-gaps.css": {
-      "bytes": 4370,
-      "sha256": "fe4bd6c52c09ecf9f20bba29a6edaad24bf1c4cf2a14f0ffb403f498ba3bdc7a"
+      "bytes": 7656,
+      "sha256": "b500eab1c41492e675c2d2f109c5b2a4422768a137f027f54fb8496dfdde86a3"
     },
     "tainan-map/floor-gaps.js": {
-      "bytes": 33170,
-      "sha256": "3f97dade1dc35318e880c4d56d86f59735e1d496c0da7ab1c848f57cd72975e3"
+      "bytes": 43648,
+      "sha256": "55bd7c50e203e46b661c0ed995ec11b6af8efcf2a7785894ac5a71c92d553b25"
     },
     "tainan-map/floor-sales.css": {
       "bytes": 14558,
       "sha256": "a00b53c5ba433618cf2289ce6d68b8ba3ba6954bf78122e83bb65d5478afb7f8"
     },
     "tainan-map/floor-sales.js": {
-      "bytes": 34497,
-      "sha256": "2f001371af0630cc2e2c63c99c7b3778efe54e8bd4ade578c2fa73b8347c7ecc"
+      "bytes": 39255,
+      "sha256": "fe1000014bcf8baaa846076419c8c70b343d1051bdfe4d03a3d88a5b94922724"
     },
     "tainan-map/ground-subsidence.js": {
       "bytes": 314707,
       "sha256": "68b8dfc87f5fa0ad8c3ffc52a74dcc58152e9147d5cbab525ab4e00e7c01b6de"
     },
     "tainan-map/index.html": {
-      "bytes": 14446,
-      "sha256": "24c70033e7d6c6e4725444f2854e9c00f37acf4608b7b26851178dc4b57f04ac"
+      "bytes": 14671,
+      "sha256": "f96708125605e9244d0af84666fce741fa4b660762303db17f930ce30d17aaac"
     },
     "tainan-map/life-data.js": {
       "bytes": 138647,
       "sha256": "cfcac0ab01de01bfbad9e98cb22f4060b11c88cd0f477867f2608cbbf82d9a51"
     },
     "tainan-map/market-ledger.css": {
-      "bytes": 4674,
-      "sha256": "e0d3ab08461b38b38e7ccd31090cf017cde94b9419aeefef6608194484bfe4d8"
+      "bytes": 5806,
+      "sha256": "2f82d14f6bc932fbbbd96c0edbf2919f7e83df1c39803394eb687f09b0c4ed87"
     },
     "tainan-map/market-ledger.js": {
-      "bytes": 17174,
-      "sha256": "5a7c1746254675f31a0649477cd2e0524ff60e7dc1c936a09e661adbc08fcc26"
+      "bytes": 20039,
+      "sha256": "e837d03d23d5c15d145ddc5d99bf3620745d048074487d4cecb008bbb5b82113"
     },
-    "tainan-map/market-ledger/01-01-941eac0f8318.json": {
-      "bytes": 116935,
-      "sha256": "941eac0f83188f6adee03cd05ff2cbc0269fd30a5d7e049f8633374592b6e027"
+    "tainan-map/market-ledger/01-01-fd6ebae4808c.json": {
+      "bytes": 121240,
+      "sha256": "fd6ebae4808c31317bd9a2d2f249507d393993b52c36540a2e1d7e897bad18b7"
     },
-    "tainan-map/market-ledger/01-01-941eac0f8318.json.gz": {
-      "bytes": 19022,
-      "sha256": "e20022e4127a0e24b33703997e84f9bebfb27d0c36943a8225915b02624424fd"
+    "tainan-map/market-ledger/01-01-fd6ebae4808c.json.gz": {
+      "bytes": 19028,
+      "sha256": "175c4b48b8f66116a48b2dabf7406ad772fbfc250c2f9b7b493bb2e038b8ca5a"
     },
-    "tainan-map/market-ledger/02-01-1f9e8397f634.json": {
-      "bytes": 121045,
-      "sha256": "1f9e8397f634309eefe283bd39a1e353cb8eb4a0d8d3e7404f94d303a589fd08"
+    "tainan-map/market-ledger/02-01-b495c01b2838.json": {
+      "bytes": 126294,
+      "sha256": "b495c01b28388c8702ff79cd18a33403cd29d9f584a57850728fe4a4b1323766"
     },
-    "tainan-map/market-ledger/02-01-1f9e8397f634.json.gz": {
-      "bytes": 20220,
-      "sha256": "6ad8600433a7543db2f66a3e396aec3d93a08ed20dc5471f81ac1f66c5d3c83d"
+    "tainan-map/market-ledger/02-01-b495c01b2838.json.gz": {
+      "bytes": 20326,
+      "sha256": "a25ed40f5ee5023055e4d90aaf78ea24c85d147d2377d1140d3e9bb44829fea9"
     },
-    "tainan-map/market-ledger/03-01-48a9c030a5ea.json": {
-      "bytes": 914564,
-      "sha256": "48a9c030a5eae96b6276b41dba76cbdd5fd4ae07be552264c9e830f83ccdbcc0"
+    "tainan-map/market-ledger/03-01-79f5120c4641.json": {
+      "bytes": 1038848,
+      "sha256": "79f5120c46415fbb8891d72b9c38e399ffa17fed50a8e369476c60a27213d645"
     },
-    "tainan-map/market-ledger/03-01-48a9c030a5ea.json.gz": {
-      "bytes": 158083,
-      "sha256": "9661274726d2429a83f68ceee85a4115288f8dd1b77d907958e63b18764736ab"
+    "tainan-map/market-ledger/03-01-79f5120c4641.json.gz": {
+      "bytes": 176644,
+      "sha256": "51c1018b865d62285fe0446b95abe1ce66ec194078f89916dcd15fc859599cad"
     },
-    "tainan-map/market-ledger/03-02-78fa9e8634dd.json": {
-      "bytes": 927521,
-      "sha256": "78fa9e8634ddd5058ba30dae5b27abfc2e501e9233d9913c75a5512af4fddccb"
+    "tainan-map/market-ledger/03-02-01d2308c836b.json": {
+      "bytes": 1044185,
+      "sha256": "01d2308c836bb47ba1c8c09d52f8007acf076b82a0902558d1cfab853fcfded0"
     },
-    "tainan-map/market-ledger/03-02-78fa9e8634dd.json.gz": {
-      "bytes": 158861,
-      "sha256": "2d8b71e6c2bfb2a56483a0cff83a4ce42d4a3d636527e02a0f3f231b7f368a6d"
+    "tainan-map/market-ledger/03-02-01d2308c836b.json.gz": {
+      "bytes": 175480,
+      "sha256": "83757074d2c5696f061cb6aa02a966d8e560f928f9504bbe783a83a06a2601a0"
     },
-    "tainan-map/market-ledger/03-03-7b20dbbc5867.json": {
-      "bytes": 325292,
-      "sha256": "7b20dbbc5867fd11326dc9dab80d58914b34127f8d2e2ee3f8d1195f068cd3aa"
+    "tainan-map/market-ledger/03-03-7b82a5916c2d.json": {
+      "bytes": 364184,
+      "sha256": "7b82a5916c2d3507d0711a9fac332b8ffbabf0a9e98c517a5265460643f9588a"
     },
-    "tainan-map/market-ledger/03-03-7b20dbbc5867.json.gz": {
-      "bytes": 57154,
-      "sha256": "4c6580659be794f8786af6bbf84c27cb01eb8120e1663c928c91ead7d393e058"
+    "tainan-map/market-ledger/03-03-7b82a5916c2d.json.gz": {
+      "bytes": 62845,
+      "sha256": "86fae9a21e5004aaf05e143d2fdf5ac566d396a6c019135a35a0d7e108053a57"
     },
-    "tainan-map/market-ledger/04-01-063a9784d1ac.json": {
-      "bytes": 945413,
-      "sha256": "063a9784d1acb89f53653eb04843b91d60b58189d070db4ade851f36b34b115c"
+    "tainan-map/market-ledger/04-01-1f92a14e1515.json": {
+      "bytes": 1064291,
+      "sha256": "1f92a14e15150d5124f42c86262388194208c93d2e8cf18ebbf6d52d7fa18811"
     },
-    "tainan-map/market-ledger/04-01-063a9784d1ac.json.gz": {
-      "bytes": 150418,
-      "sha256": "0bebc0e680018d0046175622c20ca8d8145e9ad469627efee47b249b8ab93537"
+    "tainan-map/market-ledger/04-01-1f92a14e1515.json.gz": {
+      "bytes": 160907,
+      "sha256": "d2cd71caab0b7835406768fca690f9e099949c73dac6c05b8b16f6b6d4b5b332"
     },
-    "tainan-map/market-ledger/04-02-8d3c0b474f9a.json": {
-      "bytes": 927408,
-      "sha256": "8d3c0b474f9a4110903286e215a010eab1bf1581db1dae524ed1593679fdfb07"
+    "tainan-map/market-ledger/04-02-8d5c7da55f21.json": {
+      "bytes": 1019529,
+      "sha256": "8d5c7da55f21aed6231f3a70f4e1a8e8560db6f0b1a2ae76174de9d1502fbf3d"
     },
-    "tainan-map/market-ledger/04-02-8d3c0b474f9a.json.gz": {
-      "bytes": 142737,
-      "sha256": "1018339c8bcc3f06c469125249892e9107b0d7e22df76a3b4f0e0a385de8db09"
+    "tainan-map/market-ledger/04-02-8d5c7da55f21.json.gz": {
+      "bytes": 150810,
+      "sha256": "e59fba25e53ec055e3bbe4d48dba9e4c7573da4db6c535d6b8e3826afd77f5d8"
     },
-    "tainan-map/market-ledger/04-03-831fdf8e574e.json": {
-      "bytes": 353025,
-      "sha256": "831fdf8e574ec3ac475a0423b68eb4323d5bbb3f7879a182ceab33cffd8f5a88"
+    "tainan-map/market-ledger/04-03-ed2d2615e960.json": {
+      "bytes": 386766,
+      "sha256": "ed2d2615e960b3dae11acf5b5f4fbdb9cb18dfd7973e1a2a69c8b03a2228fee7"
     },
-    "tainan-map/market-ledger/04-03-831fdf8e574e.json.gz": {
-      "bytes": 46303,
-      "sha256": "a99692d4b09c554ef8dddb95df85beaa803d54d3ed2894056ea760a7d3926925"
+    "tainan-map/market-ledger/04-03-ed2d2615e960.json.gz": {
+      "bytes": 48561,
+      "sha256": "7bdb4f60b04b0b20d5770948629c28f1c196db721ca882ee6a0666450b10d166"
     },
-    "tainan-map/market-ledger/05-01-735bb969b280.json": {
-      "bytes": 900766,
-      "sha256": "735bb969b280a95b6b2cacea70b6bc99447ffb774316b44b51644067b1a2f6a0"
+    "tainan-map/market-ledger/05-01-b81eed056593.json": {
+      "bytes": 968476,
+      "sha256": "b81eed0565935e921f52d62154b738ca25e9a6ba997782a0154b9a092edbf0e5"
     },
-    "tainan-map/market-ledger/05-01-735bb969b280.json.gz": {
-      "bytes": 143623,
-      "sha256": "2369b661f9c1fd835f5374ced4190c3bf0534a45f826874705635e0dfd280d30"
+    "tainan-map/market-ledger/05-01-b81eed056593.json.gz": {
+      "bytes": 149273,
+      "sha256": "43c305ac658fb8210ddb0cf2a1bd82501cee2750536adbc4138795e520e6dcc1"
     },
-    "tainan-map/market-ledger/05-02-7b483dd86132.json": {
-      "bytes": 141232,
-      "sha256": "7b483dd86132504c14566136e2c8a901c9ce672a20ffa4b3c58a6b1a113fcb53"
+    "tainan-map/market-ledger/05-02-5ddaf62c2acc.json": {
+      "bytes": 147501,
+      "sha256": "5ddaf62c2acc51ffc2963a2cad9152b4a4460c52748cf1db3282d86555d25330"
     },
-    "tainan-map/market-ledger/05-02-7b483dd86132.json.gz": {
-      "bytes": 22180,
-      "sha256": "ac06304d75c9cea5cc9786d61bf7c5c0792c571a1d9b3353eb3a15acf7a388f2"
+    "tainan-map/market-ledger/05-02-5ddaf62c2acc.json.gz": {
+      "bytes": 22736,
+      "sha256": "e712fa6bca8546ef1bcf0d41d33d58ada2eeb49b167f0c4e91d36fcdb422bc01"
     },
-    "tainan-map/market-ledger/06-01-73e3ad9bb6f2.json": {
-      "bytes": 215844,
-      "sha256": "73e3ad9bb6f2ae22b8f38ffddf15f141ec327264c2f21a97750eadb8469e2483"
+    "tainan-map/market-ledger/06-01-97cc1e54f25d.json": {
+      "bytes": 225491,
+      "sha256": "97cc1e54f25d7d0eb166941c2ea030be0d4d73bbbbdb07df55e4c79db97726d2"
     },
-    "tainan-map/market-ledger/06-01-73e3ad9bb6f2.json.gz": {
-      "bytes": 32628,
-      "sha256": "2dbbf0a2b2bcfc3dfcd5762fb30f4b1ae5d1c5c6f31bd27993de6a0123394906"
+    "tainan-map/market-ledger/06-01-97cc1e54f25d.json.gz": {
+      "bytes": 32887,
+      "sha256": "85e5fd5359a381be617abe9eacbb042f86be334b2e4267c4299e9884cef5b494"
     },
-    "tainan-map/market-ledger/07-01-8387b2a89ea6.json": {
-      "bytes": 931168,
-      "sha256": "8387b2a89ea665fe5892ed7c453ba7bf1c1d1c0aabfa96e2d6bf4e5b98dc0a3e"
+    "tainan-map/market-ledger/07-01-e4514aa5105c.json": {
+      "bytes": 1052674,
+      "sha256": "e4514aa5105ca403add29302737daa752867e3c71932e979dcaedd65e0697493"
     },
-    "tainan-map/market-ledger/07-01-8387b2a89ea6.json.gz": {
-      "bytes": 159142,
-      "sha256": "528d20f6f6d1a4995ff65ffa53ecf95a97095f2ffc36a3ac29d63821057d6b30"
+    "tainan-map/market-ledger/07-01-e4514aa5105c.json.gz": {
+      "bytes": 175462,
+      "sha256": "b8f9c735d24190b13c6fe59bafd071365d0dd7992ec5e674ecec4c7398e67504"
     },
-    "tainan-map/market-ledger/07-02-7d34301c177c.json": {
-      "bytes": 919950,
-      "sha256": "7d34301c177cc829bd4d2ae74248e32dd0e7302cff5eb2dff2b09fe0a29dfd34"
+    "tainan-map/market-ledger/07-02-8235ab8c9b2e.json": {
+      "bytes": 1051020,
+      "sha256": "8235ab8c9b2e0551987a77e58d44832ec03d16f180c5db8e41828b370cdd4cb6"
     },
-    "tainan-map/market-ledger/07-02-7d34301c177c.json.gz": {
-      "bytes": 154839,
-      "sha256": "422508680c6443b894d6603e46d3d5e1ed9887e4c7375fcc5b1665ad9884ddde"
+    "tainan-map/market-ledger/07-02-8235ab8c9b2e.json.gz": {
+      "bytes": 169762,
+      "sha256": "e12126b5b6ce66a0caaa8aec79672139ed35f41f908e32ad06ccee6b86fd62f2"
     },
-    "tainan-map/market-ledger/07-03-d55204c05445.json": {
-      "bytes": 924516,
-      "sha256": "d55204c0544580aa8a1019499722b756fe20109dfce1c308a3d97462d6892458"
+    "tainan-map/market-ledger/07-03-09886e35a452.json": {
+      "bytes": 1055046,
+      "sha256": "09886e35a45249c9f3b5c72aa24d8ab190f30ce3a0e7db48e16b0c04eacc307e"
     },
-    "tainan-map/market-ledger/07-03-d55204c05445.json.gz": {
-      "bytes": 150062,
-      "sha256": "6c5bff11cf084aac11dfeeee398b019a4a5a4787d5dc5a14d003829101c3ebea"
+    "tainan-map/market-ledger/07-03-09886e35a452.json.gz": {
+      "bytes": 163541,
+      "sha256": "a5342364ae8643177140086116a662382594a663dcecf90647af772aedddc6b1"
     },
-    "tainan-map/market-ledger/07-04-c08d682a371d.json": {
-      "bytes": 551504,
-      "sha256": "c08d682a371d1d5f9fbb88d763eccad7f79bd3454b3ecd09137e344f95126cdd"
+    "tainan-map/market-ledger/07-04-0d197408d728.json": {
+      "bytes": 615760,
+      "sha256": "0d197408d7282f4d2df1ad71b67fa09dc47417a2183c1ab8da8066996f18d135"
     },
-    "tainan-map/market-ledger/07-04-c08d682a371d.json.gz": {
-      "bytes": 96347,
-      "sha256": "361824817b3e4e20b1cf000f92293c852ab52acb6a5b69cd6f21d55ce0131873"
+    "tainan-map/market-ledger/07-04-0d197408d728.json.gz": {
+      "bytes": 104956,
+      "sha256": "560163e7292e7bbf14978fbc751d1625790420b653a481db20bcf61a9a1e1128"
     },
-    "tainan-map/market-ledger/08-01-b93ccf9aaf41.json": {
-      "bytes": 12476,
-      "sha256": "b93ccf9aaf41cacb77ac9ee5b5cb1c70baf6899fc9cd934a3248852403dd6edb"
+    "tainan-map/market-ledger/08-01-dbfaec6192c3.json": {
+      "bytes": 12906,
+      "sha256": "dbfaec6192c3f205884ae9cf2cbdb35a91c1efca2b2cffe4e542d552db0ab1b0"
     },
-    "tainan-map/market-ledger/08-01-b93ccf9aaf41.json.gz": {
-      "bytes": 2570,
-      "sha256": "520198b004d6071654add432e085bdc0dcf86d5a92b78f3d57f21e08f3529ef4"
+    "tainan-map/market-ledger/08-01-dbfaec6192c3.json.gz": {
+      "bytes": 2578,
+      "sha256": "20ea42f8de3d97065e0571636da25345288e6a2b915a6c59fc42b7191a565479"
     },
-    "tainan-map/market-ledger/09-01-23082680ca87.json": {
-      "bytes": 14005,
-      "sha256": "23082680ca87193daa0b7b48eaff81dd116ac9c85909c1f65b22a66f016b26c1"
+    "tainan-map/market-ledger/09-01-6f1fbb7cbb90.json": {
+      "bytes": 14525,
+      "sha256": "6f1fbb7cbb909aee9bf9bf9c478d284ad39d23a84143a10a77185fa80cb57a18"
     },
-    "tainan-map/market-ledger/09-01-23082680ca87.json.gz": {
+    "tainan-map/market-ledger/09-01-6f1fbb7cbb90.json.gz": {
       "bytes": 2746,
-      "sha256": "7a311a41b06799e802228e929822e857cf800e25e00cc36373d28604afd4299d"
-    },
-    "tainan-map/market-ledger/10-01-911968fb8bdb.json": {
-      "bytes": 900216,
-      "sha256": "911968fb8bdb8f5ac2b2b396d992c73169d2f491393bae1e39e921f5892c30ed"
-    },
-    "tainan-map/market-ledger/10-01-911968fb8bdb.json.gz": {
-      "bytes": 152914,
-      "sha256": "157b43f5f68e2cf459d2f69c56a8ce02ea8510a455364407d5db13c182adfb55"
-    },
-    "tainan-map/market-ledger/10-02-b381f160f796.json": {
-      "bytes": 917641,
-      "sha256": "b381f160f79624355a69714ec706050fea7344e806de82a5e4b68f537612beab"
-    },
-    "tainan-map/market-ledger/10-02-b381f160f796.json.gz": {
-      "bytes": 148972,
-      "sha256": "8ed594e942d16618895ae3a923a495c240080724f9d90206afa9cfad3ef4a472"
-    },
-    "tainan-map/market-ledger/10-03-c117a067548c.json": {
-      "bytes": 704615,
-      "sha256": "c117a067548c602be84e1d3ef1ec719d6af2e4c65e18c5a867d1661633be93a6"
-    },
-    "tainan-map/market-ledger/10-03-c117a067548c.json.gz": {
-      "bytes": 117739,
-      "sha256": "60b3369b651849f0babf0176c48c3a58f4c81c567c462f4e592a83fbf23d699f"
-    },
-    "tainan-map/market-ledger/11-01-1a30ef9d5895.json": {
-      "bytes": 917975,
-      "sha256": "1a30ef9d58952f25fef4f0e833387198860baf7ec3d6055fb176875f03ddfed0"
-    },
-    "tainan-map/market-ledger/11-01-1a30ef9d5895.json.gz": {
-      "bytes": 142127,
-      "sha256": "88bc566ae0a3966997720652f015640c433a9eb24f3adf998bcac8eebf81b47d"
-    },
-    "tainan-map/market-ledger/11-02-84e08f1f2d29.json": {
-      "bytes": 897277,
-      "sha256": "84e08f1f2d2970589daf1f06b7dc85f8a9d534f8087f1dfeb1340625778ca9b9"
-    },
-    "tainan-map/market-ledger/11-02-84e08f1f2d29.json.gz": {
-      "bytes": 125472,
-      "sha256": "a2f95284a291bc5b0e701a3c48fb63d88c1fd213b3f56f2cd13eb623a16a304c"
-    },
-    "tainan-map/market-ledger/11-03-8e97cd922ab1.json": {
-      "bytes": 130587,
-      "sha256": "8e97cd922ab16cc339e08032ff440fba32ba6c2420c3d41eefbb1d8fa1cc347e"
-    },
-    "tainan-map/market-ledger/11-03-8e97cd922ab1.json.gz": {
-      "bytes": 17907,
-      "sha256": "44c088b774c40415fb4cc31168722544173ac27879784fb13ff79b0519328b5f"
-    },
-    "tainan-map/market-ledger/12-01-e76dd541b4fa.json": {
-      "bytes": 24609,
-      "sha256": "e76dd541b4fac3525c312c1460517ef1ab0bb123ca044c951e11019c06219f87"
-    },
-    "tainan-map/market-ledger/12-01-e76dd541b4fa.json.gz": {
-      "bytes": 4554,
-      "sha256": "87885751676fdb9d412d47d7fb531dc2ad441c8a2e00853c87ff49b4e98f59c0"
-    },
-    "tainan-map/market-ledger/13-01-7015d169da9c.json": {
-      "bytes": 313269,
-      "sha256": "7015d169da9c85c370c0020bc1c73344f9e4cad35ef81fb089835b4655fb1bd9"
-    },
-    "tainan-map/market-ledger/13-01-7015d169da9c.json.gz": {
-      "bytes": 49128,
-      "sha256": "e2656521fc69341125d2f9292f7e31bacd681c663b30a79ed2e59d0d94c249a8"
-    },
-    "tainan-map/market-ledger/14-01-48090d179fd7.json": {
-      "bytes": 941043,
-      "sha256": "48090d179fd7e50f0393c33c134ca9d6a0c4644db84cf60eefd953850d0591cb"
-    },
-    "tainan-map/market-ledger/14-01-48090d179fd7.json.gz": {
-      "bytes": 155031,
-      "sha256": "990ac52d7dc981359d3735f52a73f51107328216d04b53e71d83f5920c75fa50"
-    },
-    "tainan-map/market-ledger/14-02-6080d5f018ce.json": {
-      "bytes": 933670,
-      "sha256": "6080d5f018ce31179d98cdcec649ba652809dd656e576735dda55bdff71d5159"
-    },
-    "tainan-map/market-ledger/14-02-6080d5f018ce.json.gz": {
-      "bytes": 146113,
-      "sha256": "919955a0bcb1506653a1b446cd149f66b5de0001d05b3ea4b7cc5a7eddb9c80a"
-    },
-    "tainan-map/market-ledger/14-03-eb182244684c.json": {
-      "bytes": 915259,
-      "sha256": "eb182244684ced708a47d5b7037d878db4940a8ec75cdb13c066ecfad21b3042"
-    },
-    "tainan-map/market-ledger/14-03-eb182244684c.json.gz": {
-      "bytes": 142422,
-      "sha256": "a17545c521a7fea32b6d95b1f218e715404b772881218b55bcdbdf9d9fdce433"
-    },
-    "tainan-map/market-ledger/14-04-4f6a782f35bb.json": {
-      "bytes": 914499,
-      "sha256": "4f6a782f35bb14495fde6ac2aa7eedbf5c97e6506f448db9b6445467c938816a"
-    },
-    "tainan-map/market-ledger/14-04-4f6a782f35bb.json.gz": {
-      "bytes": 139210,
-      "sha256": "034f9bc56d41511d931dc77a3232557805cfa931978a579c0eb90c07257e031e"
-    },
-    "tainan-map/market-ledger/14-05-04ed7cfb8191.json": {
-      "bytes": 881322,
-      "sha256": "04ed7cfb819102b0ddd9502a31ec4657bc7d36974ef0c105d4a137bbd52390c6"
-    },
-    "tainan-map/market-ledger/14-05-04ed7cfb8191.json.gz": {
-      "bytes": 135619,
-      "sha256": "c6caa4b7904dd9dcccc53b7bed7865871e95031066ee6777936cf1c0ae43e8f2"
-    },
-    "tainan-map/market-ledger/14-06-fe4f6ca9d0d0.json": {
-      "bytes": 161669,
-      "sha256": "fe4f6ca9d0d0319f051c8aa6a6f9e43b5724fb8f8372f280cc96f6289d0ecd97"
-    },
-    "tainan-map/market-ledger/14-06-fe4f6ca9d0d0.json.gz": {
-      "bytes": 24148,
-      "sha256": "0ad6b5b2c92ff8b68595450bca91e01a301c683dd5be399a4a9ebebca64d09e9"
-    },
-    "tainan-map/market-ledger/15-01-868eefc1cc6f.json": {
-      "bytes": 523533,
-      "sha256": "868eefc1cc6f4fa7b68a22b4d7aada7999591d25939eaeba9232a81286bb34af"
-    },
-    "tainan-map/market-ledger/15-01-868eefc1cc6f.json.gz": {
-      "bytes": 77764,
-      "sha256": "a20ffe4729eec520a3e4cbda4d4bbdb201648e96a9f41e4af58dc9e29bb7a551"
-    },
-    "tainan-map/market-ledger/16-01-381cda8ac7a7.json": {
-      "bytes": 973218,
-      "sha256": "381cda8ac7a765e614794cff0e32736c7e2c91b5dd429f323d5de9f6d0065666"
-    },
-    "tainan-map/market-ledger/16-01-381cda8ac7a7.json.gz": {
-      "bytes": 159914,
-      "sha256": "27d51680ca702bbd26f8f29f7dd852fa08ecf6030631881d3e9a368b655545d9"
-    },
-    "tainan-map/market-ledger/16-02-57cf7ae0e04f.json": {
-      "bytes": 969403,
-      "sha256": "57cf7ae0e04f362f7d66636eb2e59b83997f800cc246e2ccd01da28c5b9653b1"
-    },
-    "tainan-map/market-ledger/16-02-57cf7ae0e04f.json.gz": {
-      "bytes": 149642,
-      "sha256": "be5549c7b07b03813084ce2b29ff3d56242bd3d337cd2fb486570f5b4c6bf4ca"
-    },
-    "tainan-map/market-ledger/16-03-9b553aa8da9c.json": {
-      "bytes": 961149,
-      "sha256": "9b553aa8da9c0754da1c008228619e4610b72ddda74f2590f22b397c8cebe78b"
-    },
-    "tainan-map/market-ledger/16-03-9b553aa8da9c.json.gz": {
-      "bytes": 154663,
-      "sha256": "42f155fbbe47473781579d12d5dd37bef54d4dd1ec97626f7f144ecf74fcd0a6"
-    },
-    "tainan-map/market-ledger/16-04-38f4bc7aea71.json": {
-      "bytes": 405112,
-      "sha256": "38f4bc7aea71cb3ba5efe4e8d7d445791a0b476f465f4a2694f309b5ba26f01d"
-    },
-    "tainan-map/market-ledger/16-04-38f4bc7aea71.json.gz": {
-      "bytes": 68716,
-      "sha256": "dd0912db0e1c015218d5a1d92ed3625e492c75bb65c77d9df44c1268fe2414a5"
-    },
-    "tainan-map/market-ledger/17-01-379ea0fdff30.json": {
-      "bytes": 283462,
-      "sha256": "379ea0fdff30cab7f52c57741a2dc153da3f8f3518c762c88b0545167489fedb"
-    },
-    "tainan-map/market-ledger/17-01-379ea0fdff30.json.gz": {
-      "bytes": 41957,
-      "sha256": "888dbc5572f3efc7185fec13a7ce4ee380c0b4c1b11f5d1955c66c52085ad055"
-    },
-    "tainan-map/market-ledger/18-01-a97b9219b8c8.json": {
-      "bytes": 82814,
-      "sha256": "a97b9219b8c8df740c03d079613d9712780fcc7f29de090cd139f3526565c22d"
-    },
-    "tainan-map/market-ledger/18-01-a97b9219b8c8.json.gz": {
-      "bytes": 13532,
-      "sha256": "afc274a5c7a17da456537d14ab3c8dbc53711e5c12bae8d3452d2f88cb39609d"
-    },
-    "tainan-map/market-ledger/19-01-8da64f643ec2.json": {
-      "bytes": 64363,
-      "sha256": "8da64f643ec2fef583c26788270c4b0b4461357627d7f320e60710b565a767dc"
-    },
-    "tainan-map/market-ledger/19-01-8da64f643ec2.json.gz": {
-      "bytes": 10200,
-      "sha256": "be3ed60930d5b3d1ae58e3ef679ad4be8ecd5693d3b165f29f9de824ac186ecb"
-    },
-    "tainan-map/market-ledger/20-01-955b442ef958.json": {
-      "bytes": 7023,
-      "sha256": "955b442ef95830c99950e74df2ca16787bbde64363ddd143418b175dc16301d7"
-    },
-    "tainan-map/market-ledger/20-01-955b442ef958.json.gz": {
-      "bytes": 1673,
-      "sha256": "026b76a6bc2830fdc2f60089954e10768aae7086637db3e0a51c8f802240eb03"
-    },
-    "tainan-map/market-ledger/21-01-9fcc4bb3f9c6.json": {
-      "bytes": 122604,
-      "sha256": "9fcc4bb3f9c6ca77a68a48c40e9eab32a5a8e89c52c2683a1ae3baee942c733e"
-    },
-    "tainan-map/market-ledger/21-01-9fcc4bb3f9c6.json.gz": {
-      "bytes": 20062,
-      "sha256": "2725eafe7170e9400319383220f229c34bf36c7a4f8abef9858157bac9a477ca"
-    },
-    "tainan-map/market-ledger/22-01-68c86c0f2d54.json": {
-      "bytes": 497862,
-      "sha256": "68c86c0f2d54a70ec3788321967b13746a4610cf85f85a6cc5a3902e8aef352f"
-    },
-    "tainan-map/market-ledger/22-01-68c86c0f2d54.json.gz": {
-      "bytes": 77763,
-      "sha256": "88686d550c1f68164fda986f317e4c1c1b690621d093e131cc9df6c64aee088a"
-    },
-    "tainan-map/market-ledger/23-01-3a7dbf14efe6.json": {
-      "bytes": 902508,
-      "sha256": "3a7dbf14efe66737a79d6c5c40c594275a82c50747cd2615fadfb19efadd8152"
-    },
-    "tainan-map/market-ledger/23-01-3a7dbf14efe6.json.gz": {
-      "bytes": 137679,
-      "sha256": "56196c00580542848acc987b2e39052cf6d5ed7382bf9606074927d58ff65603"
-    },
-    "tainan-map/market-ledger/23-02-0dba3e6e5cde.json": {
-      "bytes": 346301,
-      "sha256": "0dba3e6e5cdef91a10dc879efe48334b7410595be51c51eabb387ddbac9d71f7"
-    },
-    "tainan-map/market-ledger/23-02-0dba3e6e5cde.json.gz": {
-      "bytes": 49183,
-      "sha256": "6c54b6a9dff383d5195244b3712bb0ccf7344c97aebbb4ce524435a8fe194c45"
-    },
-    "tainan-map/market-ledger/24-01-e3b91c1b0d1a.json": {
-      "bytes": 899020,
-      "sha256": "e3b91c1b0d1aff4f5307af19b6a504fe79982a89bb24730748aa2b3b62ad666c"
-    },
-    "tainan-map/market-ledger/24-01-e3b91c1b0d1a.json.gz": {
-      "bytes": 152582,
-      "sha256": "56739faf70ef27e9663e96bf8c2d4e461b28e64d083e1daa79206f6e29cf3825"
-    },
-    "tainan-map/market-ledger/24-02-3fd3ad545841.json": {
-      "bytes": 603116,
-      "sha256": "3fd3ad54584125949ca59dbce0207f0fbc5be87177a2a511367c408c19d100cb"
-    },
-    "tainan-map/market-ledger/24-02-3fd3ad545841.json.gz": {
-      "bytes": 101018,
-      "sha256": "df73ffd50cd3e0cce496b64911f3653ab6044e68fbf63b32ed2424f0ca952786"
-    },
-    "tainan-map/market-ledger/25-01-b83e701478c1.json": {
-      "bytes": 927336,
-      "sha256": "b83e701478c1a84d1dfafc862036a1eb5175a45a8775814342e449af195591a6"
-    },
-    "tainan-map/market-ledger/25-01-b83e701478c1.json.gz": {
-      "bytes": 160742,
-      "sha256": "0f6daef9a95fe93def9eef4610dfcec8ad29ea654d9b6e50d83f88aaba40500e"
-    },
-    "tainan-map/market-ledger/25-02-55107fffc8e2.json": {
-      "bytes": 892412,
-      "sha256": "55107fffc8e285d5913f23d451058a986eb8b21e490d8019e88fc9a467b0f2b9"
-    },
-    "tainan-map/market-ledger/25-02-55107fffc8e2.json.gz": {
-      "bytes": 157009,
-      "sha256": "6e3a9e796c7afbf3e9ede5f56406ce95f4a980236d3e96ca478eb0aa69f8e82d"
-    },
-    "tainan-map/market-ledger/25-03-99c4ba9d519d.json": {
-      "bytes": 920452,
-      "sha256": "99c4ba9d519d4f4ad3efa1d4a42ab8d09e6bee76fd04fc0cb1c8095cc99854f8"
-    },
-    "tainan-map/market-ledger/25-03-99c4ba9d519d.json.gz": {
-      "bytes": 159905,
-      "sha256": "a52b293a189e1544c2198c6a1333a11337f37b62053fd5eb4e6d1a2b4c776756"
-    },
-    "tainan-map/market-ledger/25-04-0709a05875b1.json": {
-      "bytes": 907426,
-      "sha256": "0709a05875b15f407882722aa58cfb965ee0a50c407bfe1ad63c2205a7affe76"
-    },
-    "tainan-map/market-ledger/25-04-0709a05875b1.json.gz": {
-      "bytes": 159022,
-      "sha256": "d5722d471ed551683916090835dbc95701121285b90acec84b090d25967f53b5"
-    },
-    "tainan-map/market-ledger/25-05-5835d437dff7.json": {
-      "bytes": 798649,
-      "sha256": "5835d437dff76b2b9058acee40eb880cfa382bbbef5d0b44639e99a65e769dd2"
-    },
-    "tainan-map/market-ledger/25-05-5835d437dff7.json.gz": {
-      "bytes": 139305,
-      "sha256": "6a0114c3797db9fe4b8acf819307d1ff53f57d498bb60a12672539930eaf6e94"
-    },
-    "tainan-map/market-ledger/26-01-267cc89ce518.json": {
-      "bytes": 88728,
-      "sha256": "267cc89ce51882dd2363bd7c005774eb5677e2886762b80861db097a093ed6d1"
-    },
-    "tainan-map/market-ledger/26-01-267cc89ce518.json.gz": {
-      "bytes": 15040,
-      "sha256": "c61e7d32fe7ef0408a4ddde3d38912c55d5ae6ae21d538df2b0b9bebc9c0be6b"
-    },
-    "tainan-map/market-ledger/27-01-9e932bd3a01b.json": {
-      "bytes": 238009,
-      "sha256": "9e932bd3a01bf7fdb4dd58451ff58d5e7a001b7510bdc01ee32ed4fdea455253"
-    },
-    "tainan-map/market-ledger/27-01-9e932bd3a01b.json.gz": {
-      "bytes": 36307,
-      "sha256": "47755a4691c43039376f7593b50f575094307b7c6ff0c5851e70ff33840951f5"
-    },
-    "tainan-map/market-ledger/28-01-0b37fefbf623.json": {
-      "bytes": 46585,
-      "sha256": "0b37fefbf6231a6e0512284c0c0366e346e5a77b8802fed78b894f5827250781"
-    },
-    "tainan-map/market-ledger/28-01-0b37fefbf623.json.gz": {
-      "bytes": 8326,
-      "sha256": "17a438996042e996ba57ec9cb26007fd53ed393dce54609262383061951ea383"
-    },
-    "tainan-map/market-ledger/29-01-b67237d4b7c4.json": {
-      "bytes": 970749,
-      "sha256": "b67237d4b7c4a644c478ea5587bfe6b085eba9f3efbc93a18bf464933fe9612f"
-    },
-    "tainan-map/market-ledger/29-01-b67237d4b7c4.json.gz": {
-      "bytes": 141533,
-      "sha256": "7cb589c9df8583f8c4c8a109202c927a6fcb2298e92c03dd429cd09eabbde067"
-    },
-    "tainan-map/market-ledger/29-02-1ff0aee4cad5.json": {
-      "bytes": 745420,
-      "sha256": "1ff0aee4cad54e29cb257c28e9a9385e4ddd1b23f124762ee6715181ef568a04"
-    },
-    "tainan-map/market-ledger/29-02-1ff0aee4cad5.json.gz": {
-      "bytes": 113442,
-      "sha256": "cb5613451983f0ba78110cb337694ae39705cbd2dc3bceadf1adb32811e92617"
-    },
-    "tainan-map/market-ledger/30-01-106682f87e6d.json": {
-      "bytes": 957674,
-      "sha256": "106682f87e6d160d691dd41b548ae0b8013c8382ceb5b8ed7add7c8b3bb0271f"
-    },
-    "tainan-map/market-ledger/30-01-106682f87e6d.json.gz": {
-      "bytes": 165751,
-      "sha256": "83281740c639c8bb9021b84ebd62a8e66d7181b506aa6334aeef4925d4b1a4a7"
-    },
-    "tainan-map/market-ledger/30-02-e57d1a5fca89.json": {
-      "bytes": 959538,
-      "sha256": "e57d1a5fca8967d2dbf207ca4d3420b4d42d6cacbbc59176f737028052528c1b"
-    },
-    "tainan-map/market-ledger/30-02-e57d1a5fca89.json.gz": {
-      "bytes": 163207,
-      "sha256": "534945c45e84497299c9d980f8a204f0c9810bb5fb430f378ab33f60aaa95b06"
-    },
-    "tainan-map/market-ledger/30-03-3886a4117e83.json": {
-      "bytes": 918415,
-      "sha256": "3886a4117e83e6ee1c2f98bd60186cdca0f1c9f08c0e55086e14ee28cbbc3c1f"
-    },
-    "tainan-map/market-ledger/30-03-3886a4117e83.json.gz": {
-      "bytes": 153513,
-      "sha256": "6e886f33468ba8050f00d521f510c927dbe30d1be938db56cc3475373b24fe52"
-    },
-    "tainan-map/market-ledger/30-04-b34b9d944d9b.json": {
-      "bytes": 961147,
-      "sha256": "b34b9d944d9bc66915b723e6f6486e064bfd23951d463e35bd2f0ce6d0778643"
-    },
-    "tainan-map/market-ledger/30-04-b34b9d944d9b.json.gz": {
-      "bytes": 156733,
-      "sha256": "137c2bab8addf97f945064d9e1f05daf5ed25356dc71558a311490fc2ade45ff"
-    },
-    "tainan-map/market-ledger/30-05-108d63865d92.json": {
-      "bytes": 962180,
-      "sha256": "108d63865d92fcd67bfeead5600d74c02e3659e231302e72b65c36891c2c6d01"
-    },
-    "tainan-map/market-ledger/30-05-108d63865d92.json.gz": {
-      "bytes": 152771,
-      "sha256": "5816f880a93744d4117f5f5b64ee8cb002baa8ed0680379d16573b919bdb537b"
-    },
-    "tainan-map/market-ledger/30-06-be11648caf07.json": {
-      "bytes": 936132,
-      "sha256": "be11648caf07854d4ca5db14577f29c25a9b7d1b8ffaf0a05e9b3e139fc3c302"
-    },
-    "tainan-map/market-ledger/30-06-be11648caf07.json.gz": {
-      "bytes": 150787,
-      "sha256": "118efcd4c6f14d2e83ab82a285fdaeae006729fa7e8b768f71292156e0854111"
-    },
-    "tainan-map/market-ledger/30-07-662ad8e4ba7e.json": {
-      "bytes": 918671,
-      "sha256": "662ad8e4ba7e9adb38940fd651ae7e08d3556edc1679fdc46132daa6e4e983dc"
-    },
-    "tainan-map/market-ledger/30-07-662ad8e4ba7e.json.gz": {
-      "bytes": 155801,
-      "sha256": "9267fc3b67de9a4d0b59ea1522b55ac43f840660d3f355080962512db6dad8f0"
-    },
-    "tainan-map/market-ledger/30-08-58e8f3aac047.json": {
-      "bytes": 593876,
-      "sha256": "58e8f3aac0470b7711ceba3d62228635fe7ed37cc60c33223eebdb42dff7da67"
-    },
-    "tainan-map/market-ledger/30-08-58e8f3aac047.json.gz": {
-      "bytes": 99975,
-      "sha256": "37d1868eb9c3399631a19dd678bcc7e89f3c1e338c720ab93559fcbc00455c4e"
-    },
-    "tainan-map/market-ledger/31-01-ec2170d7dc61.json": {
-      "bytes": 124412,
-      "sha256": "ec2170d7dc613399e49683696eef85c4f567af738b6301668db1f90829de5661"
-    },
-    "tainan-map/market-ledger/31-01-ec2170d7dc61.json.gz": {
-      "bytes": 20053,
-      "sha256": "87e49803af87dd904b55f7d70ee4a9e138497ae9036666a6c5f42df8dd86067c"
-    },
-    "tainan-map/market-ledger/32-01-8e0e269c5afb.json": {
-      "bytes": 184641,
-      "sha256": "8e0e269c5afb235c09452ede6316cef797376922e8a538a257461ebe54418017"
-    },
-    "tainan-map/market-ledger/32-01-8e0e269c5afb.json.gz": {
-      "bytes": 30762,
-      "sha256": "57eeb612129edd417c9044146668cac10aaa769f6a8856c77d53bb4960d1478a"
-    },
-    "tainan-map/market-ledger/33-01-4145a6fc0dec.json": {
-      "bytes": 151,
-      "sha256": "4145a6fc0dec8fcdb1675475a9be19cece2c4a2472ca514a3e5182d38692485b"
-    },
-    "tainan-map/market-ledger/33-01-4145a6fc0dec.json.gz": {
-      "bytes": 165,
-      "sha256": "d2f1d1a15a1b3afe3050c59d37845fda0ad6a2fc13ad4dd1f3b0651adfa65487"
-    },
-    "tainan-map/market-ledger/34-01-f2aef9398927.json": {
-      "bytes": 361015,
-      "sha256": "f2aef939892721bb5d7d28278e2bcab9f2a387d1643e9051e65e2b98c1c3f519"
-    },
-    "tainan-map/market-ledger/34-01-f2aef9398927.json.gz": {
-      "bytes": 54674,
-      "sha256": "46c956e97655dbe70d1149c3ed5e4d3a60dabebb4ea2c004c0904e8fc0e16eda"
-    },
-    "tainan-map/market-ledger/35-01-03558e81f63b.json": {
-      "bytes": 403246,
-      "sha256": "03558e81f63b2a112cb7c87f2338fd72f87eb7a703a6d1593dce1948ebbc0a38"
-    },
-    "tainan-map/market-ledger/35-01-03558e81f63b.json.gz": {
-      "bytes": 63272,
-      "sha256": "16121b04e0f6c698b2ecadf4452331d2749ff8940a5b4f49b55f8b0657c049ca"
-    },
-    "tainan-map/market-ledger/36-01-eb823877a8e8.json": {
-      "bytes": 296382,
-      "sha256": "eb823877a8e81f089b030e6601ae3c825a8d11ae446443e1a6c8b8c11969bb83"
-    },
-    "tainan-map/market-ledger/36-01-eb823877a8e8.json.gz": {
-      "bytes": 49229,
-      "sha256": "c11864280151dee4c3d035555879f9fcfa2cce7b8e617f4d58963b2c56beba95"
-    },
-    "tainan-map/market-ledger/37-01-d976d660bcbf.json": {
-      "bytes": 704765,
-      "sha256": "d976d660bcbf56e03fc9a4d08cc043e50a073810cfca4eba7a29836bcfea5c72"
-    },
-    "tainan-map/market-ledger/37-01-d976d660bcbf.json.gz": {
-      "bytes": 109492,
-      "sha256": "711873d66352e9fce21249e784af7e6936ac254e32ed0eb82220418a267b5e31"
-    },
-    "tainan-map/market-ledger/38-01-2979cbb23353.json": {
-      "bytes": 785,
-      "sha256": "2979cbb23353123cd1088f80fa7a88059a05835daf615d23ea5fb5403eb6719a"
-    },
-    "tainan-map/market-ledger/38-01-2979cbb23353.json.gz": {
-      "bytes": 371,
-      "sha256": "bd0a4f293269cf93b5baa02c7724b6274c82f70338d5745d1175708d813f689c"
+      "sha256": "cdad88e9c51822b50aa01e65cc5af22625e8e553d98e00f9068b3a80d019f5e2"
+    },
+    "tainan-map/market-ledger/10-01-d864e48c0495.json": {
+      "bytes": 1012371,
+      "sha256": "d864e48c049582944df06450c787f55b26e08ddce6ac8f524a812d6cf1f09bdd"
+    },
+    "tainan-map/market-ledger/10-01-d864e48c0495.json.gz": {
+      "bytes": 167637,
+      "sha256": "28f8acab4ac6e4b1b5069b81f46b2be62881d11f439b6f473d4ed7ed6d7af81e"
+    },
+    "tainan-map/market-ledger/10-02-200a87569574.json": {
+      "bytes": 1036348,
+      "sha256": "200a87569574e20cf1d8253843006587aeba39db51fe0311310eea5a456f8a8d"
+    },
+    "tainan-map/market-ledger/10-02-200a87569574.json.gz": {
+      "bytes": 161174,
+      "sha256": "1b2b50c8877a801d448d6c7c74c332b2dbc8627e8bdc76b167b48778c424c854"
+    },
+    "tainan-map/market-ledger/10-03-ba3c7538e059.json": {
+      "bytes": 780210,
+      "sha256": "ba3c7538e0598669caf0581e2ad0ebd063bfa07bf0dc76b1793af872aab95870"
+    },
+    "tainan-map/market-ledger/10-03-ba3c7538e059.json.gz": {
+      "bytes": 127250,
+      "sha256": "8510fd1d600bca473352f23dc56fc82d362f072210dc9f5529920642e14314fd"
+    },
+    "tainan-map/market-ledger/11-01-881b8f29a448.json": {
+      "bytes": 1030352,
+      "sha256": "881b8f29a448ebb4acbf2b9c6a16e5f739247caa1ade8cf9978fffa91cd49a58"
+    },
+    "tainan-map/market-ledger/11-01-881b8f29a448.json.gz": {
+      "bytes": 151378,
+      "sha256": "fb7afa215d2b0db590953ea1d7a44ee37bcbfd025a744d6ba8f6db7b916119c5"
+    },
+    "tainan-map/market-ledger/11-02-bd978dfec01f.json": {
+      "bytes": 978340,
+      "sha256": "bd978dfec01f02aee83fb37188d3b6a5a9d2542c8dff9afd0d3143fdda4f6ff7"
+    },
+    "tainan-map/market-ledger/11-02-bd978dfec01f.json.gz": {
+      "bytes": 130575,
+      "sha256": "fe4ff4d4f1e72b62a5f7c978b4a7d34ed9130cb51da085f94eeeddae6a8c450c"
+    },
+    "tainan-map/market-ledger/11-03-43d0148ce421.json": {
+      "bytes": 136797,
+      "sha256": "43d0148ce4217fc6f4d3c66898d18b73206f8c4bdca41ab5e4ceced6314655bb"
+    },
+    "tainan-map/market-ledger/11-03-43d0148ce421.json.gz": {
+      "bytes": 18308,
+      "sha256": "38ec8ac9407ae6748b6c2a8c3c1dfd73450d12ff858c5cce2955120342e1cdc5"
+    },
+    "tainan-map/market-ledger/12-01-2ad12f04c8fc.json": {
+      "bytes": 25459,
+      "sha256": "2ad12f04c8fce111b15b869ffd03562bac9ce8dda0e3ffbebacc51b737b48a69"
+    },
+    "tainan-map/market-ledger/12-01-2ad12f04c8fc.json.gz": {
+      "bytes": 4555,
+      "sha256": "a8a28406570e3c92d3a0a777c04d81e1c9ca412fde293d4c808086a33451824e"
+    },
+    "tainan-map/market-ledger/13-01-03c07bfd6da6.json": {
+      "bytes": 334116,
+      "sha256": "03c07bfd6da69561b54d7a6643e12b0f340cb0a271e085c2cf31458c793c3d49"
+    },
+    "tainan-map/market-ledger/13-01-03c07bfd6da6.json.gz": {
+      "bytes": 50516,
+      "sha256": "b2f51ca8af8b3629b9a046c86d2b5a257090753c4425a70959130bb7d30586a2"
+    },
+    "tainan-map/market-ledger/14-01-1173dd1d4d8b.json": {
+      "bytes": 1029828,
+      "sha256": "1173dd1d4d8bbaf1826f10d90ceb5fe6b64e8d7d2fa3ed3103509333c5fe1654"
+    },
+    "tainan-map/market-ledger/14-01-1173dd1d4d8b.json.gz": {
+      "bytes": 164447,
+      "sha256": "db7868c3f75a877ffd1fc3ae781cbb0e4e64a9a32116096ee5f4b90d63c82d74"
+    },
+    "tainan-map/market-ledger/14-02-6f703e2757b2.json": {
+      "bytes": 1029898,
+      "sha256": "6f703e2757b2b653495190e4797619be79856543a506307b77920007cc42f84d"
+    },
+    "tainan-map/market-ledger/14-02-6f703e2757b2.json.gz": {
+      "bytes": 153576,
+      "sha256": "4e12fb385831922a3189f948658a2419d85ed00a65ae5f0b4be775004a420d17"
+    },
+    "tainan-map/market-ledger/14-03-7ed32321f1be.json": {
+      "bytes": 1014970,
+      "sha256": "7ed32321f1be4cf802e2cc7a339ce5b226641788ff0d031754637ee27d249335"
+    },
+    "tainan-map/market-ledger/14-03-7ed32321f1be.json.gz": {
+      "bytes": 149147,
+      "sha256": "d613f5848a2d3e4d3ba7d13b43139f39ee9be19a6671b3565aaaa9f7171af2e5"
+    },
+    "tainan-map/market-ledger/14-04-340240578e6f.json": {
+      "bytes": 983577,
+      "sha256": "340240578e6f2e2583c52ea3799caa975dc53bbf501911fa538c42f4d7a5cfc9"
+    },
+    "tainan-map/market-ledger/14-04-340240578e6f.json.gz": {
+      "bytes": 143467,
+      "sha256": "d9f15c463701bb48bad32633f5d231e706606b4467a9a5d47400180f6e0a8e8f"
+    },
+    "tainan-map/market-ledger/14-05-73dcec856d38.json": {
+      "bytes": 923532,
+      "sha256": "73dcec856d3860ed19293b920591418afa07a28ad797e18e40cb372dcc1617b3"
+    },
+    "tainan-map/market-ledger/14-05-73dcec856d38.json.gz": {
+      "bytes": 138946,
+      "sha256": "0c649ee06f3f6a4e55640a676ce0f9ad4ba5b354a17d8e24ea121863f4b3bbd5"
+    },
+    "tainan-map/market-ledger/14-06-2607ae1ad788.json": {
+      "bytes": 168428,
+      "sha256": "2607ae1ad78884c0ee9e9b5dfbc50279daf6fe59aac414fa229ba7698ee88b1a"
+    },
+    "tainan-map/market-ledger/14-06-2607ae1ad788.json.gz": {
+      "bytes": 24690,
+      "sha256": "21856a4be3765e1dbd5d4acd38723af5ee85311235b00247451c0f815e6c311a"
+    },
+    "tainan-map/market-ledger/15-01-602b92ea2ab9.json": {
+      "bytes": 570384,
+      "sha256": "602b92ea2ab94539b83a153023104941fdb17e671331b788758d1e7bc48b3729"
+    },
+    "tainan-map/market-ledger/15-01-602b92ea2ab9.json.gz": {
+      "bytes": 80067,
+      "sha256": "f4b500457ffd4f9bcb4422d5966d23dc5023807da144cae454b8b3fa1feb0203"
+    },
+    "tainan-map/market-ledger/16-01-cec8466e57f1.json": {
+      "bytes": 1126359,
+      "sha256": "cec8466e57f1de23ea0eaac773484d9ff2620ca7de744d53b824cbef19bdae83"
+    },
+    "tainan-map/market-ledger/16-01-cec8466e57f1.json.gz": {
+      "bytes": 178867,
+      "sha256": "2c12542fa060a4de16a0d49a9d7df2781285e7df1233bd36697fc18e90c0d6e2"
+    },
+    "tainan-map/market-ledger/16-02-55e4b165b685.json": {
+      "bytes": 1134097,
+      "sha256": "55e4b165b685c4ee07fef35cc1f6005c315c3aabdbf35602cfb919ed683dc3ce"
+    },
+    "tainan-map/market-ledger/16-02-55e4b165b685.json.gz": {
+      "bytes": 164443,
+      "sha256": "a988852fa0f173aa6ce044d2fbc0559c7a928ed126e15f0bc41a538b882000f3"
+    },
+    "tainan-map/market-ledger/16-03-779ce155be64.json": {
+      "bytes": 1105479,
+      "sha256": "779ce155be641b1d39618517b502fc6ef2ad7e988207444cf16b800ec3fe37f3"
+    },
+    "tainan-map/market-ledger/16-03-779ce155be64.json.gz": {
+      "bytes": 172429,
+      "sha256": "9fd6f1fd89ba122221899ab825c7814a68c145f2af4ea380237fffeacedc4ea5"
+    },
+    "tainan-map/market-ledger/16-04-68d94c48f61e.json": {
+      "bytes": 459488,
+      "sha256": "68d94c48f61e07770ea48d071c83a55bf1f213d1d917162c5e61abb73d63b6fd"
+    },
+    "tainan-map/market-ledger/16-04-68d94c48f61e.json.gz": {
+      "bytes": 76636,
+      "sha256": "7c917987962c0029c086b0dcfb2abac98d6ff6e577c277d46cd1b700114b332f"
+    },
+    "tainan-map/market-ledger/17-01-ac6791b92f37.json": {
+      "bytes": 294197,
+      "sha256": "ac6791b92f374e5ebe36073b4feaba31446e8edf9a2d0eb6103e2edba572497a"
+    },
+    "tainan-map/market-ledger/17-01-ac6791b92f37.json.gz": {
+      "bytes": 42209,
+      "sha256": "a8f80ac49072d83f9a476a44c354ac74dd8a6f77adf9e73277a57af16def70d0"
+    },
+    "tainan-map/market-ledger/18-01-9eaf287f5cb0.json": {
+      "bytes": 85729,
+      "sha256": "9eaf287f5cb046b60be79ad1d76102a956d8c08d15e6a966103516f706da91bd"
+    },
+    "tainan-map/market-ledger/18-01-9eaf287f5cb0.json.gz": {
+      "bytes": 13529,
+      "sha256": "b5b32ca3006a3abc6e6eb366f599f0e324f8c082d653cd7d45468db98d7160c6"
+    },
+    "tainan-map/market-ledger/19-01-c505c3aa31ea.json": {
+      "bytes": 66733,
+      "sha256": "c505c3aa31ea32ee9c6a11f6bcb464189dfb4d2e0d96d24fadf2de438cfb9a87"
+    },
+    "tainan-map/market-ledger/19-01-c505c3aa31ea.json.gz": {
+      "bytes": 10181,
+      "sha256": "0a609404aa81a4ca0b6b7ec3846b4f769dbace9c87eed1c441dd1321d6a81fe9"
+    },
+    "tainan-map/market-ledger/20-01-faa1565ed71b.json": {
+      "bytes": 7293,
+      "sha256": "faa1565ed71b053d3d1be7f8aa4318211ae4f61ee708366be6f813d3faf3d1f7"
+    },
+    "tainan-map/market-ledger/20-01-faa1565ed71b.json.gz": {
+      "bytes": 1679,
+      "sha256": "a8522b3d13e9aea5a94b07a768d196d3a26d776d7f5b8bd397adff0578acb62d"
+    },
+    "tainan-map/market-ledger/21-01-668d7af68e47.json": {
+      "bytes": 126814,
+      "sha256": "668d7af68e47ae49520d3990f91af6c102abdd2a59915302faca9c5bbef67482"
+    },
+    "tainan-map/market-ledger/21-01-668d7af68e47.json.gz": {
+      "bytes": 20041,
+      "sha256": "e119bd188a72bdc72152a04af71e19c5e00bd57c15ca6391a4f220a9dce93a96"
+    },
+    "tainan-map/market-ledger/22-01-edbd30e13af3.json": {
+      "bytes": 541476,
+      "sha256": "edbd30e13af328aa1625fd6b5be7cc61f4fd9c12a3721008a03eef63f48d61e3"
+    },
+    "tainan-map/market-ledger/22-01-edbd30e13af3.json.gz": {
+      "bytes": 81116,
+      "sha256": "52304b8ffa98538ab88667c336f89095e88e31ec497f9f19f231db95c1013796"
+    },
+    "tainan-map/market-ledger/23-01-0111bd5ebf92.json": {
+      "bytes": 1010790,
+      "sha256": "0111bd5ebf923f81a8834ff266ff0f6be069f686cb548a30fb8a89f98debb2ce"
+    },
+    "tainan-map/market-ledger/23-01-0111bd5ebf92.json.gz": {
+      "bytes": 145840,
+      "sha256": "b09062193f07f5b9cc06d9258f2e2555bf67454cfc09d7a08bd167c3effeb3f4"
+    },
+    "tainan-map/market-ledger/23-02-4f247f7f6d4f.json": {
+      "bytes": 378804,
+      "sha256": "4f247f7f6d4f09fed46cb18fa1802b63bbf31a660092e8c4311537028c21e924"
+    },
+    "tainan-map/market-ledger/23-02-4f247f7f6d4f.json.gz": {
+      "bytes": 51131,
+      "sha256": "8a8ccff07d89b2102658f280da428cea3043d05ee6712402488d15b2761bd0bd"
+    },
+    "tainan-map/market-ledger/24-01-310da5add1b0.json": {
+      "bytes": 988762,
+      "sha256": "310da5add1b0c6df1705d8b22dc16845bb62354af155392b8661e786a3dc8ebd"
+    },
+    "tainan-map/market-ledger/24-01-310da5add1b0.json.gz": {
+      "bytes": 164266,
+      "sha256": "6d7751b83d6573530ab6f12626dc6e6e601329f4ba4eff29e55c334f580c6c62"
+    },
+    "tainan-map/market-ledger/24-02-24e28020a92b.json": {
+      "bytes": 647673,
+      "sha256": "24e28020a92bb0612c000ef1741d180f03aced2eb791dd907d3563b3195ea08d"
+    },
+    "tainan-map/market-ledger/24-02-24e28020a92b.json.gz": {
+      "bytes": 107433,
+      "sha256": "2882991abe5406888683dbd2a11639f29c0557c3843aeb7c4ec900436dd86a62"
+    },
+    "tainan-map/market-ledger/25-01-8c7038d3fc62.json": {
+      "bytes": 1060248,
+      "sha256": "8c7038d3fc627a86b877bce3f912a31f69cf67427eb64d54efbaf8fc79a56a0d"
+    },
+    "tainan-map/market-ledger/25-01-8c7038d3fc62.json.gz": {
+      "bytes": 181765,
+      "sha256": "2928273735247012728cb2b1dc8a5175bf0b06fe97ab534e5371043ddadc2b43"
+    },
+    "tainan-map/market-ledger/25-02-d4c9679975d5.json": {
+      "bytes": 1021985,
+      "sha256": "d4c9679975d5e0414907e2369551cd5097ad28f8bd485777dafb702c8734982d"
+    },
+    "tainan-map/market-ledger/25-02-d4c9679975d5.json.gz": {
+      "bytes": 178479,
+      "sha256": "6cc49bc746692fda1dad0126955a436815391ef5aa74a2973a1ac5b1f8761075"
+    },
+    "tainan-map/market-ledger/25-03-5f0be5f6cb9f.json": {
+      "bytes": 1040839,
+      "sha256": "5f0be5f6cb9f382b3715da84c85ad447823a5a5daae356bf284075ea70733a28"
+    },
+    "tainan-map/market-ledger/25-03-5f0be5f6cb9f.json.gz": {
+      "bytes": 180171,
+      "sha256": "b9534bc84291a24adc55efa17db0332d3dc38263b16e84ea4053ae58d98c0092"
+    },
+    "tainan-map/market-ledger/25-04-41e6f8d08781.json": {
+      "bytes": 1023793,
+      "sha256": "41e6f8d087816c9f7f6e7827447fac7d91027d7e2a69749bc563b16c6c7b4267"
+    },
+    "tainan-map/market-ledger/25-04-41e6f8d08781.json.gz": {
+      "bytes": 179363,
+      "sha256": "c55f52c6e349d9a5515ba53b20ed45ce8f887cfe1542581bd4c01e6731dd7ab1"
+    },
+    "tainan-map/market-ledger/25-05-ac06aad2acf0.json": {
+      "bytes": 903245,
+      "sha256": "ac06aad2acf088ca36d888a0cb8b05b912de45c072434883728eb77e28529cd1"
+    },
+    "tainan-map/market-ledger/25-05-ac06aad2acf0.json.gz": {
+      "bytes": 156558,
+      "sha256": "e8be6e77267a251af52649d5998ad963917284d056a4fe8fa9584b83aac14b99"
+    },
+    "tainan-map/market-ledger/26-01-0dde160b59e8.json": {
+      "bytes": 92708,
+      "sha256": "0dde160b59e81c8af8cb60050d5750ff34c04aad11903cf369ca3cd9eaa6c11e"
+    },
+    "tainan-map/market-ledger/26-01-0dde160b59e8.json.gz": {
+      "bytes": 15145,
+      "sha256": "fcd88ac581321fb241ef03d56207c3b8c2e009140d4b984bb833fb5da33c7710"
+    },
+    "tainan-map/market-ledger/27-01-7fe84d60a1c5.json": {
+      "bytes": 248086,
+      "sha256": "7fe84d60a1c54eb082e96e364eab5ddebeb87272cc8d117f207502e8b80bc521"
+    },
+    "tainan-map/market-ledger/27-01-7fe84d60a1c5.json.gz": {
+      "bytes": 36614,
+      "sha256": "7879647627d95a699ab2770e80c236325a6926ba5c285ffb6dd8a8473272c11d"
+    },
+    "tainan-map/market-ledger/28-01-c1998fa0166f.json": {
+      "bytes": 49219,
+      "sha256": "c1998fa0166fc5a33e81cde07d32b80d027866bb2cd910a0abe4a8954efe9a7a"
+    },
+    "tainan-map/market-ledger/28-01-c1998fa0166f.json.gz": {
+      "bytes": 8474,
+      "sha256": "2ab9bc1c6ea2e094fbc5d0af4580f260c7b1ffa19a65429e928fb9df92cd0784"
+    },
+    "tainan-map/market-ledger/29-01-6c5273c8d74d.json": {
+      "bytes": 1103256,
+      "sha256": "6c5273c8d74de92c13bd131ee5e6ebaa6f2af7ef79de2403dbb63909b55a30ca"
+    },
+    "tainan-map/market-ledger/29-01-6c5273c8d74d.json.gz": {
+      "bytes": 149670,
+      "sha256": "26acd1dda807e47eac79723fda296d65d3593120d7511a6dceb4a1f78efed2b7"
+    },
+    "tainan-map/market-ledger/29-02-3ce10484153f.json": {
+      "bytes": 806040,
+      "sha256": "3ce10484153f03773cbac9b35393c35bde9d56b5f69dcc86304767ab99868367"
+    },
+    "tainan-map/market-ledger/29-02-3ce10484153f.json.gz": {
+      "bytes": 118293,
+      "sha256": "bad1aaed161377628e916774e6af09bed2481584f16e9aa9670fb900c9844074"
+    },
+    "tainan-map/market-ledger/30-01-827cfe1c17e5.json": {
+      "bytes": 1084010,
+      "sha256": "827cfe1c17e5b6d71ca645e3d63e20c4a1c263e80ece31a2d2e1e83b1c828bce"
+    },
+    "tainan-map/market-ledger/30-01-827cfe1c17e5.json.gz": {
+      "bytes": 187275,
+      "sha256": "df73f748e49b8677e8cfe6595a6720b26e1be1682b8d1f65d2fc877bf44f9aff"
+    },
+    "tainan-map/market-ledger/30-02-1bd468fc9fea.json": {
+      "bytes": 1084407,
+      "sha256": "1bd468fc9fea059c2ee3e9df69601cecfa02654f8e76910bec59c1b3b2f7cc5d"
+    },
+    "tainan-map/market-ledger/30-02-1bd468fc9fea.json.gz": {
+      "bytes": 183670,
+      "sha256": "fa742df6b4a76cedf38fae18919f152e55a6a7e4faff0431f0a36a8ad91ef386"
+    },
+    "tainan-map/market-ledger/30-03-d6ecfe939e6b.json": {
+      "bytes": 1052383,
+      "sha256": "d6ecfe939e6b5e9f88fc6a5eb97d02b592ce188ee4e5f3dfb33922fe95c2b9c6"
+    },
+    "tainan-map/market-ledger/30-03-d6ecfe939e6b.json.gz": {
+      "bytes": 170478,
+      "sha256": "4fe477eb9645bebb0e87f535572b5b018d3d745941ea81cfbba0ce7c360d6bfb"
+    },
+    "tainan-map/market-ledger/30-04-1f98a7eb8860.json": {
+      "bytes": 1088185,
+      "sha256": "1f98a7eb886016a2380bffd6035ad5fd16db2faf45320180654dc332ef909286"
+    },
+    "tainan-map/market-ledger/30-04-1f98a7eb8860.json.gz": {
+      "bytes": 173879,
+      "sha256": "9cdfeff806ab341ca302ac51543cfa7ed4fd27b45e3c8335458bbb7e08a5a851"
+    },
+    "tainan-map/market-ledger/30-05-c8ba839c72a2.json": {
+      "bytes": 1087454,
+      "sha256": "c8ba839c72a2f99db657e682990590da073a6310c7d14003382f1f9f8212cd23"
+    },
+    "tainan-map/market-ledger/30-05-c8ba839c72a2.json.gz": {
+      "bytes": 168753,
+      "sha256": "395bf9af84d9a91f7227c5fcbbfd0a6b480d53e47489a36b651d19b9911e83ff"
+    },
+    "tainan-map/market-ledger/30-06-807cc4eec44e.json": {
+      "bytes": 1047885,
+      "sha256": "807cc4eec44e910825b880b0da9869e1d2de64af54e5e7d0f3b8dcacbc1bfed6"
+    },
+    "tainan-map/market-ledger/30-06-807cc4eec44e.json.gz": {
+      "bytes": 166459,
+      "sha256": "17bccd00bf9da31a2515e6710dbc05e7987148d6ef1312f9ed27c05af8f01ff9"
+    },
+    "tainan-map/market-ledger/30-07-568e89870d70.json": {
+      "bytes": 1020413,
+      "sha256": "568e89870d70e5ae7e3d40e5fbda96dd8ea7e03501f7b47928100b9f83e34075"
+    },
+    "tainan-map/market-ledger/30-07-568e89870d70.json.gz": {
+      "bytes": 173400,
+      "sha256": "517c4a5df0e13f8bd958ac26cc200a9485defca86615d7de8accffefd8b9743d"
+    },
+    "tainan-map/market-ledger/30-08-196b5e273cad.json": {
+      "bytes": 661068,
+      "sha256": "196b5e273cadfc7a5d050b624730b40be43743124b1d7fc8fbf4131abef9da67"
+    },
+    "tainan-map/market-ledger/30-08-196b5e273cad.json.gz": {
+      "bytes": 110426,
+      "sha256": "5fe0639f5231d673cdadbc34f5695b417c8e132c492acd46f7eb8e5f43f087b1"
+    },
+    "tainan-map/market-ledger/31-01-e7ea7f971920.json": {
+      "bytes": 130778,
+      "sha256": "e7ea7f971920d8da2a7e39fcde9425c28a0b0156e6593a5069063d08605ad6c5"
+    },
+    "tainan-map/market-ledger/31-01-e7ea7f971920.json.gz": {
+      "bytes": 20200,
+      "sha256": "75f3eb9211e66d264b7f7e6631581298ba50c04fd38412313443b6f2329a38f8"
+    },
+    "tainan-map/market-ledger/32-01-37651f8c014b.json": {
+      "bytes": 195108,
+      "sha256": "37651f8c014bb4993e743c638ac49bf09fb6788fe42a3f9db56e2effe3f416cb"
+    },
+    "tainan-map/market-ledger/32-01-37651f8c014b.json.gz": {
+      "bytes": 31353,
+      "sha256": "e65da6a1f20a41648ab21364c784df873bac331361f939f181355f37a865985e"
+    },
+    "tainan-map/market-ledger/33-01-8ad5da4e1375.json": {
+      "bytes": 156,
+      "sha256": "8ad5da4e1375656256f4cf17dbf51c405726dd4b4cd5083b05527f2af21fd78b"
+    },
+    "tainan-map/market-ledger/33-01-8ad5da4e1375.json.gz": {
+      "bytes": 171,
+      "sha256": "26f4e4b5a6a05ffd6acf2185c5fc8818cd4e7517b19eaf1f14c4674bc4a89184"
+    },
+    "tainan-map/market-ledger/34-01-362ffc6d120e.json": {
+      "bytes": 381397,
+      "sha256": "362ffc6d120eb7cd708a34a72e1d915572bc5b662ea1d1a3a4b45c6e5db6185a"
+    },
+    "tainan-map/market-ledger/34-01-362ffc6d120e.json.gz": {
+      "bytes": 55844,
+      "sha256": "afcc39281685484ca6525a8608c025d16089872c5371f46efdc5845a268ce9ab"
+    },
+    "tainan-map/market-ledger/35-01-6a8a5eb50e0c.json": {
+      "bytes": 428410,
+      "sha256": "6a8a5eb50e0cbf4f8c56682d7ffd1ba48943603fb3b8de0454caaf5057e2d830"
+    },
+    "tainan-map/market-ledger/35-01-6a8a5eb50e0c.json.gz": {
+      "bytes": 64206,
+      "sha256": "7a40ec6ff68c20d1b4c35a3a3c2adc5d26f864c8485c1e3bf464a3d10988345b"
+    },
+    "tainan-map/market-ledger/36-01-56f4cb82b389.json": {
+      "bytes": 313766,
+      "sha256": "56f4cb82b3899fd6134905e784ac6665398ee934a80af1ef16fadfba69a213ed"
+    },
+    "tainan-map/market-ledger/36-01-56f4cb82b389.json.gz": {
+      "bytes": 50482,
+      "sha256": "d1dcb84217742334175abe9517553398cc8f655a130ac4892d0995033becd197"
+    },
+    "tainan-map/market-ledger/37-01-4309c1288bd8.json": {
+      "bytes": 757044,
+      "sha256": "4309c1288bd8f0faa9b8bf53d8f1eb02ee503ae27498b8c97393dbf5d2531267"
+    },
+    "tainan-map/market-ledger/37-01-4309c1288bd8.json.gz": {
+      "bytes": 113164,
+      "sha256": "22c09313ec94c21356b1bf60ba41b5783b3f78a552c32656cd4134cf87d7ebdf"
+    },
+    "tainan-map/market-ledger/38-01-b8731736208d.json": {
+      "bytes": 815,
+      "sha256": "b8731736208d42520c5c9cec1177126723afa0af957b22661f3eff976952465b"
+    },
+    "tainan-map/market-ledger/38-01-b8731736208d.json.gz": {
+      "bytes": 374,
+      "sha256": "86ff3829cc91daa3dd07221de4f5e79c86b246db752e00fe66b31a016a80d865"
     },
     "tainan-map/market-ledger/manifest.json": {
-      "bytes": 35960,
-      "sha256": "96e14626b6c4c25e7851bb3fc4b4a6145be9645d2ec5d063b8dfcb8dc4aa637f"
+      "bytes": 40766,
+      "sha256": "428b2c15ebbf79d6bb6cb8977d6183a2a90c3c42f180571379237908130bd63a"
+    },
+    "tainan-map/market-pulse.css": {
+      "bytes": 3111,
+      "sha256": "e18686268ced87d3eca5d63275a8df8d22338bfb37b767968be2d6474c1da8d8"
+    },
+    "tainan-map/market-pulse.js": {
+      "bytes": 8481,
+      "sha256": "4239e5c103713fe70f7f91d04c87742b702b281b82eb9ec0df6124e13997ff43"
+    },
+    "tainan-map/market-pulse/housing-index.txt": {
+      "bytes": 127,
+      "sha256": "7fa146a33aac9c8c29ce78494af69d231379f4cf739bf003f2b49769eeb1f5f4"
+    },
+    "tainan-map/market-pulse/moi-release.txt": {
+      "bytes": 248,
+      "sha256": "fa48655622eda4f613669c35474627374f4ac5fafe32e1d9fb4f76bf6c680a98"
+    },
+    "tainan-map/market-pulse/sources.json": {
+      "bytes": 702,
+      "sha256": "610062854c2fd0619e9c7ac030ef9b8dce795b9aaf8723f2db6b525a5d876483"
+    },
+    "tainan-map/market-pulse/summary.json": {
+      "bytes": 27409,
+      "sha256": "8652e6a7ce17cdee65dbb8283fd5890d0f13db8fddaf6c10847ad68371c21cc9"
+    },
+    "tainan-map/market-pulse/transfers-2026-09.json": {
+      "bytes": 5354,
+      "sha256": "c681e60405657a775c0ddd68aa6ff26af37cd39a22b8867eae749ef8207cc21a"
+    },
+    "tainan-map/market-pulse/transfers-2026-10.json": {
+      "bytes": 5360,
+      "sha256": "9eaec43803bc604a6aa600539e5ea9c15c21dbd41294eb241e1ed9fbf838474e"
     },
     "tainan-map/og-image.png": {
       "bytes": 478758,
@@ -1250,8 +1302,8 @@
       "sha256": "a717ace90bd09a186c35728534e3f81a0d233d32ef756e6bdaeab9cb05d74c63"
     },
     "tainan-map/studio-sales.js": {
-      "bytes": 11296,
-      "sha256": "9385088f856a5e7913e31a0c0240624e3a7e612b6306c2d532c2101c5213e22c"
+      "bytes": 11503,
+      "sha256": "2756097da36dac6ee41f4d82cdfab9abfb0679916e944f054e760b7fbd158d3a"
     },
     "tainan-map/styles.css": {
       "bytes": 34015,

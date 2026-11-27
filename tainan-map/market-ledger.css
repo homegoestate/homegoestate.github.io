@@ -57,6 +57,19 @@ body.market-ledger-open { overflow: hidden; }
 .ledger-record dd { margin: 0; }
 .ledger-pages { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 14px 0 4px; }
 .ledger-page { font-variant-numeric: tabular-nums; }
+.address-floors {margin: 10px 0; padding: 9px 0; border-block: 1px solid #d5e3df;}
+.address-floors > summary {color:#175449; min-height:32px; align-content:center;}
+.address-floors h4 {font-size:1rem; margin:12px 0 6px;}
+.address-floors p, .address-floor-detail a {display:block; font-size:.82rem; line-height:1.55; margin:6px 0; color:#435e5c;}
+.address-floor-detail a {color:#166052; padding:5px 2px;}
+.address-floor-table {font-variant-numeric:tabular-nums; margin:10px 0;}
+.address-floor-line {display:grid; grid-template-columns:.83fr .84fr 1.2fr 1.05fr; align-items:center; text-align:right; gap:4px; min-height:36px; border-bottom:1px solid #dde7e3;}
+.address-floor-line span:first-child {text-align:left;}
+.address-floor-detail > summary {list-style:none; color:#174d43; min-height:44px;}
+.address-floor-detail > summary::-webkit-details-marker {display:none;}
+.address-floor-detail > summary span:first-child::after {content:' ▸'; font-size:.65em;}
+.address-floor-detail[open] > summary span:first-child::after {content:' ▾';}
+.address-floor-head {font-size:.77rem; color:#48605e; background:#edf4f1; font-weight:650;}
 @media (max-width: 540px) {
   .market-ledger { width: 100%; max-width: 100vw; max-height: 100vh; max-height: 100dvh; border-radius: 12px 12px 0 0; margin: auto 0 0; }
   .market-ledger .ledger-frame { max-height: 95vh; max-height: 95dvh; }

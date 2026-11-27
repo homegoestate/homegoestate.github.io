@@ -32,7 +32,36 @@ NOTE_KEYWORDS = (
 NOTE_RULES = [(name, re.compile(pattern)) for name, pattern in NOTE_KEYWORDS]
 FIELDS = ['date', 'address', 'buildingTypeIndex', 'floor', 'totalTwd', 'unitTwdPerM2',
           'buildingAreaM2', 'flagIndex', 'sourceIndex', 'csvRecord', 'projectName',
-          'unit', 'inCommunityDetails', 'parkingTwd', 'parkingAreaM2', 'saleTarget']
+          'unit', 'inCommunityDetails', 'parkingTwd', 'parkingAreaM2', 'saleTarget',
+          'singleBuildingEvidence']
+
+
+def building_evidence(row, contract_date, latest):
+    """Describe one apartment unit using independently reported source columns."""
+    count = re.fullmatch(r'土地\d+建物1車位(\d+)', row['交易筆棟數'])
+    if not count or not row['建物型態'].startswith(('公寓', '華廈', '住宅大樓', '套房')):
+        return None
+    completed = row_date(row['建築完成年月'], latest)
+    levels = row['總樓層數'].strip()
+    if completed.startswith('?') or not levels:
+        return None
+    parking_area = number(row.get('車位移轉總面積平方公尺', row.get('車位移轉總面積(平方公尺)')))
+    parking_price = number(row['車位總價元'])
+    if row['主要用途'].strip() not in ('住家用', '住家'):
+        reason = '用途非明確住宅'
+    elif contract_date.startswith('?') or contract_date < completed:
+        reason = '成交日期待核或早於完工'
+    elif row['備註'].strip():
+        reason = '原檔有備註'
+    elif not all((number(row[key]) or 0) > 0 for key in ('單價元平方公尺','建物移轉總面積平方公尺','總價元')):
+        reason = '價格或面積待核'
+    elif int(count[1]) > 0 and not (parking_price and parking_price > 0 and parking_area and 0 < parking_area < number(row['建物移轉總面積平方公尺']) and parking_price < number(row['總價元'])):
+        reason = '車位價或面積未能拆分'
+    elif int(count[1]) == 0 and (row['車位類別'].strip() not in ('', '無', '無車位') or parking_price or parking_area):
+        reason = '車位欄位不一致'
+    else:
+        reason = '採計住宅單價'
+    return levels, completed, reason
 
 
 def sha(data):
@@ -114,12 +143,12 @@ def paths_for(name, dirs):
 
 def build(args):
     public = args.map
-    out = public / 'market-ledger'
-    out.mkdir(exist_ok=True)
+    out = args.output or public / 'market-ledger'
+    out.mkdir(parents=True, exist_ok=True)
     reviewed = {x['filename']: x for x in json.loads(args.source_manifest.read_bytes())['files']}
     mapped, community_version = community_refs(public)
     seen, sources, grouped, totals = {}, [], defaultdict(list), Counter()
-    labels = {'types': {}, 'flags': {}}
+    labels = {'types': {}, 'flags': {}, 'floorPrice': {}}
     special_cache = {}
     last = date.fromisoformat(args.batch_date)
     unknown = '行政區未載'
@@ -161,6 +190,13 @@ def build(args):
                        number(row['單價元平方公尺']), number(row['建物移轉總面積平方公尺']),
                        flag_idx, index, line, '', '', int(bool(mapped_serial)), number(row['車位總價元']),
                        number(row.get('車位移轉總面積平方公尺', row.get('車位移轉總面積(平方公尺)'))), target]
+                evidence = building_evidence(row, raw_date, last)
+                if evidence:
+                    levels, completed, status = evidence
+                    status_index = labels['floorPrice'].setdefault(status, len(labels['floorPrice']))
+                    rec.append([levels, completed, status_index])
+                else:
+                    rec.append(None)
                 grouped[district].append(rec)
                 accepted += 1
                 totals['dateReview'] += raw_date.startswith('?')
@@ -170,6 +206,7 @@ def build(args):
         sources.append(dict(label=label, url=source['sourceUrl'], sha256=source['sha256'],
                             file=name, rows=source['rows'], included=accepted))
     districts = {}
+    unmatched_types = Counter()
     for district_idx, (district, rows) in enumerate(sorted(grouped.items()), 1):
         # A source anomaly remains searchable, sorted behind dated public records.
         rows.sort(key=lambda r: (not r[0].startswith('?'), r[0], r[8], r[9]), reverse=True)
@@ -184,7 +221,10 @@ def build(args):
             (out/(name + '.gz')).write_bytes(compressed)
             parts.append(dict(file=name, count=len(subset), bytes=len(raw), sha256=digest,
                               gzip=name+'.gz', gzipBytes=len(compressed)))
-        districts[district] = dict(count=len(rows), parts=parts)
+        unmatched = Counter(r[2] for r in rows if not r[12])
+        unmatched_types.update(unmatched)
+        districts[district] = dict(count=len(rows), communityRows=len(rows)-sum(unmatched.values()),
+                                   unlinkedByType=dict(sorted(unmatched.items())), parts=parts)
     # Announcement registration windows are offset from transaction dates.
     before = last - timedelta(days=1)
     start = before.replace(day=1 if last.day == 21 else 11 if last.day == 1 else 21)
@@ -203,8 +243,18 @@ def build(args):
                     note=note, fields=FIELDS, sourceHome=SOURCE_HOME, sources=sources,
                     labels={k:list(v) for k,v in labels.items()}, districts=districts,
                     communityVersion=community_version, communityRows=totals['matched'],
-                    unlinkedRows=len(seen)-totals['matched'], unknownDistrict=len(grouped.get(unknown, [])),
+                    unlinkedRows=len(seen)-totals['matched'], unlinkedByType=dict(sorted(unmatched_types.items())),
+                    unknownDistrict=len(grouped.get(unknown, [])),
                     dateReview=totals['dateReview'], originalTargets={t:totals[t] for t in sorted(TARGETS|OTHER_TARGETS)})
+    catalog_manifest = json.loads((public / 'data-manifest.json').read_bytes())
+    review = catalog_manifest.get('doorReview')
+    if review:
+        if review['officialRows'] != manifest['count'] or review['remaining'] != manifest['unlinkedRows'] or sum(review['residualReasons'].values()) != review['remaining']:
+            raise ValueError('The community reconciliation report does not describe this market snapshot.')
+        manifest['doorReview'] = review
+        catalog = json.loads((public / catalog_manifest['summary']['json']).read_bytes())
+        snapshot = catalog['meta']['registrySnapshot']
+        manifest['registrySnapshot'] = {k:snapshot[k] for k in ('fileAsOf','publishedAt')}
     manifest_bytes = encoded(manifest)
     temp = out / 'manifest.json.tmp'
     temp.write_bytes(manifest_bytes)
@@ -217,6 +267,7 @@ if __name__ == '__main__':
     p.add_argument('--source-manifest', type=Path, required=True)
     p.add_argument('--raw', action='append', type=Path, required=True)
     p.add_argument('--map', type=Path, required=True)
+    p.add_argument('--output', type=Path, help='Build into a separate directory for verification before release.')
     p.add_argument('--last-quarter', required=True)
     p.add_argument('--batch-date', required=True)
     build(p.parse_args())

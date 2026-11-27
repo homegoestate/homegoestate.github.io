@@ -109,6 +109,18 @@ mustHave('tainan-map/index.html','id="studioSample"');
 mustHave('tainan-map/index.html','id="showPlanMap"');
 runInNewContext(read('tainan-map/floor-sales.js'), floorContext);
 const floors = floorContext.window.FloorSales;
+runInNewContext(read('tainan-map/address-floors.js'), floorContext);
+const rawFloors = floorContext.window.AddressFloors;
+const rawDoorRow = (address,level='五層',completed='1994-12-16') => {
+  const row = Array(17).fill(null);
+  row[1]=address; row[2]=1; row[3]=level; row[16]=['十三層',completed,0]; return row;
+};
+const rawDoor = address => rawFloors.identify(rawDoorRow(address), '安平區');
+assert.equal(rawDoor('臺南市安平區慶平路３８８號五樓之３').key,rawDoor('慶平路388號五樓之2').key);
+assert.notEqual(rawDoor('慶平路388號之2五樓').key,rawDoor('慶平路388號五樓之2').key);
+for(const addr of ['東區慶平路388號','慶平路388至390號','慶平路388號、390號','慶平路388號六樓','慶平路388-390號','慶平路388號A棟'])
+  assert.equal(rawDoor(addr),null,addr);
+assert.notEqual(rawDoor('慶平路388號').key,rawFloors.identify(rawDoorRow('慶平路388號','五層','1999-12-16'),'安平區').key);
 assert.deepEqual(Array.from(floors.groupRows(['十層','十一層','二十層','地下十層'].map(floor=>({floor}))).records, r=>r.floor.number),[10,11,20,-10]);
 for (const asset of ['environment.js','environment.css','environment-sun.js','environment-fault.js','environment-records.js']) {
   mustHave('tainan-map/index.html', asset + '?');
@@ -209,7 +221,7 @@ for (const [district, entry] of Object.entries(manifest.districts)) {
 }
 assert.equal(Object.keys(manifest.districts).length, new Set(catalog.communities.map(c => c.district)).size);
 assert.equal(transactionCount, manifest.transactionCount);
-for (const resource of ['market-ledger.js','market-ledger.css']) {
+for (const resource of ['market-ledger.js','market-ledger.css','address-floors.js','market-pulse.js','market-pulse.css']) {
   mustHave('tainan-map/index.html',resource+'?');
   assert.ok(existsSync(resolve(root,'tainan-map',resource)));
 }
@@ -244,6 +256,12 @@ for (const [folder,market] of [['market-ledger','sale'],['presale-ledger','presa
           if (flag.includes('解約')) cancelled++;
         } else {
           assert.ok(row[12]===0 || row[12]===1);
+          assert.equal(row.length,17);
+          if (row[16]) {
+            assert.equal(row[16].length,3);
+            assert.match(row[16][1],/^\d{4}-\d{2}-\d{2}$/);
+            assert.ok(register.labels.floorPrice[row[16][2]]);
+          }
           linked+=row[12];
         }
       }
@@ -258,7 +276,22 @@ for (const [folder,market] of [['market-ledger','sale'],['presale-ledger','presa
     assert.equal(register.communityVersion,manifest.version);
     assert.equal(linked,register.communityRows);
     assert.equal(count-linked,register.unlinkedRows);
+    assert.equal(Object.values(register.unlinkedByType).reduce((a,b)=>a+b,0),register.unlinkedRows);
+    assert.equal(Object.values(register.districts).reduce((n,d)=>n+d.communityRows,0),linked);
+    assert.deepEqual(register.doorReview,manifest.doorReview);
+    assert.equal(Object.values(register.doorReview.residualReasons).reduce((a,b)=>a+b,0),register.unlinkedRows);
   }
+}
+const marketPulse = JSON.parse(read('tainan-map/market-pulse/summary.json'));
+assert.equal(Object.keys(marketPulse.areas).length,38);
+const allCity = marketPulse.areas['全市'];
+for(const phase of ['sale','presale']){
+  const file='tainan-map/'+(phase==='sale'?'market-ledger':'presale-ledger')+'/manifest.json';
+  assert.equal(marketPulse.ledgerHashes[phase],createHash('sha256').update(readFileSync(resolve(root,file))).digest('hex'));
+}
+for(const i of [0,1]) {
+  const districtSum=Object.entries(marketPulse.areas).filter(([name])=>name!=='全市').reduce((sum,[,area])=>sum+area.transfers[i],0);
+  assert.equal(districtSum,allCity.transfers[i]);
 }
 for (const [id,units] of [['community-3424',191],['community-3287',27]]) {
   const c=registry.get(id);

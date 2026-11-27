@@ -1,0 +1,18 @@
+{
+  "verifiedOn": "2026-11-27",
+  "transferCatalog": "https://data.tainan.gov.tw/DataSet/Detail/55f76dc4-c38c-4d59-858a-fbfce428a0c4",
+  "transfers": [
+    {"period": "2026-09", "published": "2026-10-29", "id": "d3fc746d-4e54-49f8-b45f-6a48269cd67e"},
+    {"period": "2026-10", "published": "2026-11-26", "id": "70f03521-5133-4c23-a137-dd192344307a"}
+  ],
+  "housingIndex": {
+    "catalog": "https://land.tainan.gov.tw/News.aspx?n=38356&sms=25743",
+    "url": "https://land.tainan.gov.tw/News_Content.aspx?n=38356&s=8848894",
+    "period": "2026-09",
+    "published": "2026-11-26"
+  },
+  "announcement": {
+    "url": "https://lvr.land.moi.gov.tw/R11/jsp/index.jsp",
+    "published": "2026-11-21"
+  }
+}

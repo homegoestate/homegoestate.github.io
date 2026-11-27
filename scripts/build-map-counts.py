@@ -21,6 +21,8 @@ import shutil
 import unicodedata
 from zipfile import ZipFile
 import map_parcel_review
+import map_door_review
+import map_resurvey_review
 
 
 def load(path):
@@ -182,7 +184,7 @@ def pre_completion(t):
     return bool(precision == 'month' and re.fullmatch(r'\d{4}-\d{2}', date) and t['date'][:7] < date)
 
 
-def install_builder(batch, scratch, land_sources, additional):
+def install_builder(batch, scratch, land_sources, additional, reviewed_doors=None):
     """Apply narrow hooks to the reviewed source version, and fail on drift."""
     for folder in ('raw', 'registry', 'acquisition'):
         dest = scratch / folder
@@ -198,7 +200,9 @@ def install_builder(batch, scratch, land_sources, additional):
             master_id = master_id or parcel_id
 """ + old_id,
         old_tx: """            if parcel_ref:
-                tx['parcelMatch'] = parcel_ref
+                tx['doorMatch' if parcel_ref.get('rule') == 'single-building-door' else 'parcelMatch'] = parcel_ref
+                if parcel_ref.get('rule') == 'single-building-door' and re.search(r'樓之[0-9]+$', parcel_ref['fullAddress']):
+                    tx['unitIdentity'] = parcel_ref['fullAddress']
 """ + old_tx,
     }
     for before, after in replacements.items():
@@ -218,6 +222,9 @@ def install_builder(batch, scratch, land_sources, additional):
         address = row.get('土地區段位置或建物區門牌')
         return relative_address(address, district, ctx['DISTRICTS'])
     def sale_door(row, district):
+        checked = (reviewed_doors or {}).get(row.get('編號'))
+        if checked and ctx['digest'](row) == checked[0]:
+            return checked[1]
         return ctx['one_address'](qualified(row, district), district)
     def unit_identity(row):
         return original_unit({**row, '土地區段位置或建物區門牌': qualified(row, row.get('鄉鎮市區', ''))})
@@ -343,10 +350,20 @@ def package(args, land_refs, baseline, builder, initial_manifest):
     assert baseline['asOf'] == as_of
     data['meta']['parcelSaleSources'] = land_refs
     data['meta']['unitDoorplateSource'] = {'year': 114, 'url': DOOR_URL, 'sha256': digest(args.doors.read_bytes())}
+    survey_keys = {key for c in data['communities'] for t in c['transactions']
+                   for key in t.get('doorMatch',{}).get('resurvey',{}).values()}
+    if survey_keys:
+        if not args.resurvey or not map_resurvey_review.checked(args.resurvey):
+            raise ValueError('The linked transactions require their reviewed --resurvey sources')
+        data['meta']['parcelResurveySources'] = {key:map_resurvey_review.CASES[key] for key in sorted(survey_keys)}
     observed_doors = {t['parcelMatch']['door'] for c in data['communities'] if c['id'] in CASES
                       for t in c['transactions'] if t.get('parcelMatch')}
     single_plates = read_doorplates(args.doors, builder, observed_doors)
-    previous_catalog = {c['id']: c for c in load(args.map/baseline['summary']['json'])['communities']}
+    prior_data = load(args.map/baseline['summary']['json'])
+    if any(t.get('doorMatch') for c in data['communities'] for t in c['transactions']):
+        if prior_data['meta']['unitDoorplateSource']['sha256'] != data['meta']['unitDoorplateSource']['sha256']:
+            raise ValueError('The official doorplate file no longer matches the reviewed catalog')
+    previous_catalog = {c['id']: c for c in prior_data['communities']}
     districts, audit = {}, {'before': baseline['transactionCount'], 'after': 0, 'changedCommunities': 0, 'cases': {}}
     owners, official_ids = {}, defaultdict(set)
     past_owners = {}
@@ -398,6 +415,10 @@ def package(args, land_refs, baseline, builder, initial_manifest):
             c['matchNote'] = '依名冊精確門牌配對。另以同季內政部買賣編號連到土地明細，限唯一地號、單建物、行政區、完工日與總樓層均符合本案的紀錄。'
             audit['cases'][cid] = {'oldAll': len(original), 'newAll': len(rows), 'parcelRows': len(evidence),
                                    'doors': c['parcelMatchedAddresses'], 'stats': c['statsByCategory']['all']['all']}
+        door_rows = [t['doorMatch'] for t in rows if 'doorMatch' in t]
+        if door_rows:
+            c['verifiedDoorAddresses'] = sorted({proof['door'] for proof in door_rows})
+            c['matchNote'] += ' 另逐筆核對單棟使照的完工日、層數及市府完整門牌。有同批土地明細時一併核對地號。'
     assert previous_catalog.keys() == {c['id'] for c in data['communities']}
     assert audit['after'] == data['meta']['coverage']['matchedTransactionCount']
     conflicting = {k: sorted(v) for k, v in official_ids.items() if len(v) > 1}
@@ -411,9 +432,14 @@ def package(args, land_refs, baseline, builder, initial_manifest):
     (args.scratch/'verified-data.js').write_bytes(full)
     for c in data['communities']:
         c.pop('transactions')
-    manifest = dict(baseline, version='V5-' + as_of.replace('-', '') + '-land-archives',
+    door_checked = any(c.get('verifiedDoorAddresses') for c in data['communities'])
+    suffix = '-verified-doors-resurvey' if survey_keys else '-verified-doors' if door_checked else '-land-archives'
+    manifest = dict(baseline, version='V5-' + as_of.replace('-', '') + suffix,
                     sourceDataSha256=digest(full), transactionCount=audit['after'],
                     summary=pack(args.map, 'catalog', data), districts={})
+    review_path = args.scratch/'door-review.json'
+    if door_checked:
+        manifest['doorReview'] = load(review_path)
     for i, (d, values) in enumerate(sorted(districts.items()), 1):
         manifest['districts'][d] = pack(args.map, f'transactions-{i:02d}', values)
     assert load(args.map/'data-manifest.json') == initial_manifest
@@ -426,6 +452,7 @@ def main():
     for flag in ('batch', 'land', 'doors', 'permits', 'scratch', 'map'):
         parser.add_argument('--' + flag, type=Path, required=True)
     parser.add_argument('--archives', type=Path, help='Directory containing the official dated ZIPs')
+    parser.add_argument('--resurvey', type=Path, help='Official parcel renumbering CSVs xinhua.csv and jiali.csv, dataset 161392')
     parser.add_argument('--package-only', action='store_true')
     parser.add_argument('--expected-manifest-sha', help='Reviewed hash when replacing a prior staged build')
     args = parser.parse_args()
@@ -440,7 +467,8 @@ def main():
         raise ValueError('Check the current manifest before replacing an earlier candidate')
     files = {}
     additional = {}
-    builder = install_builder(args.batch.resolve(), args.scratch.resolve(), files, additional)
+    reviewed_doors = {}
+    builder = install_builder(args.batch.resolve(), args.scratch.resolve(), files, additional, reviewed_doors)
     archive_dir = args.archives or args.batch.parent
     reviewed_files, urls, sources = read_land(args.land, base['asOf'], args.batch, builder, archive_dir, args.scratch)
     files.update(reviewed_files)
@@ -455,6 +483,20 @@ def main():
         catalog = baseline_catalog['communities']
         groups = [load(args.map/e['json']) for e in base['districts'].values()]
         additional.update(map_parcel_review.screen(args.permits,catalog,builder,relative_address,sources,args.doors,groups,CASES))
+        if baseline_catalog['meta'].get('parcelResurveySources') and not args.resurvey:
+            raise ValueError('The published links require their verified municipal --resurvey CSVs')
+        resurvey = map_resurvey_review.checked(args.resurvey)
+        confirmed, keys, review = map_door_review.screen(baseline_catalog, groups, builder,
+            lambda name: primary_file(name, args.batch, builder), sources, args.permits, args.doors, resurvey)
+        reviewed_doors.update(keys)
+        for name, records in confirmed.items():
+            existing = additional.setdefault(name, {})
+            for tid, (cid, proof) in records.items():
+                if tid in existing and existing[tid][0] != cid:
+                    raise ValueError('Conflicting parcel and doorplate match: ' + tid)
+                existing.setdefault(tid, (cid, proof))
+        save(args.scratch/'door-review.json', review)
+        save(args.scratch/'door-reviewed-rows.json', confirmed)
         identical_current_rows(additional, files, sources, builder, args.batch)
         save(args.scratch/'parcel-reviewed-rows.json',additional)
         assert relative_address('健康路三段７００號', '安平區', builder['DISTRICTS']) == '安平區健康路三段700號'
